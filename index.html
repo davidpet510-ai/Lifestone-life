@@ -14,6 +14,9 @@ input,select,button{font:inherit}
 </style>
 <style>
 html{scroll-behavior:smooth}
+.rv-on .rv{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:var(--rv-d,0s)}
+.rv-on .rv.rv-zoom{transform:translateY(20px) scale(.96)}
+.rv-on .rv.rv-in{opacity:1;transform:none}
 .chip{text-align:left;padding:18px 20px;border-radius:14px;font-size:18px;min-height:60px;cursor:pointer;font-weight:700;border:1.5px solid #B9C9C0;background:#FFFFFF;color:#1E2A24}
 .chip[aria-pressed="true"]{border:2px solid #4B8064;background:#EAF1ED;color:#1F3D2E}
 @media (max-width:640px){
@@ -450,6 +453,44 @@ html{scroll-behavior:smooth}
         err.style.display = 'block';
       });
   });
+})();
+</script>
+<script>
+// Fade content up into view as the page scrolls.
+(function(){
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var picks = [
+    'section:first-of-type > div > div > *',
+    'section h2', 'section h2 + p',
+    'section [style*="display: grid"] > *',
+    'section details', 'section img',
+    '#coverage-check', '#review form', '#review ol, #review h2 ~ div',
+    'section:last-of-type a'
+  ];
+  var els = [];
+  picks.forEach(function(sel){
+    document.querySelectorAll(sel).forEach(function(el){
+      if (els.indexOf(el) !== -1) return;
+      if (el.closest('form') && el.tagName !== 'FORM') return;
+      if (el.closest('footer') || el.closest('header')) return;
+      els.push(el);
+    });
+  });
+  // Don't animate an element inside another animated one.
+  els = els.filter(function(el){ return !els.some(function(o){ return o !== el && o.contains(el); }); });
+  els.forEach(function(el){
+    var sibs = Array.prototype.filter.call(el.parentNode.children, function(c){ return els.indexOf(c) !== -1; });
+    el.style.setProperty('--rv-d', Math.min(sibs.indexOf(el) * 0.1, 0.4) + 's');
+    el.classList.add('rv');
+    if (el.tagName === 'IMG') el.classList.add('rv-zoom');
+  });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('rv-in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+  document.documentElement.classList.add('rv-on');
+  els.forEach(function(el){ io.observe(el); });
 })();
 </script>
 </body>

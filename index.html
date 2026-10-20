@@ -171,7 +171,7 @@ html{scroll-padding-top:84px}
 /* ---------- Final CTA ---------- */
 .fc{position:relative;overflow:hidden;isolation:isolate;color:#FFFFFF;text-align:center}
 .fc-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;z-index:-2}
-.fc-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(15,36,25,.82),rgba(15,36,25,.92)),radial-gradient(600px 300px at 50% 100%,rgba(242,217,160,.25),transparent 70%)}
+.fc-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(15,36,25,.74),rgba(15,36,25,.88)),radial-gradient(600px 300px at 50% 100%,rgba(242,217,160,.25),transparent 70%)}
 .fc-wrap{max-width:860px;margin:0 auto;padding:120px 24px}
 .fc h2{font-size:52px;line-height:1.08;letter-spacing:-.015em;margin:0 0 18px;color:#FFFFFF;text-wrap:balance}
 .fc h2 em{color:#F2D9A0}
@@ -919,7 +919,7 @@ html{scroll-padding-top:84px}
     </header>
     <div class="grid lf-grid">
       <a class="lf-card" href="#quote">
-        <img src="video/family-park-poster.jpg" width="1920" height="1080" alt="A family walking together through a park" loading="lazy" style="object-position:50% 40%">
+        <img src="video/family-eating-poster.jpg" width="1920" height="1080" alt="A family sharing a meal together outdoors" loading="lazy" style="object-position:30% 50%">
         <span class="lf-shade" aria-hidden="true"></span>
         <span class="lf-body">
           <span class="lf-tag">Growing families</span>
@@ -990,7 +990,10 @@ html{scroll-padding-top:84px}
 </section>
 
 <section class="fc" aria-labelledby="fc-title">
-  <img class="fc-bg" src="video/family-park-poster.jpg" width="1920" height="1080" alt="" loading="lazy">
+  <video class="fc-bg" muted loop playsinline preload="none" poster="video/family-eating-poster.jpg" aria-hidden="true">
+    <source src="video/family-eating-720.mp4" type="video/mp4" media="(max-width: 768px)">
+    <source src="video/family-eating-1080.mp4" type="video/mp4">
+  </video>
   <div class="fc-shade" aria-hidden="true"></div>
   <div class="fc-wrap">
     <h2 id="fc-title">Ready to protect the people <em>who count on you?</em></h2>
@@ -1288,6 +1291,19 @@ html{scroll-padding-top:84px}
       qf.show(!a.goal ? 1 : !a.age ? 2 : !a.amount ? 3 : 4);
     });
   });
+})();
+</script>
+<script>
+// Closing section: play the dinner video only while it's on screen.
+(function(){
+  var v = document.querySelector('.fc-bg');
+  if (!v || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+      else v.pause();
+    });
+  }, { threshold: 0.2 }).observe(v);
 })();
 </script>
 </body>

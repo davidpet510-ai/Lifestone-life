@@ -102,6 +102,90 @@ html{scroll-padding-top:84px}
  .nb-menu{width:42px;height:42px}
  .nb-brand{gap:9px}
 }
+/* ---------- Products ---------- */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pc{position:relative;background:#F4F1EA;color:var(--ink);overflow:hidden;overflow:clip}
+.pc::before{content:"";position:absolute;inset:0;background:radial-gradient(900px 500px at 85% -10%,rgba(242,217,160,.35),transparent 60%),radial-gradient(800px 500px at -10% 110%,rgba(75,128,100,.14),transparent 60%);pointer-events:none}
+.pc-wrap{position:relative;max-width:1200px;margin:0 auto;padding:110px 24px 110px}
+.pc-intro{text-align:center;max-width:760px;margin:0 auto 64px}
+.pc-eyebrow{margin:0 0 14px;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A9842F}
+.pc-intro h2{font-size:48px;line-height:1.08;letter-spacing:-.015em;margin:0 0 18px;color:var(--deep);text-wrap:balance}
+.pc-intro h2 em{font-style:italic;color:#2F5A44}
+.pc-intro p:last-child{margin:0 auto;font-size:20px;color:var(--muted);max-width:620px}
+.pc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;align-items:stretch;perspective:1600px}
+.pc-card{position:relative;display:flex;flex-direction:column;background:#FFFFFF;border-radius:26px;overflow:hidden;box-shadow:0 1px 0 rgba(31,61,46,.06),0 24px 60px rgba(31,61,46,.12);border:1px solid rgba(31,61,46,.08);transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s}
+.pc-card:hover{transform:translateY(-10px);box-shadow:0 1px 0 rgba(31,61,46,.06),0 40px 80px rgba(31,61,46,.2),0 0 0 2px rgba(227,194,122,.7)}
+.pc-top{position:relative;overflow:hidden;padding:30px 30px 28px;color:#FFFFFF;background:linear-gradient(150deg,#1F3D2E 0%,#0F2419 100%)}
+.pc-whole .pc-top{background:linear-gradient(150deg,#2A4A39 0%,#13291D 100%)}
+.pc-ul .pc-top{background:linear-gradient(150deg,#244536 0%,#0F2419 100%)}
+.pc-top::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(242,217,160,.35),transparent 70%)}
+.pc-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,240,205,.22) 50%,transparent 65%);transform:translateX(-120%);pointer-events:none}
+.pc-card:hover .pc-shine{transition:transform .9s ease;transform:translateX(120%)}
+.pc-badge{position:absolute;right:22px;top:24px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1A3324;background:linear-gradient(135deg,#F7E4B5,#E3B96A);padding:6px 12px;border-radius:999px}
+.pc-ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;color:#F2D9A0;background:rgba(242,217,160,.12);border:1px solid rgba(242,217,160,.3);margin-bottom:20px;transition:transform .45s}
+.pc-card:hover .pc-ic{transform:rotate(-8deg) scale(1.06)}
+.pc-top h3{font-size:34px;line-height:1.1;margin:0 0 8px;color:#FFFFFF}
+.pc-top p{margin:0;font-size:17px;color:#C9D9CF;min-height:3.2em}
+.pc-body{display:flex;flex-direction:column;flex:1;padding:24px 30px 30px}
+.pc-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0 0 20px;border:1px solid var(--line2);border-radius:14px;overflow:hidden}
+.pc-facts div{padding:12px 12px;border-right:1px solid var(--line2)}
+.pc-facts div:last-child{border-right:0}
+.pc-facts dt{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.pc-facts dd{margin:0;font-size:15px;font-weight:700;color:var(--deep);line-height:1.3}
+.pc-cost i{font-style:normal;font-size:18px;color:#D9DED9}
+.pc-cost i.on{color:#A9842F}
+.pc-best{margin:0 0 20px;padding:14px 16px;background:#F7F4EC;border-radius:12px;font-size:16px;color:var(--body2)}
+.pc-best b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#A9842F;margin-bottom:2px}
+.pc-h{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--deep)}
+.pc-list{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:10px}
+.pc-list li{display:flex;gap:10px;align-items:flex-start;font-size:16px;line-height:1.45;color:var(--body2)}
+.pc-list svg{flex:none;margin-top:2px}
+.pc-cons{margin-bottom:26px}
+.pc-btn{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:15px 22px;border-radius:999px;text-decoration:none;font-weight:700;font-size:17px;color:#FFFFFF;background:linear-gradient(135deg,#2F5A44,#1F3D2E);box-shadow:0 10px 24px rgba(31,61,46,.25);transition:all .25s}
+.pc-btn span{transition:transform .25s}
+.pc-btn:hover{color:#1A3324;background:linear-gradient(135deg,#F7E4B5,#E9C77E);box-shadow:0 12px 28px rgba(233,199,126,.45)}
+.pc-btn:hover span{transform:translateX(4px)}
+.pc-btn:focus-visible{outline:3px solid #A9842F;outline-offset:3px}
+.pc-compare{margin-top:64px;background:#FFFFFF;border-radius:24px;padding:30px;box-shadow:0 18px 50px rgba(31,61,46,.1);border:1px solid rgba(31,61,46,.08)}
+.pc-compare-title{margin:0 0 14px;font-family:var(--serif);font-weight:700;font-size:26px;color:var(--deep)}
+.pc-table-wrap{overflow-x:auto}
+.pc-table{width:100%;border-collapse:collapse;font-size:16px;min-width:560px}
+.pc-table th,.pc-table td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line2)}
+.pc-table thead th{font-family:var(--serif);font-size:19px;color:var(--deep);border-bottom:2px solid #E3C27A}
+.pc-table tbody th{color:var(--muted);font-weight:700;font-size:15px;width:24%}
+.pc-table tbody tr:last-child th,.pc-table tbody tr:last-child td{border-bottom:0}
+.pc-table tbody tr{transition:background .2s}
+.pc-table tbody tr:hover{background:#F7F4EC}
+.pc-note{margin:16px 0 0;font-size:14px;color:var(--muted)}
+/* entrance */
+.pc-anim .pc-intro,.pc-anim .pc-card,.pc-anim .pc-compare{opacity:0}
+.pc-anim .pc-card{transform:translateY(90px) rotateX(16deg) scale(.94);transform-origin:50% 100%}
+.pc-anim .pc-intro{transform:translateY(30px)}
+.pc-anim .pc-compare{transform:translateY(50px)}
+.pc-anim.pc-in .pc-intro{opacity:1;transform:none;transition:opacity .9s ease,transform .9s cubic-bezier(.2,.75,.2,1)}
+.pc-anim.pc-in .pc-card{opacity:1;transform:none;transition:opacity .9s ease calc(.15s + var(--k) * .16s),transform 1.1s cubic-bezier(.16,.8,.2,1) calc(.15s + var(--k) * .16s),box-shadow .45s}
+.pc-anim.pc-in .pc-card:hover{transform:translateY(-10px);transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s}
+.pc-anim.pc-in.pc-done .pc-card{transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s}
+.pc-anim .pc-compare.pc-in-c{opacity:1;transform:none;transition:opacity .9s ease,transform .9s cubic-bezier(.2,.75,.2,1)}
+@media (max-width:1020px){
+ .pc-grid{grid-template-columns:1fr;max-width:560px;margin:0 auto}
+ .pc-top p{min-height:0}
+}
+@media (max-width:640px){
+ .pc-wrap{padding:72px 16px 80px}
+ .pc-intro{margin-bottom:40px}
+ .pc-intro h2{font-size:34px}
+ .pc-intro p:last-child{font-size:18px}
+ .pc-top{padding:26px 22px 24px}
+ .pc-body{padding:22px 20px 24px}
+ .pc-top h3{font-size:29px}
+ .pc-facts dd{font-size:14px}
+ .pc-compare{padding:22px 16px;margin-top:44px}
+}
+@media (prefers-reduced-motion:reduce){
+ .pc-anim .pc-intro,.pc-anim .pc-card,.pc-anim .pc-compare{opacity:1;transform:none}
+ .pc-card,.pc-card:hover,.pc-ic,.pc-card:hover .pc-ic{transition:none;transform:none}
+}
 /* ---------- Process ---------- */
 .ps{position:relative;overflow:hidden;overflow:clip;background:linear-gradient(180deg,#0F2419 0%,#12291D 50%,#0F2419 100%);color:#FFFFFF;isolation:isolate}
 .ps-glow{position:absolute;width:900px;height:900px;left:50%;top:var(--gy,20%);transform:translate(-30%,-50%);background:radial-gradient(circle,rgba(242,217,160,.13) 0%,rgba(75,128,100,.10) 35%,transparent 65%);z-index:-1;transition:top .8s cubic-bezier(.2,.7,.2,1);pointer-events:none}
@@ -335,6 +419,82 @@ html{scroll-padding-top:84px}
   </div>
 </section>
 
+<section id="coverage" class="pc" aria-labelledby="pc-title">
+  <div class="pc-wrap">
+    <header class="pc-intro">
+      <p class="pc-eyebrow">Your coverage options</p>
+      <h2 id="pc-title">Three kinds of life insurance. <em>One right fit for you.</em></h2>
+      <p>Here’s what each one does well, where it falls short and how they compare. Not sure? Your agent will help you choose.</p>
+    </header>
+    <div class="pc-grid">
+      <article class="pc-card pc-term" style="--k:0">
+        <div class="pc-top">
+          <div class="pc-shine" aria-hidden="true"></div>
+          <span class="pc-badge">Most affordable</span>
+          <span class="pc-ic"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3>Term life</h3>
+          <p>Big protection for the years your family needs it most.</p>
+        </div>
+        <div class="pc-body">
+          <dl class="pc-facts"><div><dt>Lasts</dt><dd>10, 15, 20 or 30 years</dd></div><div><dt>Cost</dt><dd><span class="pc-cost" aria-label="Lowest cost"><i class="on">$</i><i class="">$</i><i class="">$</i></span></dd></div><div><dt>Cash value</dt><dd>None</dd></div></dl>
+          <p class="pc-best"><b>Best for</b>Replacing your income, paying off a mortgage, raising kids</p>
+          <p class="pc-h">Benefits</p>
+          <ul class="pc-list"><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The lowest price for the most coverage</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Premium stays the same for the whole term</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Many policies can convert to permanent coverage later without a new medical exam</span></li></ul>
+          <p class="pc-h">Downsides</p>
+          <ul class="pc-list pc-cons"><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>Coverage ends when the term does, with no payout if you outlive it</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>No savings or cash value</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>Buying new coverage later costs more as you age</span></li></ul>
+          <a href="#quote" class="pc-btn" data-ptype="Term">Get a term quote <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+      <article class="pc-card pc-whole" style="--k:1">
+        <div class="pc-top">
+          <div class="pc-shine" aria-hidden="true"></div>
+          <span class="pc-badge">Lifelong & guaranteed</span>
+          <span class="pc-ic"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3>Whole life</h3>
+          <p>Coverage that never expires, with savings that grow alongside it.</p>
+        </div>
+        <div class="pc-body">
+          <dl class="pc-facts"><div><dt>Lasts</dt><dd>Your whole life</dd></div><div><dt>Cost</dt><dd><span class="pc-cost" aria-label="Highest cost"><i class="on">$</i><i class="on">$</i><i class="on">$</i></span></dd></div><div><dt>Cash value</dt><dd>Guaranteed growth</dd></div></dl>
+          <p class="pc-best"><b>Best for</b>Leaving a legacy, final expenses, estate planning</p>
+          <p class="pc-h">Benefits</p>
+          <ul class="pc-list"><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Covers you for life as long as premiums are paid</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Premiums and payout are locked in and guaranteed</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Builds cash value at a guaranteed rate that you can borrow against</span></li></ul>
+          <p class="pc-h">Downsides</p>
+          <ul class="pc-list pc-cons"><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>Costs much more than term for the same payout</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>Cash value grows slowly in the first years</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>Canceling early can mean getting back less than you paid</span></li></ul>
+          <a href="#quote" class="pc-btn" data-ptype="Whole life">Get a whole life quote <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+      <article class="pc-card pc-ul" style="--k:2">
+        <div class="pc-top">
+          <div class="pc-shine" aria-hidden="true"></div>
+          <span class="pc-badge">Most flexible</span>
+          <span class="pc-ic"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M4 17h6M18 7h2M14 17h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <h3>Universal life</h3>
+          <p>Lifelong coverage you can adjust as your life changes.</p>
+        </div>
+        <div class="pc-body">
+          <dl class="pc-facts"><div><dt>Lasts</dt><dd>Lifelong, if funded</dd></div><div><dt>Cost</dt><dd><span class="pc-cost" aria-label="Medium cost"><i class="on">$</i><i class="on">$</i><i class="">$</i></span></dd></div><div><dt>Cash value</dt><dd>Earns interest</dd></div></dl>
+          <p class="pc-best"><b>Best for</b>Lifelong coverage at a lower cost than whole life, business planning</p>
+          <p class="pc-h">Benefits</p>
+          <ul class="pc-list"><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Adjust your payments and coverage amount over time</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Usually costs less than whole life for lifelong coverage</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E7F0EA"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#2F5A44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Cash value earns interest, with a minimum rate guaranteed</span></li></ul>
+          <p class="pc-h">Downsides</p>
+          <ul class="pc-list pc-cons"><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>If payments or interest rates fall short, the policy can lapse</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>Needs a check-up every year or two to stay on track</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F6ECE6"/><path d="M8 12h8" stroke="#A4573F" stroke-width="2.6" stroke-linecap="round"/></svg><span>More moving parts to understand</span></li></ul>
+          <a href="#quote" class="pc-btn" data-ptype="Universal life">Get a universal life quote <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    </div>
+    <div class="pc-compare">
+      <p class="pc-compare-title">At a glance</p>
+      <div class="pc-table-wrap">
+        <table class="pc-table">
+          <thead><tr><th scope="col"><span class="sr-only">Feature</span></th><th scope="col">Term</th><th scope="col">Whole</th><th scope="col">Universal</th></tr></thead>
+          <tbody><tr><th scope="row">How long it lasts</th><td>10–30 years</td><td>Your whole life</td><td>Lifelong, if funded</td></tr><tr><th scope="row">Starting cost</th><td>Lowest</td><td>Highest</td><td>In between</td></tr><tr><th scope="row">Premiums</th><td>Fixed for the term</td><td>Fixed for life</td><td>Flexible</td></tr><tr><th scope="row">Cash value</th><td>None</td><td>Guaranteed growth</td><td>Grows with interest rates</td></tr><tr><th scope="row">Best for</th><td>Income & mortgage</td><td>Legacy & certainty</td><td>Flexibility & cost</td></tr></tbody>
+        </table>
+      </div>
+      <p class="pc-note">Many families combine term and permanent coverage. All policies are subject to underwriting and carrier approval.</p>
+    </div>
+  </div>
+</section>
+
 <section id="how" class="ps" aria-labelledby="ps-title">
   <div class="ps-glow" aria-hidden="true"></div>
   <div class="ps-wrap">
@@ -489,7 +649,8 @@ html{scroll-padding-top:84px}
         <h3 id="q-ptype" class="qh" style="margin-top:28px">What kind of coverage interests you?</h3>
         <div role="group" aria-labelledby="q-ptype" data-name="ptype" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
           <button type="button" class="chip" aria-pressed="false">Term</button>
-          <button type="button" class="chip" aria-pressed="false">Permanent</button>
+          <button type="button" class="chip" aria-pressed="false">Whole life</button>
+          <button type="button" class="chip" aria-pressed="false">Universal life</button>
           <button type="button" class="chip" aria-pressed="false">Help me decide</button>
         </div>
         <p class="qc-error" role="alert">Please answer both questions to continue.</p>
@@ -544,46 +705,6 @@ html{scroll-padding-top:84px}
   </div>
 </section>
 
-<section id="coverage" style="background:var(--soft)">
-  <div class="wrap">
-    <h2 class="h2 center">Term or permanent? We'll help you choose.</h2>
-    <p class="lede center">Most people need one of two kinds of coverage. Here's the simple version.</p>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:stretch;margin-bottom:40px">
-      <div class="card" style="padding:36px">
-        <span class="tag">Most popular</span>
-        <h3 style="font-size:28px">Term life</h3>
-        <p style="margin-bottom:18px">Coverage for a set number of years, like 10, 20 or 30. Usually the lowest cost for the most coverage.</p>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:17px;color:var(--body2)">
-          <div class="check"><span style="color:var(--accent);font-weight:700">✓</span>Great for income replacement and mortgages</div>
-          <div class="check"><span style="color:var(--accent);font-weight:700">✓</span>Fixed premiums for the term you choose</div>
-          <div class="check"><span style="color:var(--accent);font-weight:700">✓</span>Some policies can convert to permanent later</div>
-        </div>
-      </div>
-      <div class="card" style="padding:36px;border:2px solid var(--accent)">
-        <span class="tag">Lifelong</span>
-        <h3 style="font-size:28px">Permanent life</h3>
-        <p style="margin-bottom:18px">Universal and whole life coverage designed to last your whole life, as long as premiums are paid.</p>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:17px;color:var(--body2)">
-          <div class="check"><span style="color:var(--accent);font-weight:700">✓</span>Built for legacy and estate planning</div>
-          <div class="check"><span style="color:var(--accent);font-weight:700">✓</span>Flexible premium options with universal life</div>
-          <div class="check"><span style="color:var(--accent);font-weight:700">✓</span>Can build cash value over time</div>
-        </div>
-      </div>
-    </div>
-    <div style="overflow-x:auto;border-radius:16px;border:1px solid var(--line);box-shadow:0 6px 20px rgba(31,61,46,.07)">
-      <table class="compare">
-        <thead><tr><th scope="col"></th><th scope="col">Term life</th><th scope="col">Permanent life</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">How long it lasts</th><td>A set number of years</td><td>Your whole life, if premiums are paid</td></tr>
-          <tr><th scope="row">Cost</th><td>Lower starting cost</td><td>Higher, but built to last</td></tr>
-          <tr><th scope="row">Cash value</th><td>No</td><td>Often yes</td></tr>
-          <tr><th scope="row">Best for</th><td>Income, mortgage, raising kids</td><td>Legacy, estate and business planning</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p style="margin:20px 0 0;font-size:14px;color:var(--muted);text-align:center">Many families use a mix of both. All coverage is subject to underwriting and carrier approval.</p>
-  </div>
-</section>
 
 
 <section id="why" style="background:var(--soft)">
@@ -715,7 +836,7 @@ html{scroll-padding-top:84px}
     f.addEventListener('input', function(){ form.querySelector('.qc-step[data-step="4"] .qc-error').style.display = 'none'; });
   });
   form.querySelectorAll('.qc-next').forEach(function(b){ b.addEventListener('click', function(){ if (stepValid(current)) show(current + 1); }); });
-  window.quoteForm = { show: show };
+  window.quoteForm = { show: show, answers: answers };
   form.querySelectorAll('.qc-back').forEach(function(b){ b.addEventListener('click', function(){ show(current - 1); }); });
 
   form.addEventListener('submit', function(e){
@@ -753,7 +874,7 @@ html{scroll-padding-top:84px}
     document.querySelectorAll(sel).forEach(function(el){
       if (els.indexOf(el) !== -1) return;
       if (el.closest('form') && el.tagName !== 'FORM') return;
-      if (el.closest('footer') || el.closest('header') || el.closest('.hx') || el.closest('.ps')) return;
+      if (el.closest('footer') || el.closest('header') || el.closest('.hx') || el.closest('.ps') || el.closest('.pc')) return;
       els.push(el);
     });
   });
@@ -883,6 +1004,36 @@ html{scroll-padding-top:84px}
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   update();
+})();
+</script>
+<script>
+// Products: cards rise in as the section arrives; each quote button pre-selects that policy type.
+(function(){
+  var sec = document.querySelector('.pc'); if (!sec) return;
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    sec.classList.add('pc-anim');
+    var cmp = sec.querySelector('.pc-compare');
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return;
+        if (e.target === cmp) cmp.classList.add('pc-in-c'); else { sec.classList.add('pc-in'); setTimeout(function(){ sec.classList.add('pc-done'); }, 1800); }
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.15 });
+    io.observe(sec.querySelector('.pc-grid')); io.observe(cmp);
+  }
+  sec.querySelectorAll('.pc-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      var form = document.getElementById('quote-form'), qf = window.quoteForm;
+      if (!form || !qf) return;
+      e.preventDefault();
+      form.querySelectorAll('[data-name="ptype"] .chip').forEach(function(c){
+        if (c.textContent === btn.dataset.ptype && c.getAttribute('aria-pressed') !== 'true') c.click();
+      });
+      var a = qf.answers;
+      qf.show(!a.goal ? 1 : !a.age ? 2 : !a.amount ? 3 : 4);
+    });
+  });
 })();
 </script>
 </body>

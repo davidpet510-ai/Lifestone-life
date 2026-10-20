@@ -102,6 +102,137 @@ html{scroll-padding-top:84px}
  .nb-menu{width:42px;height:42px}
  .nb-brand{gap:9px}
 }
+/* ---------- Life stages ---------- */
+.lf{background:linear-gradient(180deg,#0F2419,#13291D);color:#FFFFFF}
+.lf-wrap{max-width:1200px;margin:0 auto;padding:110px 24px}
+.lf-intro{max-width:720px;margin:0 0 52px}
+.lf-eyebrow,.wy-eyebrow,.fq-eyebrow{margin:0 0 14px;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#E3C27A}
+.lf-intro h2{font-size:48px;line-height:1.08;letter-spacing:-.015em;margin:0 0 16px;color:#FFFFFF;text-wrap:balance}
+.lf-intro p:last-child{margin:0;font-size:20px;color:#C9D9CF}
+.lf-grid{grid-template-columns:repeat(4,1fr);gap:20px}
+.lf-card{position:relative;display:block;aspect-ratio:3/4.3;border-radius:24px;overflow:hidden;color:#FFFFFF;text-decoration:none;box-shadow:0 24px 50px rgba(0,0,0,.35);isolation:isolate}
+.lf-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.2,.7,.2,1);z-index:-2}
+.lf-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(15,36,25,0) 30%,rgba(15,36,25,.55) 58%,rgba(11,28,19,.95) 100%);transition:opacity .5s}
+.lf-body{position:absolute;left:0;right:0;bottom:0;padding:22px 22px 24px;display:flex;flex-direction:column;gap:6px;transform:translateY(34px);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.lf-tag{align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1A3324;background:linear-gradient(135deg,#F7E4B5,#E3B96A);padding:5px 11px;border-radius:999px;margin-bottom:6px}
+.lf-title{font-family:var(--serif);font-weight:700;font-size:27px;line-height:1.1;position:relative;padding-bottom:10px}
+.lf-title::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:36px;background:#E3C27A;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.lf-text{font-size:16px;line-height:1.45;color:#D5E2DA}
+.lf-go{font-weight:700;font-size:16px;color:#F2D9A0;opacity:0;transition:opacity .4s;margin-top:4px}
+.lf-card:hover,.lf-card:focus-visible{color:#FFFFFF}
+.lf-card:hover img,.lf-card:focus-visible img{transform:scale(1.08)}
+.lf-card:hover .lf-body,.lf-card:focus-visible .lf-body{transform:none}
+.lf-card:hover .lf-title::after,.lf-card:focus-visible .lf-title::after{width:100%}
+.lf-card:hover .lf-go,.lf-card:focus-visible .lf-go{opacity:1}
+.lf-card:focus-visible{outline:3px solid #F2D9A0;outline-offset:4px}
+@media (hover:none){.lf-body{transform:none}.lf-go{opacity:1}}
+/* ---------- Why ---------- */
+.wy{position:relative;background:#F4F1EA;overflow:hidden;overflow:clip}
+.wy::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(800px 500px at 100% 0%,rgba(242,217,160,.4),transparent 60%)}
+.wy-wrap{position:relative;max-width:1200px;margin:0 auto;padding:110px 24px;display:grid;grid-template-columns:1.15fr .85fr;gap:80px;align-items:center}
+.wy-eyebrow{color:#A9842F}
+.wy-copy h2{font-size:48px;line-height:1.08;letter-spacing:-.015em;margin:0 0 16px;color:var(--deep)}
+.wy-lede{margin:0 0 34px;font-size:20px;color:var(--muted);max-width:540px}
+.wy-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.wy-list li{display:flex;gap:14px;align-items:flex-start;background:#FFFFFF;border:1px solid rgba(31,61,46,.08);border-radius:18px;padding:20px;box-shadow:0 10px 28px rgba(31,61,46,.07);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.wy-list li:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(31,61,46,.12)}
+.wy-ic{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#F2D9A0;background:linear-gradient(150deg,#2F5A44,#1F3D2E)}
+.wy-list b{display:block;font-family:var(--serif);font-size:19px;color:var(--deep);margin-bottom:4px}
+.wy-list li span:last-child{font-size:16px;line-height:1.5;color:var(--body2)}
+.wy-art{position:relative}
+.wy-art img{position:relative;display:block;width:100%;height:auto;aspect-ratio:8/9;object-fit:cover;border-radius:28px;box-shadow:0 34px 70px rgba(31,61,46,.28)}
+.wy-frame{position:absolute;inset:0;transform:translate(20px,20px);border:1.5px solid #E3C27A;border-radius:28px}
+.wy-badge{position:absolute;left:-36px;bottom:36px;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:18px;color:#FFFFFF;background:rgba(15,36,25,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(0,0,0,.3);line-height:1.3;font-size:14px;color:#C9D9CF;animation:wyBob 7s ease-in-out infinite}
+.wy-badge b{display:block;color:#FFFFFF;font-size:17px}
+.wy-badge-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#1A3324;background:linear-gradient(135deg,#F7E4B5,#E3B96A)}
+@keyframes wyBob{50%{transform:translateY(-8px)}}
+/* ---------- FAQ ---------- */
+.fq{background:#FBFAF6}
+.fq-wrap{max-width:860px;margin:0 auto;padding:110px 24px}
+.fq-intro{text-align:center;margin-bottom:40px}
+.fq-eyebrow{color:#A9842F}
+.fq-intro h2{font-size:48px;line-height:1.08;margin:0;color:var(--deep)}
+.fq-list{display:grid;gap:14px}
+.fq-item{background:#FFFFFF;border:1px solid rgba(31,61,46,.1);border-radius:18px;padding:0;box-shadow:0 6px 18px rgba(31,61,46,.05);transition:border-color .3s,box-shadow .3s}
+.fq-item[open]{border-color:rgba(227,194,122,.8);box-shadow:0 14px 34px rgba(31,61,46,.1)}
+.fq-item summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 24px;font-size:19px;font-weight:700;color:var(--deep);cursor:pointer}
+.fq-item summary::-webkit-details-marker{display:none}
+.fq-item summary:focus-visible{outline:3px solid #E3C27A;outline-offset:-3px;border-radius:18px}
+.fq-item i{position:relative;flex:none;width:34px;height:34px;border-radius:50%;background:#F1F5F2;transition:background .3s,transform .4s cubic-bezier(.3,1.4,.5,1)}
+.fq-item i::before,.fq-item i::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:2px;margin:-1px 0 0 -7px;border-radius:2px;background:#2F5A44}
+.fq-item i::after{transform:rotate(90deg)}
+.fq-item[open] i{transform:rotate(135deg);background:linear-gradient(135deg,#F7E4B5,#E3B96A)}
+.fq-a{padding:0 24px 22px}
+.fq-a p{margin:0;color:var(--body2);font-size:17px;line-height:1.6}
+.fq-item[open] .fq-a{animation:fqOpen .4s ease}
+@keyframes fqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.fq-more{text-align:center;margin:28px 0 0;color:var(--muted)}
+.fq-more a{font-weight:700}
+/* ---------- Final CTA ---------- */
+.fc{position:relative;overflow:hidden;isolation:isolate;color:#FFFFFF;text-align:center}
+.fc-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;z-index:-2}
+.fc-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(15,36,25,.82),rgba(15,36,25,.92)),radial-gradient(600px 300px at 50% 100%,rgba(242,217,160,.25),transparent 70%)}
+.fc-wrap{max-width:860px;margin:0 auto;padding:120px 24px}
+.fc h2{font-size:52px;line-height:1.08;letter-spacing:-.015em;margin:0 0 18px;color:#FFFFFF;text-wrap:balance}
+.fc h2 em{color:#F2D9A0}
+.fc p{margin:0 0 34px;font-size:20px;color:#D5E2DA}
+.fc-ctas{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px 28px}
+.fc-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#F7E4B5,#E9C77E);color:#1A3324;text-decoration:none;font-weight:700;font-size:19px;padding:18px 34px;border-radius:999px;min-height:60px;box-shadow:0 12px 32px rgba(233,199,126,.4);transition:transform .2s}
+.fc-btn:hover{color:#1A3324;transform:translateY(-2px)}
+.fc-call{display:inline-flex;align-items:center;gap:10px;color:#FFFFFF;font-weight:700;font-size:19px;text-decoration:none}
+.fc-call svg{color:#F2D9A0}
+.fc-call:hover{color:#F2D9A0}
+/* ---------- Footer ---------- */
+.ft{background:#0B1C13;color:#C9D9CF}
+.ft-wrap{max-width:1200px;margin:0 auto;padding:72px 24px 36px}
+.ft-top{display:grid;grid-template-columns:1.3fr .8fr 1.2fr 1fr;gap:48px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.1)}
+.ft-brand p{margin:16px 0 0;font-size:16px;color:#A9C2B4;max-width:300px}
+.ft-h{margin:0 0 14px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E3C27A}
+.ft-col{display:flex;flex-direction:column;gap:10px;font-size:16px}
+.ft-col a,.ft-col span{color:#D5E2DA;text-decoration:none}
+.ft-col a:hover{color:#F2D9A0}
+.ft-ic{display:flex;gap:10px;align-items:flex-start}
+.ft-ic svg{flex:none;color:#E3C27A;margin-top:3px}
+.ft-cta p:not(.ft-h){margin:0 0 16px;font-size:16px;color:#A9C2B4}
+.ft-legal{padding-top:28px;font-size:13.5px;line-height:1.65;color:#7FA08D}
+.ft-legal p{margin:0 0 10px}
+.ft-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;margin-top:16px}
+.ft-legal a{color:#A9C2B4}
+.ft a:focus-visible{outline:2px solid #F2D9A0;outline-offset:3px}
+/* sticky phone bar */
+.sticky-cta .sc-call,.sticky-cta .sc-quote{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:999px;font-weight:700;font-size:16px;text-decoration:none}
+.sticky-cta .sc-call{color:#FFFFFF;border:1px solid rgba(255,255,255,.25)}
+.sticky-cta .sc-call svg{color:#F2D9A0}
+.sticky-cta .sc-quote{color:#1A3324;background:linear-gradient(135deg,#F7E4B5,#E9C77E)}
+@media (max-width:1020px){
+ .lf-grid{grid-template-columns:repeat(2,1fr)}
+ .wy-wrap{grid-template-columns:1fr;gap:56px}
+ .wy-art{max-width:520px;margin:0 auto 0 0}
+ .ft-top{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+ .lf-wrap,.wy-wrap,.fq-wrap{padding:72px 16px}
+ .lf-intro h2,.wy-copy h2,.fq-intro h2{font-size:34px}
+ .lf-intro p:last-child,.wy-lede{font-size:18px}
+ .lf-grid{grid-template-columns:1fr 1fr;gap:12px}
+ .lf-card{border-radius:18px;aspect-ratio:3/4.6}
+ .lf-body{padding:14px}
+ .lf-title{font-size:20px}
+ .lf-text{display:none}
+ .lf-tag{font-size:10px;padding:4px 8px}
+ .wy-list{grid-template-columns:1fr}
+ .wy-badge{left:12px;bottom:16px}
+ .wy-frame{transform:translate(12px,12px)}
+ .fq-item summary{font-size:17px;padding:18px}
+ .fq-a{padding:0 18px 18px}
+ .fc-wrap{padding:84px 20px}
+ .fc h2{font-size:36px}
+ .fc-btn{width:100%;justify-content:center}
+ .ft-top{grid-template-columns:1fr;gap:32px}
+}
+@media (prefers-reduced-motion:reduce){
+ .lf-card img,.lf-body,.wy-badge,.fq-item i,.fq-item[open] .fq-a{transition:none;animation:none}
+}
 /* ---------- Quote form ---------- */
 .qf{position:relative;background:#F4F1EA;overflow:hidden;overflow:clip}
 .qf::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(700px 420px at 10% 0%,rgba(242,217,160,.45),transparent 60%),radial-gradient(700px 500px at 100% 100%,rgba(75,128,100,.16),transparent 60%)}
@@ -444,7 +575,7 @@ html{scroll-padding-top:84px}
  .hide-sm{display:none !important}
  .compare{font-size:15px}
  .compare th,.compare td{padding:12px}
- .sticky-cta{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;gap:10px;padding:10px 16px;background:#FFFFFF;border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(31,61,46,.1)}
+ .sticky-cta{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(11,28,19,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);box-shadow:0 -10px 30px rgba(0,0,0,.25)}
  .sticky-cta a{flex:1}
  body{padding-bottom:78px}
 }
@@ -779,117 +910,136 @@ html{scroll-padding-top:84px}
   </div>
 </section>
 
-<section style="background:var(--deep);color:#FFFFFF">
-  <div style="max-width:1200px;margin:0 auto;padding:48px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;text-align:center">
-    <div><div style="font-family:var(--serif);font-weight:700;font-size:44px;color:var(--gold)">$0</div><div style="color:var(--onDark)">Cost for a quote and consultation</div></div>
-    <div><div style="font-family:var(--serif);font-weight:700;font-size:44px;color:var(--gold)">15–20 min</div><div style="color:var(--onDark)">A short call with a licensed agent</div></div>
-    <div><div style="font-family:var(--serif);font-weight:700;font-size:44px;color:var(--gold)">[#]+</div><div style="color:var(--onDark)">Insurance carriers we can compare</div></div>
-    <div><div style="font-family:var(--serif);font-weight:700;font-size:44px;color:var(--gold)">100%</div><div style="color:var(--onDark)">Licensed agents, no call center</div></div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <h2 class="h2 center">Life insurance for every stage of life</h2>
-    <p class="lede center">Coverage needs change as life changes. Here's where most people start.</p>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
-      <div class="card"><span class="tag">Growing families</span><h3>New parents</h3><p>Replace your income so your kids are taken care of through school and beyond.</p></div>
-      <div class="card"><span class="tag">Homeowners</span><h3>New mortgage</h3><p>Make sure your family can keep the house if something happens to you.</p></div>
-      <div class="card"><span class="tag">Business owners</span><h3>Partners &amp; key people</h3><p>Fund a buy-sell agreement or protect the business if a key person passes.</p></div>
-      <div class="card"><span class="tag">Pre-retirees &amp; retirees</span><h3>Legacy &amp; estate</h3><p>Leave money to children, grandchildren or charity, or help cover estate costs.</p></div>
+<section class="lf" aria-labelledby="lf-title">
+  <div class="lf-wrap">
+    <header class="lf-intro">
+      <p class="lf-eyebrow">Who we help</p>
+      <h2 id="lf-title">Life insurance for every stage of life.</h2>
+      <p>Coverage needs change as life changes. Here’s where most people start.</p>
+    </header>
+    <div class="grid lf-grid">
+      <a class="lf-card" href="#quote">
+        <img src="video/family-park-poster.jpg" width="1920" height="1080" alt="A family walking together through a park" loading="lazy" style="object-position:50% 40%">
+        <span class="lf-shade" aria-hidden="true"></span>
+        <span class="lf-body">
+          <span class="lf-tag">Growing families</span>
+          <span class="lf-title">Raising kids</span>
+          <span class="lf-text">Replace your income so your kids are taken care of through school and beyond.</span>
+          <span class="lf-go">Get a quote <span aria-hidden="true">→</span></span>
+        </span>
+      </a>
+      <a class="lf-card" href="#quote">
+        <img src="images/pay-off-home.jpg" width="800" height="1000" alt="A couple on the front steps of their home" loading="lazy" style="object-position:50% 50%">
+        <span class="lf-shade" aria-hidden="true"></span>
+        <span class="lf-body">
+          <span class="lf-tag">Homeowners</span>
+          <span class="lf-title">A new mortgage</span>
+          <span class="lf-text">Make sure your family can keep the house if something happens to you.</span>
+          <span class="lf-go">Get a quote <span aria-hidden="true">→</span></span>
+        </span>
+      </a>
+      <a class="lf-card" href="#quote">
+        <img src="images/protect-spouse.jpg" width="800" height="1000" alt="A husband hugging his wife on their porch" loading="lazy" style="object-position:50% 30%">
+        <span class="lf-shade" aria-hidden="true"></span>
+        <span class="lf-body">
+          <span class="lf-tag">Couples</span>
+          <span class="lf-title">Protect your partner</span>
+          <span class="lf-text">Take care of the person you share everything with.</span>
+          <span class="lf-go">Get a quote <span aria-hidden="true">→</span></span>
+        </span>
+      </a>
+      <a class="lf-card" href="#quote">
+        <img src="images/leave-legacy.jpg" width="800" height="1000" alt="Grandparents hugging their grandchildren" loading="lazy" style="object-position:50% 35%">
+        <span class="lf-shade" aria-hidden="true"></span>
+        <span class="lf-body">
+          <span class="lf-tag">Retirees</span>
+          <span class="lf-title">Legacy & estate</span>
+          <span class="lf-text">Leave money to children, grandchildren or charity, or help cover final costs.</span>
+          <span class="lf-go">Get a quote <span aria-hidden="true">→</span></span>
+        </span>
+      </a>
     </div>
   </div>
 </section>
 
+<section id="why" class="wy" aria-labelledby="wy-title">
+  <div class="wy-wrap">
+    <div class="wy-copy">
+      <p class="wy-eyebrow">Why Lifestone</p>
+      <h2 id="wy-title">The Lifestone difference.</h2>
+      <p class="wy-lede">Buying life insurance should feel like talking to someone you trust. That’s how we work.</p>
+      <ul class="wy-list"><li><span class="wy-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="7.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.5" cy="8.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 19.5c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2M13.5 19.5c0-2.5 1.4-4.3 3.5-4.3s3.5 1.8 3.5 4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Real people, real care</b>A family firm, not a call center. One agent works with you from start to finish.</span></li><li><span class="wy-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="4" width="7" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 9h2M5.5 12h2M16.5 9h2M16.5 12h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>We compare carriers</b>We’re not tied to one insurance company, so we look for the fit that’s right for you.</span></li><li><span class="wy-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Licensed and regulated</b>Every agent is licensed in Florida and works under a licensed insurance agency.</span></li><li><span class="wy-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 3v5h5M10 13h6M10 17h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>We handle everything</b>Applications, medical exams and carrier follow-up. We keep you posted the whole way.</span></li></ul>
+    </div>
+    <div class="wy-art">
+      <div class="wy-frame" aria-hidden="true"></div>
+      <img src="images/agent-meeting.jpg" width="900" height="1012" alt="Licensed agent going over coverage options with a couple at their kitchen table" loading="lazy">
+      <div class="wy-badge"><span class="wy-badge-ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="7.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.5" cy="8.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 19.5c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2M13.5 19.5c0-2.5 1.4-4.3 3.5-4.3s3.5 1.8 3.5 4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>One agent</b>from first call to final policy</span></div>
+    </div>
+  </div>
+</section>
 
+<section id="faq" class="fq" aria-labelledby="fq-title">
+  <div class="fq-wrap">
+    <header class="fq-intro">
+      <p class="fq-eyebrow">FAQ</p>
+      <h2 id="fq-title">Questions, answered.</h2>
+    </header>
+    <div class="fq-list"><details class="fq-item"><summary><span>How much life insurance do I need?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>A common starting point is enough to replace several years of income, plus your mortgage and other debts, plus future costs like college. Your agent will walk through the numbers with you so you don't buy too little or too much.</p></div></details><details class="fq-item"><summary><span>Does it cost anything to get a quote?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>No. Quotes and advice are free with no obligation. If you choose a policy, our agents are paid a commission by the insurance company.</p></div></details><details class="fq-item"><summary><span>Will I need a medical exam?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Some policies require one and some don't. It depends on your age, the carrier and the amount of coverage. Your agent will tell you what to expect up front.</p></div></details><details class="fq-item"><summary><span>I already have a policy. Can you still help?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Yes. We can add coverage or review what you have and tell you honestly whether it still fits. Never cancel an existing policy until a new one is approved and in force. <a href="policy-review.html">Get a free policy review →</a></p></div></details></div>
+    <p class="fq-more">Still have a question? Call <a href="tel:+19542056233">+1 (954) 205-6233</a> and talk to a real person.</p>
+  </div>
+</section>
 
-<section id="why" style="background:var(--soft)">
-  <div class="wrap" style="display:flex;flex-wrap:wrap;gap:56px;align-items:center">
-    <div style="flex:999 1 560px;min-width:0">
-      <h2 class="h2" style="margin-bottom:32px">The Lifestone difference</h2>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px">
-        <div class="card"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="11" cy="11" r="5" fill="none" stroke="#4B8064" stroke-width="2.2"/><circle cx="21" cy="12" r="4" fill="none" stroke="#4B8064" stroke-width="2.2"/><path d="M3 26c0-5 4-8 8-8s8 3 8 8M19 19c4 0 8 2 8 7" fill="none" stroke="#4B8064" stroke-width="2.2" stroke-linecap="round"/></svg><h3>Real people, real care</h3><p>A family firm, not a call center. One agent works with you start to finish.</p></div>
-        <div class="card"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="3" y="6" width="10" height="18" rx="2" fill="none" stroke="#4B8064" stroke-width="2.2"/><rect x="17" y="6" width="10" height="18" rx="2" fill="none" stroke="#4B8064" stroke-width="2.2"/></svg><h3>We compare carriers</h3><p>We're not tied to one insurance company, so we look for the fit that's right for you.</p></div>
-        <div class="card"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M15 3l10 4v8c0 6-4 10-10 12-6-2-10-6-10-12V7Z" fill="none" stroke="#4B8064" stroke-width="2.2" stroke-linejoin="round"/><path d="M10.5 15l3 3 6-6" fill="none" stroke="#4B8064" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Licensed and regulated</h3><p>Every agent is licensed in Florida and works under a licensed insurance agency.</p></div>
-        <div class="card"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M4 26V13l11-8 11 8v13Z" fill="none" stroke="#4B8064" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 26v-7h6v7" fill="none" stroke="#4B8064" stroke-width="2.2"/></svg><h3>We handle everything</h3><p>Applications, medical exams, carrier follow-up. We keep you posted the whole way.</p></div>
+<section class="fc" aria-labelledby="fc-title">
+  <img class="fc-bg" src="video/family-park-poster.jpg" width="1920" height="1080" alt="" loading="lazy">
+  <div class="fc-shade" aria-hidden="true"></div>
+  <div class="fc-wrap">
+    <h2 id="fc-title">Ready to protect the people <em>who count on you?</em></h2>
+    <p>Free quotes from a licensed agent. No pressure, no obligation.</p>
+    <div class="fc-ctas">
+      <a href="#quote" class="fc-btn">Get My Free Quote <span aria-hidden="true">→</span></a>
+      <a href="tel:+19542056233" class="fc-call"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>+1 (954) 205-6233</a>
+    </div>
+  </div>
+</section>
+
+<footer id="legal" class="ft">
+  <div class="ft-wrap">
+    <div class="ft-top">
+      <div class="ft-brand">
+        <a href="#top" class="nb-brand" aria-label="Lifestone Life, back to top">
+          <img src="images/logo.png" width="48" height="44" alt="">
+          <span><b>Lifestone Life</b><small>Licensed life insurance agency</small></span>
+        </a>
+        <p>A family firm helping people find the right life insurance for the ones they love.</p>
+      </div>
+      <nav class="ft-col" aria-label="Footer">
+        <p class="ft-h">Explore</p>
+        <a href="#coverage">Coverage Options</a><a href="#how">How It Works</a><a href="#why">Why Lifestone</a><a href="#faq">FAQ</a><a href="policy-review.html">Free Policy Review</a>
+      </nav>
+      <div class="ft-col">
+        <p class="ft-h">Contact</p>
+        <a href="tel:+19542056233" class="ft-ic"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>+1 (954) 205-6233</a>
+        <a href="mailto:policies@lifestonesettlements.com" class="ft-ic"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="overflow-wrap:anywhere">policies@lifestonesettlements.com</span></a>
+        <span class="ft-ic"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Mon–Fri 9–5 EST</span>
+        <span class="ft-ic"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>2211 E Sample Rd, Suite 205<br>Lighthouse Point, FL 33064</span></span>
+      </div>
+      <div class="ft-cta">
+        <p class="ft-h">Get started</p>
+        <p>Answer a few questions and get free quotes from a licensed agent.</p>
+        <a href="#quote" class="nb-cta">Free Quote <span aria-hidden="true">→</span></a>
       </div>
     </div>
-    <div style="flex:1 1 340px;min-width:0">
-      <img src="images/agent-meeting.jpg" width="900" height="1012" alt="Licensed agent going over coverage options with a couple at their kitchen table" loading="lazy" class="photo" style="aspect-ratio:8/9;border-radius:20px;box-shadow:0 28px 60px rgba(31,61,46,.22),0 8px 18px rgba(31,61,46,.12)">
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <h2 class="h2 center">Protect what matters most</h2>
-    <p class="lede center">The right coverage means the people you love are taken care of, no matter what.</p>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
-      <div><img src="images/protect-spouse.jpg" width="800" height="1000" alt="Husband hugging his wife from behind on their sunlit porch" loading="lazy" class="photo" style="aspect-ratio:4/5"><div style="font-weight:700;margin-top:12px;color:var(--deep)">Protect your spouse</div></div>
-      <div><img src="images/pay-off-home.jpg" width="800" height="1000" alt="Couple standing on the front steps of their family home" loading="lazy" class="photo" style="aspect-ratio:4/5"><div style="font-weight:700;margin-top:12px;color:var(--deep)">Keep the house</div></div>
-      <div><img src="images/leave-legacy.jpg" width="800" height="1000" alt="Grandparents hugging their two young grandchildren in a sunny garden" loading="lazy" class="photo" style="aspect-ratio:4/5"><div style="font-weight:700;margin-top:12px;color:var(--deep)">Leave a legacy</div></div>
-      <div><img src="images/peace-of-mind.jpg" width="800" height="1000" alt="Woman smiling with a cup of coffee by a sunny window" loading="lazy" class="photo" style="aspect-ratio:4/5"><div style="font-weight:700;margin-top:12px;color:var(--deep)">Peace of mind</div></div>
-    </div>
-  </div>
-</section>
-
-<section id="faq" style="background:var(--soft)">
-  <div style="max-width:860px;margin:0 auto;padding:88px 24px">
-    <h2 class="h2 center" style="margin-bottom:32px">Frequently asked questions</h2>
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <details><summary>How much life insurance do I need?</summary><p>A common starting point is enough to replace several years of income, plus your mortgage and other debts, plus future costs like college. Your agent will walk through the numbers with you so you don't buy too little or too much.</p></details>
-      <details><summary>Is term or permanent life insurance better?</summary><p>It depends on your goal. Term is usually the most affordable way to cover a specific period, like raising kids or paying off a mortgage. Permanent coverage is built to last your whole life and is often used for legacy and estate planning. Many people use both.</p></details>
-      <details><summary>Does it cost anything to get a quote?</summary><p>No. Quotes and advice are free with no obligation. If you choose a policy, our agents are paid a commission by the insurance company.</p></details>
-      <details><summary>Will I need a medical exam?</summary><p>Some policies require one and some don't. It depends on your age, the carrier and the amount of coverage. Your agent will tell you what to expect up front.</p></details>
-      <details><summary>How long does it take to get covered?</summary><p>It varies by carrier and policy. Some approvals take days and others take several weeks. We handle the paperwork and keep you updated the whole way.</p></details>
-      <details><summary>I already have a policy. Can you still help?</summary><p>Yes. We can add coverage or review what you have and tell you honestly whether it still fits. Never cancel an existing policy until a new one is approved and in force. <a href="policy-review.html">Get a free policy review →</a></p></details>
-    </div>
-  </div>
-</section>
-
-<section style="background:var(--deep);color:#FFFFFF">
-  <div style="max-width:900px;margin:0 auto;padding:80px 24px;text-align:center">
-    <h2 class="h2" style="color:#FFFFFF;margin-bottom:16px">Ready to protect your family?</h2>
-    <p style="margin:0 0 32px;color:var(--onDark);font-size:20px">Free quotes from a licensed agent. No pressure, no obligation.</p>
-    <a href="#quote" class="btn" style="background:var(--gold);color:var(--deep)">Get My Free Quote →</a>
-    <div style="margin-top:20px;font-size:18px;color:var(--onDark)">Or call <a href="tel:+19542056233" style="color:#FFFFFF;font-weight:700">+1 (954) 205-6233</a></div>
-  </div>
-</section>
-
-<footer id="legal" style="background:var(--soft);border-top:1px solid var(--line)">
-  <div style="max-width:1200px;margin:0 auto;padding:56px 24px 40px;display:flex;flex-direction:column;gap:32px">
-    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between">
-      <div style="flex:1 1 280px;max-width:360px">
-        <div style="font-family:var(--serif);font-weight:700;font-size:22px;color:var(--deep);margin-bottom:8px">Lifestone Life</div>
-        <p style="margin:0;color:var(--muted);font-size:16px">A family firm helping people find the right life insurance for the ones they love.</p>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;font-size:16px">
-        <div style="font-weight:700;color:var(--deep)">Get started</div>
-        <a href="#quote">Free Quote</a><a href="#coverage">Term vs. Permanent</a><a href="#how">How It Works</a>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;font-size:16px">
-        <div style="font-weight:700;color:var(--deep)">Company</div>
-        <a href="#faq">FAQ</a><a href="policy-review.html">Free Policy Review</a>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;font-size:16px;color:var(--body2)">
-        <div style="font-weight:700;color:var(--deep)">Contact</div>
-        <a href="tel:+19542056233">+1 (954) 205-6233</a>
-        <a href="mailto:policies@lifestonesettlements.com" style="overflow-wrap:anywhere">policies@lifestonesettlements.com</a>
-        <span>Mon–Fri 9–5 EST</span>
-        <span>2211 E Sample Rd, Suite 205<br>Lighthouse Point, FL 33064</span>
-      </div>
-    </div>
-    <div style="border-top:1px solid var(--line);padding-top:24px;display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.6;color:var(--muted)">
-      <p style="margin:0">Lifestone Life is a trade name of [AGENCY LEGAL NAME], a licensed insurance agency in the State of Florida, License #[AGENCY LICENSE #]. Insurance products are offered through licensed agents.</p>
-      <p style="margin:0">We are an insurance agency, not an insurance company. All coverage is subject to underwriting and approval by the issuing insurance carrier. Agents may receive compensation from insurance carriers for policies sold. Not affiliated with or endorsed by any government agency.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>© 2026 [AGENCY LEGAL NAME]. All rights reserved.</span><span><a href="#legal">Privacy Policy</a> · <a href="#legal">Terms &amp; Conditions</a></span></div>
+    <div class="ft-legal">
+      <p>Lifestone Life is a trade name of [AGENCY LEGAL NAME], a licensed insurance agency in the State of Florida, License #[AGENCY LICENSE #]. Insurance products are offered through licensed agents.</p>
+      <p>We are an insurance agency, not an insurance company. All coverage is subject to underwriting and approval by the issuing insurance carrier. Agents may receive compensation from insurance carriers for policies sold. Not affiliated with or endorsed by any government agency.</p>
+      <div class="ft-bottom"><span>© 2026 [AGENCY LEGAL NAME]. All rights reserved.</span><span><a href="#legal">Privacy Policy</a> · <a href="#legal">Terms &amp; Conditions</a></span></div>
     </div>
   </div>
 </footer>
 
 <div class="sticky-cta">
-  <a href="tel:+19542056233" class="btn btn-sm" style="background:#FFFFFF;color:var(--deep);border:1.5px solid var(--line)">Call Now</a>
-  <a href="#quote" class="btn btn-sm">Free Quote →</a>
+  <a href="tel:+19542056233" class="sc-call"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Call Now</a>
+  <a href="#quote" class="sc-quote">Free Quote <span aria-hidden="true">→</span></a>
 </div>
 
 <script>
@@ -978,7 +1128,7 @@ html{scroll-padding-top:84px}
     document.querySelectorAll(sel).forEach(function(el){
       if (els.indexOf(el) !== -1) return;
       if (el.closest('form') && el.tagName !== 'FORM') return;
-      if (el.closest('footer') || el.closest('header') || el.closest('.hx') || el.closest('.ps') || el.closest('.pc') || el.closest('.qf')) return;
+      if (el.closest('footer') || el.closest('header') || el.closest('.hx') || el.closest('.ps') || el.closest('.pc') || el.closest('.qf') || (el.tagName === 'IMG' && (el.closest('.lf') || el.closest('.fc') || el.closest('.wy')))) return;
       els.push(el);
     });
   });

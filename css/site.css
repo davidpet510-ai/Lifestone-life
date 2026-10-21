@@ -342,6 +342,8 @@ html{scroll-padding-top:84px}
 .hq-field label{display:block;font-weight:700;font-size:14px;margin:0 0 5px;color:var(--deep)}
 .hq-field input,.hq-field select{width:100%;font:inherit;font-size:16px;padding:11px 13px;min-height:50px;border-radius:12px;border:1.5px solid #B9C9C0;background:#FBFCFB;color:var(--ink)}
 .hq-field input:focus,.hq-field select:focus{outline:none;border-color:var(--accent);background:#FFFFFF;box-shadow:0 0 0 4px rgba(75,128,100,.14)}
+.qf-field,.hq-field,.qf-input{min-width:0}
+@supports (-webkit-touch-callout:none){input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box}input[type=date]::-webkit-date-and-time-value{text-align:left}}
 .hq-field [aria-invalid],.qf-input [aria-invalid]{border-color:#A63D2F !important}
 .hq-sub{font-weight:700;font-size:14px;margin:14px 0 6px;color:var(--deep)}
 .hq-q-sm{font-size:16px;line-height:1.4}

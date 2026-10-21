@@ -62,6 +62,10 @@ html{scroll-padding-top:84px}
 .nb-brand b{display:block;font-family:var(--serif);font-weight:700;font-size:23px;line-height:1.1;letter-spacing:-.005em}
 .nb-brand small{display:block;font-size:12.5px;color:#A9C2B4;letter-spacing:.02em}
 .nb-brand:hover{color:#FFFFFF}
+.nb-word{display:inline-flex;flex-direction:column;align-items:flex-start}
+.nb-brand .nb-word b{font-size:26px;line-height:1;letter-spacing:.005em}
+.nb-brand .nb-word small{display:block;margin-top:5px;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-weight:700;font-size:10.5px;line-height:1;text-transform:uppercase;letter-spacing:.32em;color:#E3C27A;white-space:nowrap}
+
 .nb-links{display:flex;gap:28px;margin:0 auto}
 .nb-links a{position:relative;color:rgba(255,255,255,.82);text-decoration:none;font-size:16px;padding:8px 0;transition:color .2s}
 .nb-links a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:2px;border-radius:2px;background:#F2D9A0;transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
@@ -94,8 +98,8 @@ html{scroll-padding-top:84px}
  .nb-brand{min-width:0}
 }
 @media (max-width:420px){
- .nb-brand small{display:none}
- .nb-brand b{font-size:21px}
+ .nb-brand .nb-word b{font-size:23px}
+ .nb-brand .nb-word small{font-size:9.5px}
  .nb-brand img{width:40px;height:37px}
  .nb-cta{padding:9px 14px;font-size:15px;min-height:42px}
  .nb-cta span{display:none}
@@ -585,9 +589,9 @@ html{scroll-padding-top:84px}
 
 <header class="nb" id="top">
   <div class="nb-in">
-    <a href="./" class="nb-brand" aria-label="Lifestone Life home">
+    <a href="./" class="nb-brand" aria-label="Lifestone Life Insurance home">
       <img src="images/logo.png" width="48" height="44" alt="">
-      <span><b>Lifestone Life</b><small>Licensed life insurance agency</small></span>
+      <span class="nb-word"><b>Lifestone</b><small>Life Insurance</small></span>
     </a>
     <nav class="nb-links" aria-label="Main">
       <a href="#coverage">Coverage</a>
@@ -992,7 +996,7 @@ html{scroll-padding-top:84px}
       <div class="ft-brand">
         <a href="#top" class="nb-brand" aria-label="Lifestone Life, back to top">
           <img src="images/logo.png" width="48" height="44" alt="">
-          <span><b>Lifestone Life</b><small>Licensed life insurance agency</small></span>
+          <span class="nb-word"><b>Lifestone</b><small>Life Insurance</small></span>
         </a>
         <p>Life insurance for the ones you love.</p>
       </div>
@@ -1284,6 +1288,22 @@ html{scroll-padding-top:84px}
       else v.pause();
     });
   }, { threshold: 0.2 }).observe(v);
+})();
+</script>
+<script>
+// Logo: stretch "LIFE INSURANCE" to exactly the width of "Lifestone".
+(function(){
+  function fit(){
+    document.querySelectorAll('.nb-word').forEach(function(w){
+      var b = w.querySelector('b'), sm = w.querySelector('small');
+      sm.style.letterSpacing = '0px';
+      var n = sm.textContent.length, gap = b.getBoundingClientRect().width - sm.getBoundingClientRect().width;
+      if (n > 1) { sm.style.letterSpacing = (gap / (n - 1)) + 'px'; sm.style.marginRight = (-gap / (n - 1)) + 'px'; }
+    });
+  }
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  window.addEventListener('resize', fit);
 })();
 </script>
 </body>

@@ -163,8 +163,9 @@ html{scroll-behavior:smooth}
 <select id="qc-time" name="best_time" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box; width: 100%; background: #FFFFFF"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
 <div style="display: flex; gap: 12px; align-items: flex-start; background: #F4F8F5; border-radius: 10px; padding: 16px; margin-top: 20px">
 <input id="qc-consent" name="consent" type="checkbox" required style="width: 22px; height: 22px; margin: 3px 0 0; flex: none">
-<label for="qc-consent" style="font-size: 14px; line-height: 1.5; color: #33433A">By checking this box and submitting this form, I agree that [AGENCY LEGAL NAME] (Lifestone Life) and its licensed agents may contact me by phone, text, or email at the number and address provided, including by automated means, about life insurance options. Consent is not a condition of purchase. Message and data rates may apply. Reply STOP to opt out. See our <a href="#legal">Privacy Policy</a>.</label>
+<label for="qc-consent" style="font-size: 14px; line-height: 1.5; color: #33433A">By checking this box, I agree to be contacted by Lifestone Life and its licensed agents at the number provided, including by calls and texts that may use automated technology. Consent is not a condition of purchase. Msg &amp; data rates may apply. Reply STOP to opt out. <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms</a></label>
 </div>
+<div class="lq-hp" aria-hidden="true" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden"><label>Website <input type="text" name="website" data-hp tabindex="-1" autocomplete="off"></label></div>
 <p class="qc-error" role="alert" style="display: none; color: #A63D2F; font-weight: 700; font-size: 16px; margin: 16px 0 0">Please fill in your name and phone number, and check the box to continue.</p>
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 28px">
 <span><button type="button" class="qc-back" style="background: none; border: 0; color: #2F5A44; font-weight: 700; font-size: 17px; padding: 14px 4px; min-height: 52px; cursor: pointer; text-decoration: underline; white-space: nowrap">← Back</button></span>
@@ -303,27 +304,29 @@ html{scroll-behavior:smooth}
 <a href="mailto:policies@lifestonesettlements.com" style="font-size: 17px">policies@lifestonesettlements.com</a>
 </div>
 </div>
-<form style="flex: 999 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #D5E1DA; border-radius: 20px; padding: 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 12px 40px rgba(31,61,46,0.08)">
+<form id="review-form" novalidate style="position: relative; flex: 999 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #D5E1DA; border-radius: 20px; padding: 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 12px 40px rgba(31,61,46,0.08)">
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px">
-<div style="display: flex; flex-direction: column; gap: 6px"><label for="fname" style="font-weight: 700; font-size: 16px">First name</label><input id="fname" type="text" autocomplete="given-name" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label for="lname" style="font-weight: 700; font-size: 16px">Last name</label><input id="lname" type="text" autocomplete="family-name" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label for="phone" style="font-weight: 700; font-size: 16px">Phone</label><input id="phone" type="tel" autocomplete="tel" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label for="email" style="font-weight: 700; font-size: 16px">Email</label><input id="email" type="email" autocomplete="email" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="fname" style="font-weight: 700; font-size: 16px">First name</label><input id="fname" name="first_name" type="text" required autocomplete="given-name" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="lname" style="font-weight: 700; font-size: 16px">Last name</label><input id="lname" name="last_name" type="text" required autocomplete="family-name" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="phone" style="font-weight: 700; font-size: 16px">Phone</label><input id="phone" name="phone" type="tel" required autocomplete="tel" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="email" style="font-weight: 700; font-size: 16px">Email</label><input id="email" name="email" type="email" autocomplete="email" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; box-sizing: border-box"></div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px">
 <div style="display: flex; flex-direction: column; gap: 6px"><label for="age" style="font-weight: 700; font-size: 16px">Your age</label>
-<select id="age" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Under 55</option><option>55–64</option><option>65–74</option><option>75–84</option><option>85+</option></select></div>
+<select id="age" name="age" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Under 55</option><option>55–64</option><option>65–74</option><option>75–84</option><option>85+</option></select></div>
 <div style="display: flex; flex-direction: column; gap: 6px"><label for="amount" style="font-weight: 700; font-size: 16px">Current coverage amount</label>
-<select id="amount" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Under $100K</option><option>$100K–$499K</option><option>$500K–$999K</option><option>$1M+</option><option>Not sure</option></select></div>
+<select id="amount" name="amount" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Under $100K</option><option>$100K–$499K</option><option>$500K–$999K</option><option>$1M+</option><option>Not sure</option></select></div>
 <div style="display: flex; flex-direction: column; gap: 6px"><label for="ptype" style="font-weight: 700; font-size: 16px">Policy type</label>
-<select id="ptype" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Term</option><option>Universal life</option><option>Whole life</option><option>Not sure</option></select></div>
+<select id="ptype" name="ptype" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Term</option><option>Universal life</option><option>Whole life</option><option>Not sure</option></select></div>
 <div style="display: flex; flex-direction: column; gap: 6px"><label for="time" style="font-weight: 700; font-size: 16px">Best time to call</label>
-<select id="time" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+<select id="time" name="best_time" style="padding: 14px; border: 1.5px solid #8A9A91; border-radius: 10px; font-size: 18px; min-height: 52px; background: #FFFFFF"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
 </div>
 <div style="display: flex; gap: 12px; align-items: flex-start; background: #F4F8F5; border-radius: 10px; padding: 16px">
-<input id="consent" type="checkbox" style="width: 22px; height: 22px; margin: 3px 0 0; flex: none">
-<label for="consent" style="font-size: 14px; line-height: 1.5; color: #33433A">By checking this box and submitting this form, I agree that [AGENCY LEGAL NAME] (Lifestone Life) and its licensed agents may contact me by phone, text, or email at the number and address provided, including by automated means, about life insurance options. Consent is not a condition of purchase. Message and data rates may apply. Reply STOP to opt out. See our <a href="#legal">Privacy Policy</a>.</label>
+<input id="consent" name="consent" type="checkbox" required style="width: 22px; height: 22px; margin: 3px 0 0; flex: none">
+<label for="consent" style="font-size: 14px; line-height: 1.5; color: #33433A">By checking this box, I agree to be contacted by Lifestone Life and its licensed agents at the number provided, including by calls and texts that may use automated technology. Consent is not a condition of purchase. Msg &amp; data rates may apply. Reply STOP to opt out. <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms</a></label>
 </div>
+<div class="lq-hp" aria-hidden="true" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden"><label>Website <input type="text" name="website" data-hp tabindex="-1" autocomplete="off"></label></div>
+<p class="rf-error" role="alert" style="display: none; color: #A63D2F; font-weight: 700; font-size: 16px; margin: 0">Please fill in your name and phone number, and check the box to continue.</p>
 <button type="submit" style="background: #4B8064; color: #FFFFFF; border: 0; font-weight: 700; padding: 18px 28px; border-radius: 999px; font-size: 19px; min-height: 56px; cursor: pointer">Get My Free Review →</button>
 <div style="font-size: 14px; color: #55645C; text-align: center">Free and no obligation. We never sell your information.</div>
 </form>
@@ -379,16 +382,16 @@ html{scroll-behavior:smooth}
 <div style="border-top: 1px solid #D5E1DA; padding-top: 24px; display: flex; flex-direction: column; gap: 12px; font-size: 14px; line-height: 1.6; color: #55645C">
 <p style="margin: 0">Lifestone Life is a trade name of [AGENCY LEGAL NAME], a licensed insurance agency in the State of Florida, License #[AGENCY LICENSE #]. Insurance products are offered through licensed agents. [AGENCY LEGAL NAME] is affiliated with Lifestone Settlements.</p>
 <p style="margin: 0">We are an insurance agency, not an insurance company. All coverage is subject to underwriting and approval by the issuing insurance carrier. Agents may receive compensation from insurance carriers for policies sold. Not affiliated with or endorsed by any government agency.</p>
-<div style="display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between"><span>© 2026 [AGENCY LEGAL NAME]. All rights reserved.</span><span><a href="#legal">Privacy Policy</a> · <a href="#legal">Terms &amp; Conditions</a></span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between"><span>© 2026 [AGENCY LEGAL NAME]. All rights reserved.</span><span><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms &amp; Conditions</a></span></div>
 </div>
 </div>
 </footer>
 
 </div>
+<script src="config/routing-rules.js"></script>
+<script src="js/quote-flow.js"></script>
 <script>
 (function(){
-  // Paste a form-service URL here (e.g. Formspree) so Coverage Check answers get sent to you.
-  var FORM_ENDPOINT = '';
   var form = document.getElementById('coverage-check');
   var steps = form.querySelectorAll('.qc-step');
   var label = document.getElementById('qc-label');
@@ -434,25 +437,52 @@ html{scroll-behavior:smooth}
   form.addEventListener('submit', function(e){
     e.preventDefault();
     if (!stepValid(4)) return;
-    var data = new FormData(form);
-    Object.keys(answers).forEach(function(k){ data.append(k, answers[k]); });
-    var done = function(){
-      steps.forEach(function(s){ s.hidden = true; });
-      label.textContent = 'Done';
-      bar.style.width = '100%';
-      var d = document.getElementById('qc-done');
-      d.hidden = false;
-      d.querySelector('h3').focus();
-    };
-    if (!FORM_ENDPOINT) { done(); return; }
-    fetch(FORM_ENDPOINT, { method: 'POST', body: data, headers: { Accept: 'application/json' } })
-      .then(function(r){ if (!r.ok) throw new Error(); done(); })
-      .catch(function(){
-        var err = form.querySelector('.qc-step[data-step="4"] .qc-error');
-        err.textContent = 'Sorry, something went wrong. Please call us at +1 (954) 205-6233.';
-        err.style.display = 'block';
-      });
+    var err = form.querySelector('.qc-step[data-step="4"] .qc-error');
+    var phone = form.elements.phone.value, email = form.elements.email.value.trim();
+    if (!LifestoneQuote.validPhone(phone) || (email && !LifestoneQuote.validEmail(email))) {
+      err.textContent = 'Please check your phone number' + (email ? ' and email.' : '.');
+      err.style.display = 'block';
+      return;
+    }
+    sendReview(form, {
+      first_name: form.elements.first_name.value, last_name: form.elements.last_name.value,
+      phone: phone, email: email, best_time: form.elements.best_time.value
+    }, answers);
   });
+
+  // Bottom "Get My Free Review" form.
+  var rf = document.getElementById('review-form');
+  var rfErr = rf.querySelector('.rf-error');
+  rf.addEventListener('input', function(){ rfErr.style.display = 'none'; });
+  rf.addEventListener('submit', function(e){
+    e.preventDefault();
+    var el = rf.elements, email = el.email.value.trim();
+    if (!el.first_name.value.trim() || !el.last_name.value.trim() || !LifestoneQuote.validPhone(el.phone.value) ||
+        (email && !LifestoneQuote.validEmail(email)) || !el.consent.checked) {
+      rfErr.style.display = 'block';
+      return;
+    }
+    sendReview(rf, {
+      first_name: el.first_name.value, last_name: el.last_name.value,
+      phone: el.phone.value, email: email, best_time: el.best_time.value
+    }, { age: el.age.value, amount: el.amount.value, ptype: el.ptype.value });
+  });
+
+  // Both forms save to Monday through the same lead function, source "policy-review".
+  function sendReview(f, c, review){
+    var btn = f.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    var hp = f.querySelector('[data-hp]');
+    LifestoneQuote.sendLead({
+      action: 'create',
+      source: 'policy-review',
+      lead: { firstName: c.first_name.trim(), lastName: c.last_name.trim(), phone: c.phone, email: c.email },
+      review: review,
+      bestTime: c.best_time,
+      consent: LifestoneQuote.consentRecord(),
+      hp: hp ? hp.value : ''
+    }).then(function(){ location.href = 'thank-you.html?path=review'; });
+  }
 })();
 </script>
 <script>

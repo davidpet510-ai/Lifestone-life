@@ -14,6 +14,7 @@
   var RULES = {
     minAge: 18,                 // youngest age allowed on the digital path
     maxAge: 60,                 // oldest age allowed on the digital path
+    minCoverage: 0,             // lowest coverage amount (in dollars) on the digital path; smaller amounts go to an agent
     maxCoverage: 1000000,       // highest coverage amount (in dollars) on the digital path
     digitalTypes: ['term'],     // coverage types allowed on the digital path: 'term', 'universal', 'not_sure'
     healthAnswerMustBe: 'no',   // the health screen answer required for the digital path
@@ -47,6 +48,7 @@
     if (age == null || isNaN(age)) reasons.push('Age missing');
     else if (age < RULES.minAge || age > RULES.maxAge) reasons.push('Age outside ' + RULES.minAge + '–' + RULES.maxAge);
     if (!coverage || isNaN(coverage)) reasons.push('Coverage amount missing');
+    else if (coverage < RULES.minCoverage) reasons.push('Coverage under $' + RULES.minCoverage.toLocaleString('en-US'));
     else if (coverage > RULES.maxCoverage) reasons.push('Coverage over $' + RULES.maxCoverage.toLocaleString('en-US'));
     if (RULES.digitalTypes.indexOf(a.type) === -1) reasons.push('Coverage type needs an agent');
     if (a.health !== RULES.healthAnswerMustBe) reasons.push('Health screen');

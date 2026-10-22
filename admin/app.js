@@ -21,7 +21,7 @@
   var team = [];                  // all profiles I can see
   var leads = [];                 // leads I can see
   var leadsLoadedAt = 0;
-  var view = { tab: 'inbox', q: '', path: '', agent: '', mode: savedPref('lq_crm_view', 'board'), closed: savedPref('lq_crm_closed', '') === '1' };
+  var view = { q: '', path: '', agent: '', mode: savedPref('lq_crm_view', 'board'), closed: savedPref('lq_crm_closed', '') === '1' };
   var dragging = false;
   var refreshTimer = null;
 
@@ -346,29 +346,16 @@
     showLeads();
   }
 
-  // ---------- leads list ----------
-  var TABS = [
-    { key: 'inbox', label: 'Needs action', test: function (l) { return S.group(l.status) === 'inbox'; } },
-    { key: 'unassigned', label: 'Unassigned', admin: true, test: function (l) { var g = S.group(l.status); return !l.assigned_to && (g === 'inbox' || g === 'working'); } },
-    { key: 'working', label: 'In progress', test: function (l) { return S.group(l.status) === 'working'; } },
-    { key: 'won', label: 'Won', test: function (l) { return S.group(l.status) === 'won'; } },
-    { key: 'closed', label: 'Closed', test: function (l) { return S.group(l.status) === 'closed'; } },
-    { key: 'all', label: 'All', test: function () { return true; } }
-  ];
-
+  // ---------- leads list (grouped by stage, like Monday) ----------
   async function showLeads() {
     render('<div class="ad-loading">Loading leads…</div>');
     try { await loadLeads(); } catch (e) { return render('<div class="page"><p class="form-error">' + esc(niceError(e)) + '</p></div>'); }
     startRefresh();
-    var tabs = TABS.filter(function (t) { return !t.admin || isAdmin(); });
     var main = render('<div class="page">' +
       '<div class="page-head"><div><h1>Leads</h1><p class="muted" id="lead-sum"></p></div>' +
       '<div class="head-actions"><div class="seg" role="group" aria-label="View">' +
       '<button type="button" data-mode="board">Board</button><button type="button" data-mode="list">List</button></div>' +
       '<button class="btn btn-ghost" type="button" id="refresh">Refresh</button></div></div>' +
-      '<div class="tabs" role="tablist" id="lead-tabs">' + tabs.map(function (t) {
-        return '<button type="button" role="tab" data-tab="' + t.key + '"><span>' + esc(t.label) + '</span><i data-count="' + t.key + '"></i></button>';
-      }).join('') + '</div>' +
       '<div class="filters">' +
       '<input type="search" id="f-q" placeholder="Search name, phone or email" aria-label="Search leads">' +
       '<select id="f-path" aria-label="Path"><option value="">Online + agent</option><option value="digital">Online only</option><option value="agent">Agent only</option></select>' +
@@ -381,11 +368,6 @@
     $('#f-q', main).value = view.q;
     $('#f-path', main).value = view.path;
     if ($('#f-agent', main)) $('#f-agent', main).value = view.agent;
-    if (!tabs.some(function (t) { return t.key === view.tab; })) view.tab = 'inbox';
-
-    $$('[data-tab]', main).forEach(function (b) {
-      b.addEventListener('click', function () { view.tab = b.getAttribute('data-tab'); drawLeadRows(); });
-    });
     $('#f-q', main).addEventListener('input', function (e) { view.q = e.target.value; drawLeadRows(); });
     $('#f-path', main).addEventListener('change', function (e) { view.path = e.target.value; drawLeadRows(); });
     if ($('#f-agent', main)) $('#f-agent', main).addEventListener('change', function (e) { view.agent = e.target.value; drawLeadRows(); });
@@ -412,50 +394,103 @@
     });
   }
 
+  // Which stage groups each person has collapsed, remembered on this device.
+  var collapsed = (function () { try { return JSON.parse(savedPref('lq_crm_collapsed', '{}')) || {}; } catch (e) { return {}; } })();
+
+  function stagesShown() {
+    return S.STATUSES.filter(function (st) { return view.closed || st.group !== 'closed'; });
+  }
+
   function drawLeadRows() {
     var box = $('#lead-rows');
     if (!box) return;
     var board = view.mode === 'board';
     $$('[data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-mode') === view.mode ? 'true' : 'false'); });
-    $('#lead-tabs').hidden = board;
-    $('#show-closed').hidden = !board;
     box.closest('.page').classList.toggle('page-wide', board);
-    if (board) return drawBoard(box);
-    var base = filtered();
-    TABS.forEach(function (t) {
-      var c = $('[data-count="' + t.key + '"]');
-      if (c) c.textContent = base.filter(t.test).length;
-    });
-    $$('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === view.tab ? 'true' : 'false'); });
-    var tab = TABS.find(function (t) { return t.key === view.tab; });
-    var rows = base.filter(tab.test);
     $('#lead-sum').textContent = leads.length + (leads.length === 1 ? ' lead' : ' leads') + (isAdmin() ? ' total' : ' assigned to you') + ' · updated ' + ago(new Date(leadsLoadedAt).toISOString());
+    if (board) return drawBoard(box);
+    drawGroups(box);
+  }
 
-    if (!rows.length) {
-      box.innerHTML = '<div class="empty"><p><b>Nothing here.</b></p><p class="muted">' +
-        (leads.length ? 'Try another tab or clear the search.' : isAdmin() ? 'New leads from the website will show up here.' : 'Leads assigned to you will show up here.') + '</p></div>';
+  function statusSelect(l) {
+    return '<select class="pill st-' + esc(l.status) + '" data-act="status" aria-label="Stage for ' + esc(l.first_name) + '">' +
+      S.STATUSES.map(function (st) { return '<option value="' + st.key + '"' + (st.key === l.status ? ' selected' : '') + '>' + esc(st.label) + '</option>'; }).join('') +
+      '</select>';
+  }
+
+  function assignSelect(l) {
+    return '<select class="who" data-act="assign" aria-label="Assign ' + esc(l.first_name) + '"><option value="">Unassigned</option>' +
+      team.filter(function (p) { return p.active || p.id === l.assigned_to; }).map(function (p) {
+        return '<option value="' + esc(p.id) + '"' + (p.id === l.assigned_to ? ' selected' : '') + '>' + esc(p.full_name || p.email) + '</option>';
+      }).join('') + '</select>';
+  }
+
+  function drawGroups(box) {
+    var base = filtered();
+    if (!leads.length) {
+      box.innerHTML = '<div class="empty"><p><b>No leads yet.</b></p><p class="muted">' + (isAdmin() ? 'New leads from the website will show up here.' : 'Leads assigned to you will show up here.') + '</p></div>';
       return;
     }
-    box.innerHTML = '<div class="table-wrap"><table class="leads"><thead><tr>' +
-      '<th>Name</th><th>Phone</th><th>Coverage</th><th>Path</th><th>Status</th>' + (isAdmin() ? '<th>Assigned</th>' : '') + '<th>Received</th><th>Last contact</th>' +
-      '</tr></thead><tbody>' + rows.map(function (l) {
-        return '<tr data-id="' + esc(l.id) + '" tabindex="0">' +
-          '<td data-label="Name"><a href="#/lead/' + esc(l.id) + '" class="lead-name">' + esc(l.first_name + ' ' + l.last_name) + '</a>' +
-          '<small>' + esc([l.state, l.age ? 'age ' + l.age : '', l.source].filter(Boolean).join(' · ')) + '</small></td>' +
-          '<td data-label="Phone">' + esc(fmtPhone(l.phone)) + '</td>' +
-          '<td data-label="Coverage"><span>' + esc(money(l.coverage) || l.coverage_label || '—') + (l.coverage_type ? '<small>' + esc(l.coverage_type) + '</small>' : '') + '</span></td>' +
-          '<td data-label="Path">' + pathBadge(l.path) + '</td>' +
-          '<td data-label="Status">' + statusChip(l.status) + '</td>' +
-          (isAdmin() ? '<td data-label="Assigned">' + (l.assigned_to ? esc(personName(l.assigned_to)) : '<span class="muted">Unassigned</span>') + '</td>' : '') +
-          '<td data-label="Received" title="' + esc(fmtDate(l.created_at)) + '">' + esc(ago(l.created_at)) + '</td>' +
-          '<td data-label="Last contact">' + (l.last_contacted_at ? esc(ago(l.last_contacted_at)) : '<span class="muted">Never</span>') + '</td>' +
-          '</tr>';
-      }).join('') + '</tbody></table></div>';
-    $$('tr[data-id]', box).forEach(function (tr) {
-      var go = function () { location.hash = '#/lead/' + tr.getAttribute('data-id'); };
-      tr.addEventListener('click', function (e) { if (!e.target.closest('a')) go(); });
-      tr.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+    var head = '<thead><tr><th class="c-name">Name</th><th class="c-stage">Stage</th>' + (isAdmin() ? '<th class="c-who">Assigned</th>' : '') +
+      '<th class="c-phone">Phone</th><th class="c-cov">Coverage</th><th class="c-path">Path</th><th class="c-time">Received</th><th class="c-time">Last contact</th></tr></thead>';
+    box.innerHTML = stagesShown().map(function (st) {
+      var items = base.filter(function (l) { return l.status === st.key; });
+      var total = items.reduce(function (sum, l) { return sum + (Number(l.coverage) || 0); }, 0);
+      var shut = !!collapsed[st.key];
+      return '<section class="grp st-' + esc(st.key) + (shut ? ' is-shut' : '') + '" data-group="' + esc(st.key) + '">' +
+        '<button type="button" class="grp-head" aria-expanded="' + (!shut) + '">' +
+        '<span class="grp-caret" aria-hidden="true"></span><span class="grp-name">' + esc(st.label) + '</span>' +
+        '<span class="grp-count">' + items.length + (items.length === 1 ? ' lead' : ' leads') + '</span>' +
+        (total ? '<span class="grp-sum">' + esc(money(total)) + '</span>' : '') + '</button>' +
+        '<div class="grp-body"' + (shut ? ' hidden' : '') + '>' +
+        (items.length ? '<div class="table-wrap"><table class="leads">' + head + '<tbody>' + items.map(function (l) {
+          return '<tr data-id="' + esc(l.id) + '" tabindex="0">' +
+            '<td data-label="Name"><a href="#/lead/' + esc(l.id) + '" class="lead-name">' + esc(l.first_name + ' ' + l.last_name) + '</a>' +
+            '<small>' + esc([l.state, l.age ? 'age ' + l.age : '', l.source].filter(Boolean).join(' · ')) + '</small></td>' +
+            '<td data-label="Stage">' + statusSelect(l) + '</td>' +
+            (isAdmin() ? '<td data-label="Assigned">' + assignSelect(l) + '</td>' : '') +
+            '<td data-label="Phone">' + esc(fmtPhone(l.phone)) + '</td>' +
+            '<td data-label="Coverage"><span>' + esc(money(l.coverage) || l.coverage_label || '—') + (l.coverage_type ? '<small>' + esc(l.coverage_type) + '</small>' : '') + '</span></td>' +
+            '<td data-label="Path">' + pathBadge(l.path) + '</td>' +
+            '<td data-label="Received" title="' + esc(fmtDate(l.created_at)) + '">' + esc(ago(l.created_at)) + '</td>' +
+            '<td data-label="Last contact">' + (l.last_contacted_at ? esc(ago(l.last_contacted_at)) : '<span class="warn">Never</span>') + '</td>' +
+            '</tr>';
+        }).join('') + '</tbody></table></div>' : '<p class="grp-empty">No leads in this stage.</p>') +
+        '</div></section>';
+    }).join('');
+
+    $$('.grp-head', box).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var sec = btn.closest('.grp'), key = sec.getAttribute('data-group');
+        var shut = !sec.classList.contains('is-shut');
+        sec.classList.toggle('is-shut', shut);
+        $('.grp-body', sec).hidden = shut;
+        btn.setAttribute('aria-expanded', String(!shut));
+        if (shut) collapsed[key] = 1; else delete collapsed[key];
+        savePref('lq_crm_collapsed', JSON.stringify(collapsed));
+      });
     });
+    $$('tr[data-id]', box).forEach(function (tr) {
+      var id = tr.getAttribute('data-id');
+      var go = function () { location.hash = '#/lead/' + id; };
+      tr.addEventListener('click', function (e) { if (!e.target.closest('a, select')) go(); });
+      tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target === tr) go(); });
+      $('[data-act=status]', tr).addEventListener('change', function (e) { moveLead(id, e.target.value); });
+      var who = $('[data-act=assign]', tr);
+      if (who) who.addEventListener('change', function (e) { assignLead(id, e.target.value || null); });
+    });
+  }
+
+  async function assignLead(id, agent) {
+    var l = leads.find(function (x) { return x.id === id; });
+    if (!l) return;
+    var before = l.assigned_to;
+    l.assigned_to = agent;
+    drawLeadRows();
+    var r = await sb.rpc('lead_assign', { p_lead: id, p_agent: agent });
+    if (r.error) { l.assigned_to = before; drawLeadRows(); return toast(niceError(r.error), 'err'); }
+    if (agent) notifyAssign(id);
+    toast(agent ? l.first_name + ' assigned to ' + personName(agent) + '.' : l.first_name + ' unassigned.', 'ok');
   }
 
   // ---------- board (kanban) ----------

@@ -180,6 +180,46 @@ dd{margin:0;font-weight:700;overflow-wrap:anywhere}
 .card-move select{flex:1;font:inherit;font-size:14px;padding:6px 8px;border-radius:10px;border:1.5px solid #C9D6CE;background:#FBFCFB}
 @media (hover:none){.card{cursor:pointer}.card-move{display:flex}}
 
+/* stage colors (list groups and stage pills) */
+.st-new{--st:#D9A43B}
+.st-abandoned{--st:#E07B39}
+.st-referred{--st:#C9573B}
+.st-contacted{--st:#4A86C5}
+.st-quoted{--st:#7E63C2}
+.st-app_submitted{--st:#2E9A9A}
+.st-approved{--st:#4B9E63}
+.st-issued{--st:#1F6A3B}
+.st-declined{--st:#B94A48}
+.st-unreachable{--st:#8D9893}
+.st-not_interested{--st:#6E7873}
+
+/* list grouped by stage */
+.grp{margin-bottom:22px}
+.grp-head{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:8px 4px;font:inherit;cursor:pointer;text-align:left;border-radius:10px}
+.grp-head:hover{background:rgba(31,61,46,.05)}
+.grp-caret{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:var(--st)}
+.grp-caret::before{content:"";width:8px;height:8px;border-right:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(45deg) translate(-2px,-2px);transition:transform .2s}
+.is-shut .grp-caret::before{transform:rotate(-45deg)}
+.grp-name{font-family:var(--serif);font-weight:700;font-size:20px;color:var(--st)}
+.grp-count{font-size:14px;color:var(--muted)}
+.grp-sum{font-size:14px;font-weight:700;color:var(--body2);margin-left:auto}
+.grp-body .table-wrap{border-left:6px solid var(--st);border-radius:12px}
+.grp-empty{margin:0;padding:14px 18px;background:#fff;border-left:6px solid var(--st);border-radius:12px;color:var(--muted);font-size:14px}
+.is-shut .grp-head{background:#fff;box-shadow:inset 6px 0 0 var(--st),0 4px 14px rgba(31,61,46,.06);padding:12px 14px}
+.warn{color:#9A6A12;font-weight:700}
+select.pill{appearance:none;-webkit-appearance:none;border:0;border-radius:8px;background:var(--st);color:#fff;font:inherit;font-size:14px;font-weight:700;padding:7px 12px;min-height:34px;width:100%;min-width:150px;text-align:center;text-align-last:center;cursor:pointer}
+select.pill:focus{outline:3px solid #E3C27A;outline-offset:1px}
+select.pill option{background:#fff;color:var(--ink)}
+select.who{min-height:34px;padding:5px 8px;font-size:14px;max-width:180px}
+/* same column widths in every group so they line up like one sheet */
+@media (min-width:761px){
+ .grp table.leads{table-layout:fixed}
+ .grp th.c-name{width:20%}.grp th.c-stage{width:17%}.grp th.c-who{width:14%}.grp th.c-phone{width:13%}
+ .grp th.c-cov{width:11%}.grp th.c-path{width:8%}.grp th.c-time{width:9%}
+ .grp td{overflow:hidden;text-overflow:ellipsis}
+ select.who{width:100%;max-width:none}
+}
+
 /* phones & tablets */
 @media (max-width:1060px){.lead-grid{grid-template-columns:1fr}.invite{grid-template-columns:1fr 1fr}.invite .btn{grid-column:1/-1}}
 @media (max-width:760px){
@@ -212,4 +252,7 @@ dd{margin:0;font-weight:700;overflow-wrap:anywhere}
  td[data-label=Name]::before{content:none}
  td[data-label=Name] small{display:block;margin:2px 0 0}
  td:empty{display:none}
+ td select.pill{width:auto;min-width:0}
+ .grp-name{font-size:18px}
+ .grp-head{flex-wrap:wrap;row-gap:2px}
 }

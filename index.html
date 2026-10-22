@@ -394,6 +394,56 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
  .qf-navl{justify-content:center;width:100%}
 }
 @media (max-width:420px){ .hq-fields{grid-template-columns:1fr} }
+/* ---------- Trust bar ---------- */
+.tb{background:#0B1C13;border-top:1px solid rgba(242,217,160,.14);color:#C9D9CF}
+.tb-list{list-style:none;margin:0 auto;max-width:1200px;padding:22px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px 28px}
+.tb-list li{display:flex;align-items:center;gap:14px;font-size:15px;line-height:1.35}
+.tb-list b{display:block;color:#FFFFFF;font-size:16px}
+.tb-list a{color:#F2D9A0;text-decoration:none}
+.tb-list a:hover{text-decoration:underline}
+.tb-ic{display:grid;place-items:center;flex:none;width:46px;height:46px;border-radius:14px;background:rgba(242,217,160,.1);color:#F2D9A0;box-shadow:inset 0 0 0 1px rgba(242,217,160,.22)}
+@media (max-width:980px){.tb-list{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.tb-list{gap:16px 14px;padding:20px 16px}.tb-list li{gap:10px;font-size:13.5px}.tb-list b{font-size:14.5px}.tb-ic{width:38px;height:38px;border-radius:12px}.tb-ic svg{width:20px;height:20px}}
+
+/* ---------- Local office ---------- */
+.lo{background:#FFFFFF;color:var(--ink)}
+.lo-wrap{max-width:1200px;margin:0 auto;padding:100px 24px;display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center}
+.lo-eyebrow{margin:0 0 14px;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A9842F}
+.lo h2{font-size:46px;line-height:1.08;letter-spacing:-.015em;margin:0 0 18px;color:var(--deep);text-wrap:balance}
+.lo h2 em{font-style:italic;color:#2F5A44}
+.lo-lead{margin:0 0 28px;font-size:19px;line-height:1.6;color:var(--body2)}
+.lo-list{list-style:none;margin:0 0 30px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:18px 24px}
+.lo-list li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px;line-height:1.45;color:var(--muted)}
+.lo-list b{display:block;color:var(--deep);font-size:16.5px}
+.lo-ck{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:#EAF1ED;color:#2F5A44;margin-top:1px}
+.lo-verify{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:14px;background:#F4F1EA;border:1px solid rgba(31,61,46,.1);color:var(--deep);font-weight:700;font-size:15px;text-decoration:none;line-height:1.35}
+.lo-verify svg{flex:none;color:#2F5A44}
+.lo-verify:hover{border-color:#4B8064;color:var(--deep)}
+.lo-card{border-radius:26px;overflow:hidden;background:#FFFFFF;box-shadow:0 30px 70px rgba(31,61,46,.16);border:1px solid rgba(31,61,46,.08)}
+.lo-map{position:relative;height:190px;display:grid;place-items:center;background:
+ radial-gradient(circle at 50% 55%,rgba(242,217,160,.35),transparent 45%),
+ repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 34px),
+ repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 1px,transparent 1px 34px),
+ linear-gradient(160deg,#1F3D2E,#0F2419)}
+.lo-map::before{content:"";position:absolute;left:-10%;right:-10%;top:58%;height:10px;background:rgba(255,255,255,.1);transform:rotate(-8deg)}
+.lo-map::after{content:"";position:absolute;top:-10%;bottom:-10%;left:62%;width:8px;background:rgba(255,255,255,.08);transform:rotate(12deg)}
+.lo-pin{position:relative;z-index:1;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#F7E4B5,#E3B96A);color:#1A3324;box-shadow:0 0 0 10px rgba(242,217,160,.18),0 14px 30px rgba(0,0,0,.35)}
+.lo-pin svg{width:30px;height:30px}
+.lo-info{padding:28px 30px 30px}
+.lo-name{margin:0 0 16px;font-family:var(--serif);font-weight:700;font-size:24px;color:var(--deep)}
+.lo-row{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px;font-size:16px;line-height:1.5;color:var(--body2)}
+.lo-row svg{flex:none;width:20px;height:20px;margin-top:2px;color:#A9842F}
+.lo-row a{color:var(--deep);font-weight:700;text-decoration:none}
+.lo-row a:hover{text-decoration:underline}
+.lo-dir{display:inline-flex;align-items:center;gap:10px;margin-top:8px;padding:14px 26px;min-height:52px;border-radius:999px;background:linear-gradient(135deg,#2F5A44,#1F3D2E);color:#FFFFFF;font-weight:700;text-decoration:none;box-shadow:0 10px 24px rgba(31,61,46,.25)}
+.lo-dir:hover{color:#FFFFFF;transform:translateY(-2px)}
+@media (max-width:960px){.lo-wrap{grid-template-columns:1fr;gap:44px;padding:72px 20px}.lo h2{font-size:34px}.lo-lead{font-size:18px}}
+@media (max-width:560px){.lo-list{grid-template-columns:1fr}.lo-info{padding:24px 22px 26px}}
+
+/* ---------- Form security note ---------- */
+.qf-secure{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px 0 0;font-size:14px;color:var(--muted)}
+.qf-secure svg{color:#2F5A44}
+
 /* ---------- Two ways ---------- */
 .tw{background:#FFFFFF;color:var(--ink)}
 .tw-wrap{max-width:1100px;margin:0 auto;padding:96px 24px}
@@ -689,6 +739,9 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
  body{padding-bottom:78px}
 }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"InsuranceAgency","name":"Lifestone Life Insurance","url":"https://lifestonelife.com/","logo":"https://lifestonelife.com/icon-512.png","image":"https://lifestonelife.com/images/share-card.png","telephone":"+1-954-205-6233","email":"policies@lifestonesettlements.com","address":{"@type":"PostalAddress","streetAddress":"2211 E Sample Rd, Suite 205","addressLocality":"Lighthouse Point","addressRegion":"FL","postalCode":"33064","addressCountry":"US"},"areaServed":"FL","openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"17:00"}]}
+</script>
 </head>
 <body>
 
@@ -786,13 +839,22 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
         <input type="hidden" name="interest" value="">
         <div class="hq-foot">
           <a href="agent-callback.html" class="hq-talk" data-lq-talk>I’d rather talk to someone</a>
-          <span class="hq-note">Free · No agent required</span>
+          <span class="hq-note">Free · Secure · No agent required</span>
         </div>
       </form>
 
       <a href="tel:+19542056233" class="hx-tel hx-fade" style="--d:1.1s">Prefer to talk? Call <b>+1 (954) 205-6233</b> · Mon–Fri 9–5 EST</a>
     </div>
   </div>
+</section>
+
+<section class="tb" aria-label="Why you can trust Lifestone">
+  <ul class="tb-list">
+    <li><span class="tb-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Licensed in Florida</b><a href="https://licenseesearch.fldfs.com/" target="_blank" rel="noopener">Verify with the state <span aria-hidden="true">↗</span></a></span></li>
+    <li><span class="tb-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M7 20h10M5 7h14M5 7l-2.5 6a2.8 2.8 0 0 0 5 0zM19 7l-2.5 6a2.8 2.8 0 0 0 5 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Independent agency</b>We work for you, not one insurer</span></li>
+    <li><span class="tb-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3M12 14.5v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Secure &amp; private</b>Encrypted. Never sold.</span></li>
+    <li><span class="tb-ic"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Local office</b>Lighthouse Point, FL</span></li>
+  </ul>
 </section>
 
 <section id="ways" class="tw" aria-labelledby="tw-title">
@@ -1055,6 +1117,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
         <div class="lq-hp" aria-hidden="true"><label>Website <input type="text" name="website" data-hp tabindex="-1" autocomplete="off"></label></div>
         <p class="qc-error" role="alert" data-lq-error></p>
         <div class="qc-nav qf-nav"><span class="qf-navl"><button type="button" class="qc-back qf-back" data-lq-back>← Back</button><a href="agent-callback.html" class="qf-talk" data-lq-talk>I’d rather talk to someone</a></span><button type="submit" class="qf-next qf-submit">Get My Free Quote <span aria-hidden="true">→</span></button></div>
+        <p class="qf-secure"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Secure &amp; encrypted. We never sell your information.</p>
       </div>
       <input type="hidden" name="interest" value="">
     </form>
@@ -1127,6 +1190,29 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
   </div>
 </section>
 
+<section id="office" class="lo" aria-labelledby="lo-title">
+  <div class="lo-wrap">
+    <div class="lo-copy">
+      <p class="lo-eyebrow">Local &amp; independent</p>
+      <h2 id="lo-title">A Florida agency <em>you can actually visit.</em></h2>
+      <p class="lo-lead">We’re a licensed, independent agency in Lighthouse Point. Call, email or stop by. The people who help you choose a policy are the same people here when you have questions later.</p>
+      <ul class="lo-list"><li><span class="lo-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>No pressure, ever.</b>Take your time. Ask anything.</span></li><li><span class="lo-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Straight answers on cost.</b>You see the price before you decide.</span></li><li><span class="lo-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>We never sell your information.</b>Your details stay with us and your carrier.</span></li><li><span class="lo-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Here for the life of your policy.</b>Beneficiary changes, questions, reviews.</span></li></ul>
+      <a href="https://licenseesearch.fldfs.com/" class="lo-verify" target="_blank" rel="noopener"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Verify our license with the Florida Department of Financial Services <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="lo-card">
+      <div class="lo-map" aria-hidden="true"><span class="lo-pin"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="lo-info">
+        <p class="lo-name">Lifestone Life Insurance</p>
+        <p class="lo-row"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>2211 E Sample Rd, Suite 205<br>Lighthouse Point, FL 33064</span></p>
+        <p class="lo-row"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Mon–Fri 9–5 EST</span></p>
+        <p class="lo-row"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="currentColor"/></svg><a href="tel:+19542056233">+1 (954) 205-6233</a></p>
+        <p class="lo-row"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><a href="mailto:policies@lifestonesettlements.com" style="overflow-wrap:anywhere">policies@lifestonesettlements.com</a></p>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=2211+E+Sample+Rd+Suite+205+Lighthouse+Point+FL+33064" class="lo-dir" target="_blank" rel="noopener">Get directions <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="faq" class="fq" aria-labelledby="fq-title">
   <div class="fq-wrap">
     <header class="fq-intro">
@@ -1181,7 +1267,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
       </div>
     </div>
     <div class="ft-legal">
-      <p>Lifestone Life is a trade name of [AGENCY LEGAL NAME], a licensed insurance agency in the State of Florida, License #[AGENCY LICENSE #]. Insurance products are offered through licensed agents.</p>
+      <p>Lifestone Life is a trade name of [AGENCY LEGAL NAME], a licensed insurance agency in the State of Florida, License #[AGENCY LICENSE #]. Insurance products are offered through licensed agents. <a href="https://licenseesearch.fldfs.com/" target="_blank" rel="noopener">Verify a Florida insurance license</a>.</p>
       <p>We are an insurance agency, not an insurance company. All coverage is subject to underwriting and approval by the issuing insurance carrier. Agents may receive compensation from insurance carriers for policies sold. Not affiliated with or endorsed by any government agency.</p>
       <div class="ft-bottom"><span>© 2026 [AGENCY LEGAL NAME]. All rights reserved.</span><span><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms &amp; Conditions</a></span></div>
     </div>

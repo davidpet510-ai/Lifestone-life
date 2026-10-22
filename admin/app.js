@@ -21,13 +21,18 @@
   var team = [];                  // all profiles I can see
   var leads = [];                 // leads I can see
   var leadsLoadedAt = 0;
-  var view = { tab: 'inbox', q: '', path: '', agent: '' };
+  var view = { tab: 'inbox', q: '', path: '', agent: '', mode: savedPref('lq_crm_view', 'board'), closed: savedPref('lq_crm_closed', '') === '1' };
+  var dragging = false;
   var refreshTimer = null;
 
   // Capture what kind of email link brought us here before Supabase reads (and clears) the URL.
   var hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
   var linkType = hashParams.get('type');                 // invite | recovery | magiclink | signup
   var linkError = hashParams.get('error_description');
+
+  // Per-person view preferences (list or board). Safe if storage is blocked.
+  function savedPref(key, fallback) { try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; } }
+  function savePref(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* ignore */ } }
 
   // ---------- small helpers ----------
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -323,7 +328,8 @@
     stopRefresh();
     refreshTimer = setInterval(function () {
       if (document.hidden || !me) return;
-      loadLeads().then(function () { if (/^#\/leads/.test(location.hash)) drawLeadRows(); }).catch(function () {});
+      if (dragging) return;
+      loadLeads().then(function () { if (/^#\/leads/.test(location.hash) && !dragging) drawLeadRows(); }).catch(function () {});
     }, REFRESH_SECONDS * 1000);
   }
   function stopRefresh() { if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null; }
@@ -357,8 +363,10 @@
     var tabs = TABS.filter(function (t) { return !t.admin || isAdmin(); });
     var main = render('<div class="page">' +
       '<div class="page-head"><div><h1>Leads</h1><p class="muted" id="lead-sum"></p></div>' +
-      '<button class="btn btn-ghost" type="button" id="refresh">Refresh</button></div>' +
-      '<div class="tabs" role="tablist">' + tabs.map(function (t) {
+      '<div class="head-actions"><div class="seg" role="group" aria-label="View">' +
+      '<button type="button" data-mode="board">Board</button><button type="button" data-mode="list">List</button></div>' +
+      '<button class="btn btn-ghost" type="button" id="refresh">Refresh</button></div></div>' +
+      '<div class="tabs" role="tablist" id="lead-tabs">' + tabs.map(function (t) {
         return '<button type="button" role="tab" data-tab="' + t.key + '"><span>' + esc(t.label) + '</span><i data-count="' + t.key + '"></i></button>';
       }).join('') + '</div>' +
       '<div class="filters">' +
@@ -366,6 +374,7 @@
       '<select id="f-path" aria-label="Path"><option value="">Online + agent</option><option value="digital">Online only</option><option value="agent">Agent only</option></select>' +
       (isAdmin() ? '<select id="f-agent" aria-label="Assigned to"><option value="">Everyone</option><option value="none">Unassigned</option>' +
         team.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.full_name || p.email) + '</option>'; }).join('') + '</select>' : '') +
+      '<label class="check show-closed" id="show-closed"><input type="checkbox"> Show closed</label>' +
       '</div>' +
       '<div id="lead-rows"></div></div>');
 
@@ -381,6 +390,12 @@
     $('#f-path', main).addEventListener('change', function (e) { view.path = e.target.value; drawLeadRows(); });
     if ($('#f-agent', main)) $('#f-agent', main).addEventListener('change', function (e) { view.agent = e.target.value; drawLeadRows(); });
     $('#refresh', main).addEventListener('click', function () { loadLeads().then(drawLeadRows); });
+    $$('[data-mode]', main).forEach(function (b) {
+      b.addEventListener('click', function () { view.mode = b.getAttribute('data-mode'); savePref('lq_crm_view', view.mode); drawLeadRows(); });
+    });
+    var closedBox = $('#show-closed input', main);
+    closedBox.checked = view.closed;
+    closedBox.addEventListener('change', function () { view.closed = closedBox.checked; savePref('lq_crm_closed', view.closed ? '1' : ''); drawLeadRows(); });
     drawLeadRows();
   }
 
@@ -400,6 +415,12 @@
   function drawLeadRows() {
     var box = $('#lead-rows');
     if (!box) return;
+    var board = view.mode === 'board';
+    $$('[data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-mode') === view.mode ? 'true' : 'false'); });
+    $('#lead-tabs').hidden = board;
+    $('#show-closed').hidden = !board;
+    box.closest('.page').classList.toggle('page-wide', board);
+    if (board) return drawBoard(box);
     var base = filtered();
     TABS.forEach(function (t) {
       var c = $('[data-count="' + t.key + '"]');
@@ -435,6 +456,89 @@
       tr.addEventListener('click', function (e) { if (!e.target.closest('a')) go(); });
       tr.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
     });
+  }
+
+  // ---------- board (kanban) ----------
+  // One column per status. Drag a card to another column (desktop) or use its
+  // "Move to" menu (touch screens) to change the stage. Changes go through
+  // lead_set_status, so they're permission-checked and recorded in the history.
+  function drawBoard(box) {
+    var base = filtered();
+    $('#lead-sum').textContent = leads.length + (leads.length === 1 ? ' lead' : ' leads') + (isAdmin() ? ' total' : ' assigned to you') + ' · updated ' + ago(new Date(leadsLoadedAt).toISOString());
+    var cols = S.STATUSES.filter(function (st) { return view.closed || st.group !== 'closed'; });
+    // Phones show one column at a time, so skip empty ones there.
+    if (window.innerWidth < 760) {
+      var withLeads = cols.filter(function (st) { return base.some(function (l) { return l.status === st.key; }); });
+      if (withLeads.length) cols = withLeads;
+    }
+    box.innerHTML = '<div class="board">' + cols.map(function (st) {
+      var items = base.filter(function (l) { return l.status === st.key; });
+      var total = items.reduce(function (sum, l) { return sum + (Number(l.coverage) || 0); }, 0);
+      return '<section class="col col-' + esc(st.group) + '" data-status="' + esc(st.key) + '" aria-label="' + esc(st.label) + '">' +
+        '<header class="col-head"><h2>' + esc(st.label) + '</h2><span class="col-count">' + items.length + '</span>' +
+        (total ? '<span class="col-sum">' + esc(money(total)) + '</span>' : '') + '</header>' +
+        '<div class="col-body" data-drop="' + esc(st.key) + '">' +
+        (items.length ? items.map(cardHtml).join('') : '<p class="col-empty">No leads</p>') +
+        '</div></section>';
+    }).join('') + '</div>';
+
+    $$('.card', box).forEach(function (card) {
+      var id = card.getAttribute('data-id');
+      card.addEventListener('click', function (e) { if (!e.target.closest('select, a, label')) location.hash = '#/lead/' + id; });
+      card.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target === card) location.hash = '#/lead/' + id; });
+      card.addEventListener('dragstart', function (e) {
+        dragging = true;
+        card.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', id);
+      });
+      card.addEventListener('dragend', function () { dragging = false; card.classList.remove('is-dragging'); $$('.col-body.is-over').forEach(function (c) { c.classList.remove('is-over'); }); });
+      var move = $('select', card);
+      move.addEventListener('change', function () { moveLead(id, move.value); });
+    });
+    $$('.col-body', box).forEach(function (zone) {
+      zone.addEventListener('dragover', function (e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; zone.classList.add('is-over'); });
+      zone.addEventListener('dragleave', function (e) { if (!zone.contains(e.relatedTarget)) zone.classList.remove('is-over'); });
+      zone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        zone.classList.remove('is-over');
+        dragging = false;
+        moveLead(e.dataTransfer.getData('text/plain'), zone.getAttribute('data-drop'));
+      });
+    });
+  }
+
+  function cardHtml(l) {
+    var initials = '';
+    if (isAdmin() && l.assigned_to) {
+      initials = personName(l.assigned_to).split(/[\s@]+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join('');
+    }
+    return '<article class="card" draggable="true" tabindex="0" data-id="' + esc(l.id) + '">' +
+      '<div class="card-top"><b class="card-name">' + esc(l.first_name + ' ' + l.last_name) + '</b>' + pathBadge(l.path) + '</div>' +
+      '<div class="card-meta">' + esc([money(l.coverage) || l.coverage_label, l.coverage_type].filter(Boolean).join(' · ') || 'Coverage not given') + '</div>' +
+      '<div class="card-meta">' + esc(fmtPhone(l.phone)) + (l.state ? ' · ' + esc(l.state) : '') + '</div>' +
+      '<div class="card-foot"><span title="' + esc(fmtDate(l.created_at)) + '">In ' + esc(ago(l.created_at)) + '</span>' +
+      '<span>' + (l.last_contacted_at ? 'Contacted ' + esc(ago(l.last_contacted_at)) : '<span class="warn">Not contacted</span>') + '</span>' +
+      (isAdmin() ? (initials ? '<span class="avatar" title="' + esc(personName(l.assigned_to)) + '">' + esc(initials) + '</span>' : '<span class="avatar avatar-none" title="Unassigned">?</span>') : '') +
+      '</div>' +
+      '<label class="card-move"><span>Move to</span><select aria-label="Move ' + esc(l.first_name) + ' to another stage">' +
+      S.STATUSES.map(function (st) { return '<option value="' + st.key + '"' + (st.key === l.status ? ' selected' : '') + '>' + esc(st.label) + '</option>'; }).join('') +
+      '</select></label></article>';
+  }
+
+  async function moveLead(id, status) {
+    var l = leads.find(function (x) { return x.id === id; });
+    if (!l || !status || l.status === status) return drawLeadRows();
+    var before = l.status;
+    l.status = status;                     // show it right away
+    drawLeadRows();
+    var r = await sb.rpc('lead_set_status', { p_lead: id, p_status: status });
+    if (r.error) {
+      l.status = before;
+      drawLeadRows();
+      return toast(niceError(r.error), 'err');
+    }
+    toast(l.first_name + ' moved to ' + S.label(status) + '.', 'ok');
   }
 
   // ---------- one lead ----------

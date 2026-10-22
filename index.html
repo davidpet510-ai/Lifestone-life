@@ -394,6 +394,58 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
  .qf-navl{justify-content:center;width:100%}
 }
 @media (max-width:420px){ .hq-fields{grid-template-columns:1fr} }
+/* ---------- Two ways ---------- */
+.tw{background:#FFFFFF;color:var(--ink)}
+.tw-wrap{max-width:1100px;margin:0 auto;padding:96px 24px}
+.tw-intro{text-align:center;max-width:760px;margin:0 auto 52px}
+.tw-eyebrow{margin:0 0 14px;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A9842F}
+.tw-intro h2{font-size:46px;line-height:1.08;letter-spacing:-.015em;margin:0 0 18px;color:var(--deep);text-wrap:balance}
+.tw-intro h2 em{font-style:italic;color:#2F5A44}
+.tw-intro p:last-child{margin:0 auto;font-size:20px;color:var(--muted);max-width:620px}
+.tw-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch}
+.tw-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;border-radius:24px;padding:36px 34px 32px;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.tw-card:hover{transform:translateY(-4px)}
+.tw-online{background:linear-gradient(160deg,#1F3D2E,#0F2419);color:#FFFFFF;box-shadow:0 24px 50px rgba(15,36,25,.28)}
+.tw-agent{background:#F4F1EA;border:1px solid rgba(31,61,46,.1);box-shadow:0 14px 34px rgba(31,61,46,.08)}
+.tw-badge{position:absolute;top:24px;right:24px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;border-radius:999px}
+.tw-online .tw-badge{background:linear-gradient(135deg,#F7E4B5,#E3B96A);color:#1A3324}
+.tw-agent .tw-badge{background:#EAF1ED;color:#2F5A44}
+.tw-ic{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;margin-bottom:22px}
+.tw-online .tw-ic{background:rgba(242,217,160,.14);color:#F2D9A0;box-shadow:inset 0 0 0 1px rgba(242,217,160,.3)}
+.tw-agent .tw-ic{background:linear-gradient(135deg,#2F5A44,#1F3D2E);color:#F2D9A0}
+.tw-card h3{font-size:30px;line-height:1.15;margin:0 0 10px}
+.tw-online h3{color:#FFFFFF}
+.tw-agent h3{color:var(--deep)}
+.tw-lead{margin:0 0 20px;font-size:18px;line-height:1.5}
+.tw-online .tw-lead{color:#D5E2DA}
+.tw-agent .tw-lead{color:var(--body2)}
+.tw-list{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:12px;font-size:17px;font-weight:700}
+.tw-list li{display:flex;align-items:center;gap:12px}
+.tw-ck{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;flex:none}
+.tw-online .tw-ck{background:rgba(242,217,160,.16);color:#F2D9A0}
+.tw-agent .tw-ck{background:#EAF1ED;color:#2F5A44}
+.tw-btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:18px;padding:16px 30px;border-radius:999px;min-height:58px;transition:transform .25s,box-shadow .25s}
+.tw-btn:hover{transform:translateY(-2px)}
+.tw-btn-gold{margin-top:auto;background:linear-gradient(135deg,#F7E4B5,#E9C77E);color:#1A3324;box-shadow:0 12px 28px rgba(233,199,126,.3)}
+.tw-btn-gold:hover{color:#1A3324}
+.tw-btn-green{background:linear-gradient(135deg,#2F5A44,#1F3D2E);color:#FFFFFF;box-shadow:0 10px 24px rgba(31,61,46,.25)}
+.tw-btn-green:hover{color:#FFFFFF}
+.tw-ctas{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.tw-link{font-weight:700;font-size:17px;color:#2F5A44}
+.tw-note{margin:16px 0 0;font-size:14px;line-height:1.5;color:#A9C2B4}
+.tw-or{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#FFFFFF;color:var(--deep);font-family:var(--serif);font-style:italic;font-weight:700;font-size:19px;box-shadow:0 8px 22px rgba(31,61,46,.16)}
+@media (max-width:860px){
+ .tw-wrap{padding:72px 20px}
+ .tw-intro{margin-bottom:36px}
+ .tw-intro h2{font-size:34px}
+ .tw-intro p:last-child{font-size:18px}
+ .tw-grid{grid-template-columns:1fr;gap:22px}
+ .tw-or{position:relative;left:auto;top:auto;transform:none;margin:-4px auto;width:46px;height:46px;font-size:17px}
+ .tw-card{padding:30px 22px 26px}
+ .tw-card h3{font-size:26px}
+ .tw-badge{top:20px;right:18px}
+}
+
 /* ---------- Products ---------- */
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .pc{position:relative;background:#F4F1EA;color:var(--ink);overflow:hidden;overflow:clip}
@@ -576,6 +628,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
 .hx-fade{opacity:0;transform:translateY(18px);animation:hxFade .9s cubic-bezier(.2,.75,.2,1) forwards;animation-delay:var(--d,0s)}
 @keyframes hxFade{to{opacity:1;transform:none}}
 .hx-lede{font-size:20px;color:#D5E2DA;margin:0 0 26px;max-width:500px}
+.hx-lede b{color:#F2D9A0}
 .hq{background:#FFFFFF;color:var(--ink);border-radius:20px;padding:24px;box-shadow:0 30px 70px rgba(0,0,0,.35)}
 .hq-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .hq-title{font-family:var(--serif);font-weight:700;font-size:21px;color:var(--deep);margin-right:auto;white-space:nowrap}
@@ -679,7 +732,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
   <div class="hx-inner">
     <div class="hx-copy">
       <h1 class="hx-h1"><span class="w" style="--i:0">The</span> <span class="w" style="--i:1">right</span> <span class="w" style="--i:2">coverage</span> <span class="w" style="--i:3">for</span> <span class="w" style="--i:4">the</span> <span class="w" style="--i:5">people</span> <span class="w" style="--i:6">who</span> <em class="hx-gold"><span class="w" style="--i:7">count</span> <span class="w" style="--i:8">on</span> <span class="w" style="--i:9">you.</span><svg class="hx-swash" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 17 C 70 6, 150 4, 296 12"/></svg></em></h1>
-      <p class="hx-lede hx-fade" style="--d:.75s">Answer 3 quick questions. A licensed agent finds your best plan, free.</p>
+      <p class="hx-lede hx-fade" style="--d:.75s">Get covered <b>100% online</b> in minutes. Or talk with a licensed agent. Your choice.</p>
 
       <form class="hq hx-fade" style="--d:.95s" id="hero-quiz" data-source="homepage-hero" novalidate>
         <div class="hq-top">
@@ -733,11 +786,44 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
         <input type="hidden" name="interest" value="">
         <div class="hq-foot">
           <a href="agent-callback.html" class="hq-talk" data-lq-talk>I’d rather talk to someone</a>
-          <span class="hq-note">Free · No obligation</span>
+          <span class="hq-note">Free · No agent required</span>
         </div>
       </form>
 
       <a href="tel:+19542056233" class="hx-tel hx-fade" style="--d:1.1s">Prefer to talk? Call <b>+1 (954) 205-6233</b> · Mon–Fri 9–5 EST</a>
+    </div>
+  </div>
+</section>
+
+<section id="ways" class="tw" aria-labelledby="tw-title">
+  <div class="tw-wrap">
+    <header class="tw-intro">
+      <p class="tw-eyebrow">Two ways to get covered</p>
+      <h2 id="tw-title">Get covered 100% online. <em>Or talk to a real person.</em></h2>
+      <p>No agent required. No agent off-limits. Pick what works for you, and switch anytime.</p>
+    </header>
+    <div class="tw-grid">
+      <article class="tw-card tw-online">
+        <span class="tw-badge">Fastest</span>
+        <span class="tw-ic"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 18.5h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 10.5l2 2 3.5-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3>Do it yourself, online</h3>
+        <p class="tw-lead">No phone calls. No pressure. Get a quote, apply and e-sign from your couch, in minutes.</p>
+        <ul class="tw-list"><li><span class="tw-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Quote in about 60 seconds</li><li><span class="tw-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Apply online in about 10 minutes</li><li><span class="tw-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>E-sign with the carrier, no paperwork</li></ul>
+        <a href="#quote" class="tw-btn tw-btn-gold">Start online <span aria-hidden="true">→</span></a>
+        <p class="tw-note">If your answers need a closer look, we’ll connect you with an agent automatically.</p>
+      </article>
+      <span class="tw-or" aria-hidden="true">or</span>
+      <article class="tw-card tw-agent">
+        <span class="tw-badge">Personal help</span>
+        <span class="tw-ic"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 9a5.5 5.5 0 0 1 11 0M17.5 9v2.2a1.5 1.5 0 0 1-1.5 1.5h-1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3>Talk with a licensed agent</h3>
+        <p class="tw-lead">Prefer a person? A licensed Lifestone agent walks you through every option, free.</p>
+        <ul class="tw-list"><li><span class="tw-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>We compare carriers for you</li><li><span class="tw-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Help picking the right amount</li><li><span class="tw-ck"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Mon–Fri 9–5 EST</li></ul>
+        <div class="tw-ctas">
+          <a href="tel:+19542056233" class="tw-btn tw-btn-green"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="currentColor"/></svg>+1 (954) 205-6233</a>
+          <a href="agent-callback.html" class="tw-link">Or request a call <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -747,7 +833,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
     <header class="pc-intro">
       <p class="pc-eyebrow">Your coverage options</p>
       <h2 id="pc-title">Three kinds of life insurance. <em>One right fit for you.</em></h2>
-      <p>Not sure which fits? Your agent will help you choose.</p>
+      <p>Not sure which fits? Take the quiz, or ask an agent.</p>
     </header>
     <div class="pc-grid">
       <article class="pc-card pc-term" style="--k:0">
@@ -822,9 +908,9 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
         <div class="ps-big"><span class="ps-big-n">01</span><span class="ps-big-of">/ 06</span></div>
         <ol class="ps-rail">
           <li><a href="#ps-step-1"><i></i><span>Answer a few quick questions</span></a></li>
-          <li><a href="#ps-step-2"><i></i><span>Talk with a licensed agent</span></a></li>
+          <li><a href="#ps-step-2"><i></i><span>Choose online or an agent</span></a></li>
           <li><a href="#ps-step-3"><i></i><span>Compare quotes side by side</span></a></li>
-          <li><a href="#ps-step-4"><i></i><span>Apply with your agent</span></a></li>
+          <li><a href="#ps-step-4"><i></i><span>Apply online or with your agent</span></a></li>
           <li><a href="#ps-step-5"><i></i><span>The carrier reviews your application</span></a></li>
           <li><a href="#ps-step-6"><i></i><span>You’re approved and covered</span></a></li>
         </ol>
@@ -846,11 +932,11 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
         <div class="ps-head">
           <span class="ps-ic"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
           <span class="ps-num">Step 2</span>
-          <span class="ps-time"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>15–20 minute call</span>
+          <span class="ps-time"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Your choice</span>
         </div>
-        <h3>Talk with a licensed agent</h3>
-        <p class="ps-lead">A real person helps you pick the right amount and length.</p>
-        <ul class="ps-list"><li>Term and permanent explained simply</li><li>A plan that fits your budget</li></ul>
+        <h3>Choose online or an agent</h3>
+        <p class="ps-lead">Keep going on your own, or have a licensed agent help you pick the right plan.</p>
+        <ul class="ps-list"><li>Online: no phone calls needed</li><li>Agent: a free 15–20 minute call</li></ul>
       </article>
       <article class="ps-step" data-i="2" id="ps-step-3">
         <div class="ps-ghost" aria-hidden="true">03</div>
@@ -868,10 +954,10 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
         <div class="ps-head">
           <span class="ps-ic"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13 7l4 4" stroke="currentColor" stroke-width="1.8"/></svg></span>
           <span class="ps-num">Step 4</span>
-          <span class="ps-time"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>About 20–30 minutes</span>
+          <span class="ps-time"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>About 10–30 minutes</span>
         </div>
-        <h3>Apply with your agent</h3>
-        <p class="ps-lead">Your agent fills it out with you by phone.</p>
+        <h3>Apply online or with your agent</h3>
+        <p class="ps-lead">Fill it out yourself online, or your agent does it with you by phone.</p>
         <ul class="ps-list"><li>Health questions and beneficiaries</li><li>Sign online, no paperwork</li></ul>
       </article>
       <article class="ps-step" data-i="4" id="ps-step-5">
@@ -914,7 +1000,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
       <ul class="qf-perks">
         <li><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 9v4l2.5 2M9 2.5h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>About 60 seconds</li>
         <li><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>No Social Security number</li>
-        <li><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 20c0-3.6 3.4-6 7.5-6s7.5 2.4 7.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>A real, licensed agent</li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 20c0-3.6 3.4-6 7.5-6s7.5 2.4 7.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Online or with an agent</li>
       </ul>
     </header>
     <form id="quote-form" novalidate class="qf-card" data-source="homepage-quote">
@@ -1036,7 +1122,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
     <div class="wy-art">
       <div class="wy-frame" aria-hidden="true"></div>
       <img src="images/agent-meeting-real.jpg" width="1100" height="1237" alt="Licensed agent meeting with clients in an office" loading="lazy">
-      <div class="wy-badge"><span class="wy-badge-ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="7.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.5" cy="8.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 19.5c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2M13.5 19.5c0-2.5 1.4-4.3 3.5-4.3s3.5 1.8 3.5 4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>One agent</b>from first call to final policy</span></div>
+      <div class="wy-badge"><span class="wy-badge-ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="7.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.5" cy="8.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 19.5c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2M13.5 19.5c0-2.5 1.4-4.3 3.5-4.3s3.5 1.8 3.5 4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Online or with an agent</b>your choice, start to finish</span></div>
     </div>
   </div>
 </section>
@@ -1047,7 +1133,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
       <p class="fq-eyebrow">FAQ</p>
       <h2 id="fq-title">Questions, answered.</h2>
     </header>
-    <div class="fq-list"><details class="fq-item"><summary><span>How much life insurance do I need?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Usually enough to replace several years of income and pay off big debts like a mortgage. Your agent will help you find the right number.</p></div></details><details class="fq-item"><summary><span>Does it cost anything to get a quote?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>No. Quotes and advice are free. If you buy a policy, the insurance company pays our agent.</p></div></details><details class="fq-item"><summary><span>Will I need a medical exam?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Not always. It depends on your age, the insurer and the amount. Your agent will tell you up front.</p></div></details><details class="fq-item"><summary><span>I already have a policy. Can you still help?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Yes. We can add coverage or review what you have. Never cancel a policy until a new one is in force. <a href="policy-review.html">Get a free policy review →</a></p></div></details></div>
+    <div class="fq-list"><details class="fq-item"><summary><span>Can I get covered without talking to an agent?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Yes. If you qualify, you can apply 100% online in minutes and e-sign with the carrier. No phone calls needed. If your answers need a closer look, or you’d just rather talk to someone, a licensed agent is one call away.</p></div></details><details class="fq-item"><summary><span>How much life insurance do I need?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Usually enough to replace several years of income and pay off big debts like a mortgage. Our quiz gives you a starting point, and an agent can help you fine-tune it.</p></div></details><details class="fq-item"><summary><span>Does it cost anything to get a quote?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>No. Quotes and advice are free. If you buy a policy, the insurance company pays our agent.</p></div></details><details class="fq-item"><summary><span>Will I need a medical exam?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Not always. It depends on your age, the insurer and the amount. Your agent will tell you up front.</p></div></details><details class="fq-item"><summary><span>I already have a policy. Can you still help?</span><i aria-hidden="true"></i></summary><div class="fq-a"><p>Yes. We can add coverage or review what you have. Never cancel a policy until a new one is in force. <a href="policy-review.html">Get a free policy review →</a></p></div></details></div>
     <p class="fq-more">More questions? Call <a href="tel:+19542056233">+1 (954) 205-6233</a>.</p>
   </div>
 </section>
@@ -1060,7 +1146,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
   <div class="fc-shade" aria-hidden="true"></div>
   <div class="fc-wrap">
     <h2 id="fc-title">Ready to protect the people <em>who count on you?</em></h2>
-    <p>Free quotes. No pressure.</p>
+    <p>Apply online in minutes, or talk with a licensed agent. Free, no pressure.</p>
     <div class="fc-ctas">
       <a href="#quote" class="fc-btn">Get My Free Quote <span aria-hidden="true">→</span></a>
       <a href="tel:+19542056233" class="fc-call"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>+1 (954) 205-6233</a>

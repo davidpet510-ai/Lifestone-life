@@ -6,15 +6,21 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# Keep private config and setup scripts from being served as web pages.
+# Keep server code, database setup and scripts from being served as web pages.
 [[redirects]]
-  from = "/scripts/*"
+  from = "/netlify/*"
   to = "/404.html"
   status = 404
   force = true
 
 [[redirects]]
-  from = "/netlify/*"
+  from = "/supabase/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/scripts/*"
   to = "/404.html"
   status = 404
   force = true
@@ -24,3 +30,14 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# The CRM dashboard: never indexed, never framed, only talks to this site and Supabase.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
+    Cache-Control = "no-cache"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"

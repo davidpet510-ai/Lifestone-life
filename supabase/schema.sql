@@ -91,7 +91,7 @@ create index if not exists lead_events_lead_idx on public.lead_events (lead_id, 
 
 -- True when the signed-in user finished two-step verification this session.
 create or replace function public.mfa_ok() returns boolean
-language sql stable
+language sql stable set search_path = public
 as $$ select coalesce(auth.jwt() ->> 'aal', '') = 'aal2' $$;
 
 -- The signed-in user's role, or null if they have no active profile.
@@ -159,7 +159,7 @@ create trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
 create or replace function public.touch_updated_at() returns trigger
-language plpgsql
+language plpgsql set search_path = public
 as $$ begin new.updated_at = now(); return new; end $$;
 
 drop trigger if exists leads_touch on public.leads;
@@ -261,3 +261,9 @@ grant execute on function
   public.lead_log_contact(uuid, text), public.team_update(uuid, text, boolean),
   public.profile_update_me(text, text, boolean, boolean)
 to authenticated;
+
+-- Helpers used inside the access rules: signed-in users need them, visitors don't.
+revoke execute on function public.mfa_ok(), public.my_role(), public.is_admin(), public.can_see_lead(uuid) from public, anon;
+grant execute on function public.mfa_ok(), public.my_role(), public.is_admin(), public.can_see_lead(uuid) to authenticated;
+-- Runs only as a trigger; nobody calls it directly.
+revoke execute on function public.handle_new_user(), public.touch_updated_at() from public, anon, authenticated;

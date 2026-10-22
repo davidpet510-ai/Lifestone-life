@@ -5,7 +5,7 @@
 
 -- True when the signed-in user finished two-step verification this session.
 create or replace function public.mfa_ok() returns boolean
-language sql stable
+language sql stable set search_path = public
 as $$ select coalesce(auth.jwt() ->> 'aal', '') = 'aal2' $$;
 
 -- The signed-in user's role, or null if they have no active profile.

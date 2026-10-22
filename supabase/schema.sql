@@ -69,7 +69,7 @@ create table if not exists public.leads (
 alter table public.leads drop constraint if exists leads_status_check;
 alter table public.leads add constraint leads_status_check check (status in (
   'new', 'abandoned', 'referred', 'contacted', 'quoted', 'app_submitted',
-  'approved', 'issued', 'declined', 'unreachable', 'not_interested'
+  'approved', 'issued', 'declined', 'unreachable', 'not_interested', 'bought_elsewhere', 'duplicate'
 ));
 
 create index if not exists leads_created_at_idx  on public.leads (created_at desc);

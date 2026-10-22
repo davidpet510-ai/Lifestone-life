@@ -21,7 +21,8 @@
   var team = [];                  // all profiles I can see
   var leads = [];                 // leads I can see
   var leadsLoadedAt = 0;
-  var view = { q: '', path: '', agent: '', mode: savedPref('lq_crm_view', 'board'), closed: savedPref('lq_crm_closed', '') === '1' };
+  var view = { q: '', path: '', agent: '', mode: savedPref('lq_crm_view', 'board') };
+  var archiveQ = '';
   var dragging = false;
   var refreshTimer = null;
 
@@ -137,7 +138,7 @@
     me = prof.data;
     await loadTeam();
     setTop(true);
-    if (!location.hash || location.hash.indexOf('access_token') !== -1) history.replaceState(null, '', '#/leads');
+    if (!location.hash || location.hash === '#/' || location.hash.indexOf('access_token') !== -1) history.replaceState(null, '', '#/home');
     route();
   }
 
@@ -310,7 +311,7 @@
 
   async function loadLeads() {
     var r = await sb.from('leads')
-      .select('id,created_at,first_name,last_name,email,phone,state,age,coverage,coverage_label,coverage_type,path,status,source,assigned_to,last_contacted_at')
+      .select('id,created_at,updated_at,first_name,last_name,email,phone,state,age,coverage,coverage_label,coverage_type,path,status,source,assigned_to,last_contacted_at')
       .order('created_at', { ascending: false }).limit(LEAD_LIMIT);
     if (r.error) throw r.error;
     var before = leads.length && leadsLoadedAt ? leads[0].created_at : null;
@@ -329,7 +330,7 @@
     refreshTimer = setInterval(function () {
       if (document.hidden || !me) return;
       if (dragging) return;
-      loadLeads().then(function () { if (/^#\/leads/.test(location.hash) && !dragging) drawLeadRows(); }).catch(function () {});
+      loadLeads().then(function () { if (!dragging) refreshView(); }).catch(function () {});
     }, REFRESH_SECONDS * 1000);
   }
   function stopRefresh() { if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null; }
@@ -337,13 +338,34 @@
   // ---------- routing ----------
   function route() {
     if (!me) return;
-    var h = location.hash || '#/leads';
+    var h = location.hash || '#/home';
     var m;
     if ((m = h.match(/^#\/lead\/([0-9a-f-]{36})$/i))) { markNav('leads'); return showLead(m[1]); }
+    if (h === '#/leads') { markNav('leads'); return showLeads(); }
+    if (h === '#/archive') { markNav('archive'); return showArchive(); }
     if (h === '#/team' && isAdmin()) { markNav('team'); return showTeam(); }
     if (h === '#/settings') { markNav('settings'); return showSettings(); }
-    markNav('leads');
-    showLeads();
+    markNav('home');
+    showHome();
+  }
+
+  // Redraws whichever list page is open after the periodic refresh.
+  function refreshView() {
+    var h = location.hash;
+    if (h === '#/leads') drawLeadRows();
+    else if (h === '#/archive') drawArchive();
+    else if (h === '#/home' || h === '' || h === '#/') drawHome();
+  }
+
+  function isArchived(l) { return S.group(l.status) === 'closed'; }
+  var OPEN = S.STATUSES.filter(function (st) { return st.group !== 'closed'; });
+  var REASONS = S.STATUSES.filter(function (st) { return st.group === 'closed'; });
+
+  // Stage choices: active stages first, then "Archive as …" reasons.
+  function stageOptions(current) {
+    var opt = function (st) { return '<option value="' + st.key + '"' + (st.key === current ? ' selected' : '') + '>' + esc(st.label) + '</option>'; };
+    return '<optgroup label="Active">' + OPEN.map(opt).join('') + '</optgroup>' +
+      '<optgroup label="Archive as…">' + REASONS.map(opt).join('') + '</optgroup>';
   }
 
   // ---------- leads list (grouped by stage, like Monday) ----------
@@ -361,7 +383,7 @@
       '<select id="f-path" aria-label="Path"><option value="">Online + agent</option><option value="digital">Online only</option><option value="agent">Agent only</option></select>' +
       (isAdmin() ? '<select id="f-agent" aria-label="Assigned to"><option value="">Everyone</option><option value="none">Unassigned</option>' +
         team.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.full_name || p.email) + '</option>'; }).join('') + '</select>' : '') +
-      '<label class="check show-closed" id="show-closed"><input type="checkbox"> Show closed</label>' +
+      '<a class="archive-link" href="#/archive">Archive <span id="archive-count"></span></a>' +
       '</div>' +
       '<div id="lead-rows"></div></div>');
 
@@ -375,9 +397,6 @@
     $$('[data-mode]', main).forEach(function (b) {
       b.addEventListener('click', function () { view.mode = b.getAttribute('data-mode'); savePref('lq_crm_view', view.mode); drawLeadRows(); });
     });
-    var closedBox = $('#show-closed input', main);
-    closedBox.checked = view.closed;
-    closedBox.addEventListener('change', function () { view.closed = closedBox.checked; savePref('lq_crm_closed', view.closed ? '1' : ''); drawLeadRows(); });
     drawLeadRows();
   }
 
@@ -398,7 +417,7 @@
   var collapsed = (function () { try { return JSON.parse(savedPref('lq_crm_collapsed', '{}')) || {}; } catch (e) { return {}; } })();
 
   function stagesShown() {
-    return S.STATUSES.filter(function (st) { return view.closed || st.group !== 'closed'; });
+    return OPEN;
   }
 
   function drawLeadRows() {
@@ -407,15 +426,17 @@
     var board = view.mode === 'board';
     $$('[data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-mode') === view.mode ? 'true' : 'false'); });
     box.closest('.page').classList.toggle('page-wide', board);
-    $('#lead-sum').textContent = leads.length + (leads.length === 1 ? ' lead' : ' leads') + (isAdmin() ? ' total' : ' assigned to you') + ' · updated ' + ago(new Date(leadsLoadedAt).toISOString());
+    var active = leads.filter(function (l) { return !isArchived(l); }).length;
+    $('#lead-sum').textContent = active + (active === 1 ? ' active lead' : ' active leads') + (isAdmin() ? '' : ' assigned to you') + ' · updated ' + ago(new Date(leadsLoadedAt).toISOString());
+    var archived = leads.length - active;
+    $('#archive-count').textContent = archived ? '(' + archived + ')' : '';
     if (board) return drawBoard(box);
     drawGroups(box);
   }
 
   function statusSelect(l) {
     return '<select class="pill st-' + esc(l.status) + '" data-act="status" aria-label="Stage for ' + esc(l.first_name) + '">' +
-      S.STATUSES.map(function (st) { return '<option value="' + st.key + '"' + (st.key === l.status ? ' selected' : '') + '>' + esc(st.label) + '</option>'; }).join('') +
-      '</select>';
+      stageOptions(l.status) + '</select>';
   }
 
   function assignSelect(l) {
@@ -427,8 +448,8 @@
 
   function drawGroups(box) {
     var base = filtered();
-    if (!leads.length) {
-      box.innerHTML = '<div class="empty"><p><b>No leads yet.</b></p><p class="muted">' + (isAdmin() ? 'New leads from the website will show up here.' : 'Leads assigned to you will show up here.') + '</p></div>';
+    if (!leads.some(function (l) { return !isArchived(l); })) {
+      box.innerHTML = '<div class="empty"><p><b>No active leads.</b></p><p class="muted">' + (isAdmin() ? 'New leads from the website will show up here.' : 'Leads assigned to you will show up here.') + '</p></div>';
       return;
     }
     var head = '<thead><tr><th class="c-name">Name</th><th class="c-stage">Stage</th>' + (isAdmin() ? '<th class="c-who">Assigned</th>' : '') +
@@ -499,8 +520,7 @@
   // lead_set_status, so they're permission-checked and recorded in the history.
   function drawBoard(box) {
     var base = filtered();
-    $('#lead-sum').textContent = leads.length + (leads.length === 1 ? ' lead' : ' leads') + (isAdmin() ? ' total' : ' assigned to you') + ' · updated ' + ago(new Date(leadsLoadedAt).toISOString());
-    var cols = S.STATUSES.filter(function (st) { return view.closed || st.group !== 'closed'; });
+    var cols = OPEN.slice();
     // Phones show one column at a time, so skip empty ones there.
     if (window.innerWidth < 760) {
       var withLeads = cols.filter(function (st) { return base.some(function (l) { return l.status === st.key; }); });
@@ -515,7 +535,9 @@
         '<div class="col-body" data-drop="' + esc(st.key) + '">' +
         (items.length ? items.map(cardHtml).join('') : '<p class="col-empty">No leads</p>') +
         '</div></section>';
-    }).join('') + '</div>';
+    }).join('') + '</div>' +
+      // Shown at the bottom of the screen while a card is being dragged.
+      '<div class="col-body archive-drop" data-drop="__archive">Drop here to archive</div>';
 
     $$('.card', box).forEach(function (card) {
       var id = card.getAttribute('data-id');
@@ -524,10 +546,11 @@
       card.addEventListener('dragstart', function (e) {
         dragging = true;
         card.classList.add('is-dragging');
+        document.body.classList.add('is-dragging-card');
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', id);
       });
-      card.addEventListener('dragend', function () { dragging = false; card.classList.remove('is-dragging'); $$('.col-body.is-over').forEach(function (c) { c.classList.remove('is-over'); }); });
+      card.addEventListener('dragend', function () { dragging = false; card.classList.remove('is-dragging'); document.body.classList.remove('is-dragging-card'); $$('.col-body.is-over').forEach(function (c) { c.classList.remove('is-over'); }); });
       var move = $('select', card);
       move.addEventListener('change', function () { moveLead(id, move.value); });
     });
@@ -538,7 +561,10 @@
         e.preventDefault();
         zone.classList.remove('is-over');
         dragging = false;
-        moveLead(e.dataTransfer.getData('text/plain'), zone.getAttribute('data-drop'));
+        document.body.classList.remove('is-dragging-card');
+        var id = e.dataTransfer.getData('text/plain'), to = zone.getAttribute('data-drop');
+        if (to === '__archive') return pickReason(id);
+        moveLead(id, to);
       });
     });
   }
@@ -557,23 +583,260 @@
       (isAdmin() ? (initials ? '<span class="avatar" title="' + esc(personName(l.assigned_to)) + '">' + esc(initials) + '</span>' : '<span class="avatar avatar-none" title="Unassigned">?</span>') : '') +
       '</div>' +
       '<label class="card-move"><span>Move to</span><select aria-label="Move ' + esc(l.first_name) + ' to another stage">' +
-      S.STATUSES.map(function (st) { return '<option value="' + st.key + '"' + (st.key === l.status ? ' selected' : '') + '>' + esc(st.label) + '</option>'; }).join('') +
-      '</select></label></article>';
+      stageOptions(l.status) + '</select></label></article>';
   }
 
   async function moveLead(id, status) {
     var l = leads.find(function (x) { return x.id === id; });
-    if (!l || !status || l.status === status) return drawLeadRows();
+    if (!l || !status || l.status === status) return refreshView();
     var before = l.status;
     l.status = status;                     // show it right away
-    drawLeadRows();
+    refreshView();
     var r = await sb.rpc('lead_set_status', { p_lead: id, p_status: status });
     if (r.error) {
       l.status = before;
-      drawLeadRows();
+      refreshView();
       return toast(niceError(r.error), 'err');
     }
-    toast(l.first_name + ' moved to ' + S.label(status) + '.', 'ok');
+    l.updated_at = new Date().toISOString();
+    if (isArchived(l) && S.group(before) !== 'closed') toast(l.first_name + ' archived (' + S.label(status) + '). Find them under Archive.', 'ok');
+    else if (!isArchived(l) && S.group(before) === 'closed') toast(l.first_name + ' restored to ' + S.label(status) + '.', 'ok');
+    else toast(l.first_name + ' moved to ' + S.label(status) + '.', 'ok');
+  }
+
+  // Small dialog asking why a lead is being archived.
+  function pickReason(id) {
+    var l = leads.find(function (x) { return x.id === id; });
+    if (!l) return;
+    var dlg = document.createElement('div');
+    dlg.className = 'modal-wrap';
+    dlg.innerHTML = '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">' +
+      '<h2 id="m-title">Archive ' + esc(l.first_name + ' ' + l.last_name) + '?</h2><p class="muted">Pick what happened. You can restore them from the Archive anytime.</p>' +
+      '<div class="reasons">' + REASONS.map(function (st) { return '<button type="button" class="reason st-' + st.key + '" data-reason="' + st.key + '">' + esc(st.label) + '</button>'; }).join('') + '</div>' +
+      '<button type="button" class="btn btn-ghost btn-wide" data-cancel>Cancel</button></div>';
+    var close = function () { dlg.remove(); document.removeEventListener('keydown', onKey); };
+    var onKey = function (e) { if (e.key === 'Escape') close(); };
+    dlg.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-reason]');
+      if (b) { close(); moveLead(id, b.getAttribute('data-reason')); }
+      else if (e.target === dlg || e.target.closest('[data-cancel]')) close();
+    });
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(dlg);
+    $('.reason', dlg).focus();
+  }
+
+  // ---------- archive ----------
+  async function showArchive() {
+    render('<div class="ad-loading">Loading archive…</div>');
+    try { await loadLeads(); } catch (e) { return render('<div class="page"><p class="form-error">' + esc(niceError(e)) + '</p></div>'); }
+    startRefresh();
+    var main = render('<div class="page">' +
+      '<div class="page-head"><div><h1>Archive</h1><p class="muted" id="arch-sum"></p></div></div>' +
+      '<div class="filters"><input type="search" id="a-q" placeholder="Search archived leads" aria-label="Search archived leads"></div>' +
+      '<div id="arch-rows"></div></div>');
+    $('#a-q', main).value = archiveQ;
+    $('#a-q', main).addEventListener('input', function (e) { archiveQ = e.target.value; drawArchive(); });
+    drawArchive();
+  }
+
+  function drawArchive() {
+    var box = $('#arch-rows');
+    if (!box) return;
+    var q = archiveQ.trim().toLowerCase(), qd = digits(q);
+    var all = leads.filter(isArchived);
+    var list = all.filter(function (l) {
+      if (!q) return true;
+      return (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1 || (l.email || '').toLowerCase().indexOf(q) !== -1 ||
+        (qd.length >= 3 && digits(l.phone).indexOf(qd) !== -1);
+    }).sort(function (a, b) { return (b.updated_at || '') > (a.updated_at || '') ? 1 : -1; });
+    $('#arch-sum').textContent = all.length + (all.length === 1 ? ' archived lead' : ' archived leads') + '. Dead leads stay here for your records and can be restored anytime.';
+    if (!all.length) {
+      box.innerHTML = '<div class="empty"><p><b>The archive is empty.</b></p><p class="muted">When a lead goes nowhere, set its stage to an “Archive as…” reason, or drag it to Archive on the board.</p></div>';
+      return;
+    }
+    var head = '<thead><tr><th class="c-name">Name</th><th class="c-stage">Reason</th>' + (isAdmin() ? '<th class="c-who">Was assigned to</th>' : '') +
+      '<th class="c-phone">Phone</th><th class="c-cov">Coverage</th><th class="c-time">Came in</th><th class="c-time">Archived</th><th class="c-act"><span class="sr">Restore</span></th></tr></thead>';
+    box.innerHTML = REASONS.map(function (st) {
+      var items = list.filter(function (l) { return l.status === st.key; });
+      if (!items.length) return '';
+      return '<section class="grp st-' + esc(st.key) + '"><div class="grp-head grp-static"><span class="grp-name">' + esc(st.label) + '</span>' +
+        '<span class="grp-count">' + items.length + (items.length === 1 ? ' lead' : ' leads') + '</span></div>' +
+        '<div class="grp-body"><div class="table-wrap"><table class="leads">' + head + '<tbody>' + items.map(function (l) {
+          return '<tr data-id="' + esc(l.id) + '" tabindex="0">' +
+            '<td data-label="Name"><a href="#/lead/' + esc(l.id) + '" class="lead-name">' + esc(l.first_name + ' ' + l.last_name) + '</a>' +
+            '<small>' + esc([l.state, l.age ? 'age ' + l.age : '', l.source].filter(Boolean).join(' · ')) + '</small></td>' +
+            '<td data-label="Reason"><select class="pill st-' + esc(l.status) + '" data-act="status" aria-label="Reason for ' + esc(l.first_name) + '">' + stageOptions(l.status) + '</select></td>' +
+            (isAdmin() ? '<td data-label="Was assigned to">' + (l.assigned_to ? esc(personName(l.assigned_to)) : '<span class="muted">Nobody</span>') + '</td>' : '') +
+            '<td data-label="Phone">' + esc(fmtPhone(l.phone)) + '</td>' +
+            '<td data-label="Coverage">' + esc(money(l.coverage) || l.coverage_label || '—') + '</td>' +
+            '<td data-label="Came in" title="' + esc(fmtDate(l.created_at)) + '">' + esc(ago(l.created_at)) + '</td>' +
+            '<td data-label="Archived" title="' + esc(fmtDate(l.updated_at)) + '">' + esc(ago(l.updated_at)) + '</td>' +
+            '<td><button type="button" class="btn btn-ghost btn-sm" data-act="restore">Restore</button></td></tr>';
+        }).join('') + '</tbody></table></div></div></section>';
+    }).join('') || '<div class="empty"><p><b>No matches.</b></p></div>';
+
+    $$('tr[data-id]', box).forEach(function (tr) {
+      var id = tr.getAttribute('data-id');
+      tr.addEventListener('click', function (e) { if (!e.target.closest('a, select, button')) location.hash = '#/lead/' + id; });
+      $('[data-act=status]', tr).addEventListener('change', function (e) { moveLead(id, e.target.value); });
+      $('[data-act=restore]', tr).addEventListener('click', function () {
+        var l = leads.find(function (x) { return x.id === id; });
+        moveLead(id, l && l.last_contacted_at ? 'contacted' : 'new');
+      });
+    });
+  }
+
+  // ---------- dashboard (home) ----------
+  async function showHome() {
+    render('<div class="ad-loading">Loading dashboard…</div>');
+    try { await loadLeads(); } catch (e) { return render('<div class="page"><p class="form-error">' + esc(niceError(e)) + '</p></div>'); }
+    startRefresh();
+    render('<div class="page" id="home"></div>');
+    drawHome();
+    loadActivity();
+  }
+
+  function startOf(unit) {
+    var d = new Date(); d.setHours(0, 0, 0, 0);
+    if (unit === 'week') d.setDate(d.getDate() - 6);
+    if (unit === 'month') d.setDate(1);
+    return d;
+  }
+
+  function drawHome() {
+    var root = $('#home');
+    if (!root) return;
+    var now = Date.now(), DAY = 86400000;
+    var weekAgo = now - 7 * DAY, twoWeeksAgo = now - 14 * DAY, monthStart = startOf('month').getTime();
+    var t = function (iso) { return iso ? new Date(iso).getTime() : 0; };
+    var active = leads.filter(function (l) { return !isArchived(l); });
+    var inbox = leads.filter(function (l) { return S.group(l.status) === 'inbox'; });
+    var stale = inbox.filter(function (l) { return !l.last_contacted_at && now - t(l.created_at) > DAY; });
+    var thisWeek = leads.filter(function (l) { return t(l.created_at) >= weekAgo; }).length;
+    var lastWeek = leads.filter(function (l) { return t(l.created_at) >= twoWeeksAgo && t(l.created_at) < weekAgo; }).length;
+    var pipeline = active.filter(function (l) { return S.group(l.status) !== 'won'; }).reduce(function (s2, l) { return s2 + (Number(l.coverage) || 0); }, 0);
+    var won = leads.filter(function (l) { return S.group(l.status) === 'won'; });
+    var wonMonth = won.filter(function (l) { return t(l.updated_at) >= monthStart; }).length;
+    var closed = leads.filter(isArchived).length;
+    var rate = won.length + closed ? Math.round(won.length / (won.length + closed) * 100) : null;
+    var hour = new Date().getHours();
+    var hello = (hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening') + (me.full_name ? ', ' + me.full_name.split(' ')[0] : '');
+
+    function tile(label, value, sub, href, tone) {
+      return '<a class="tile' + (tone ? ' tile-' + tone : '') + '" href="' + href + '"><span class="tile-label">' + esc(label) + '</span>' +
+        '<span class="tile-value">' + esc(value) + '</span>' + (sub ? '<span class="tile-sub">' + sub + '</span>' : '') + '</a>';
+    }
+    var diff = thisWeek - lastWeek;
+
+    // New leads per day, last 14 days (one series, one color).
+    var days = [];
+    for (var i = 13; i >= 0; i--) {
+      var d0 = startOf('day').getTime() - i * DAY;
+      days.push({ d: new Date(d0), n: leads.filter(function (l) { var x = t(l.created_at); return x >= d0 && x < d0 + DAY; }).length });
+    }
+    var maxN = Math.max(1, Math.max.apply(null, days.map(function (x) { return x.n; })));
+    var chart = '<div class="bars" role="img" aria-label="New leads per day for the last 14 days">' + days.map(function (x) {
+      var label = x.d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + ': ' + x.n + (x.n === 1 ? ' lead' : ' leads');
+      return '<div class="bar-slot" tabindex="0" data-tip="' + esc(label) + '"><span class="bar" data-h="' + (x.n ? Math.max(6, x.n / maxN * 100) : 0) + '"></span>' +
+        '<span class="bar-x">' + (x.d.getDay() === 1 || x === days[0] || x === days[13] ? esc(x.d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })) : '') + '</span></div>';
+    }).join('') + '</div><div class="bar-tip" aria-hidden="true"></div>';
+
+    function hbars(rows, total) {
+      if (!rows.length) return '<p class="muted">Nothing yet.</p>';
+      var max = Math.max.apply(null, rows.map(function (r) { return r.n; })) || 1;
+      return '<ul class="hbars">' + rows.map(function (r) {
+        return '<li><a href="' + (r.href || '#/leads') + '"><span class="hb-label">' + esc(r.label) + '</span><span class="hb-track"><span class="hb-fill" data-w="' + (r.n / max * 100) + '"></span></span>' +
+          '<span class="hb-n">' + r.n + (total ? ' <small>' + Math.round(r.n / total * 100) + '%</small>' : '') + '</span></a></li>';
+      }).join('') + '</ul>';
+    }
+    var stageRows = OPEN.map(function (st) { return { label: st.label, n: leads.filter(function (l) { return l.status === st.key; }).length }; }).filter(function (r) { return r.n; });
+    var srcCount = {};
+    leads.forEach(function (l) { var k = l.source || 'unknown'; srcCount[k] = (srcCount[k] || 0) + 1; });
+    var NAMES = { 'homepage-hero': 'Homepage quiz', 'homepage-quote': 'Quote form', 'policy-review': 'Policy review', 'agent-callback': 'Callback request', apply: 'Online application' };
+    var srcRows = Object.keys(srcCount).map(function (k) { return { label: NAMES[k] || k, n: srcCount[k] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 6);
+    var online = leads.filter(function (l) { return l.path === 'digital'; }).length;
+
+    var follow = stale.concat(inbox.filter(function (l) { return stale.indexOf(l) === -1; }))
+      .sort(function (a, b) { return t(a.created_at) - t(b.created_at); }).slice(0, 6);
+
+    var workload = '';
+    if (isAdmin()) {
+      var people = team.filter(function (p) { return p.active; });
+      workload = '<section class="panel"><h2>Team workload</h2><div class="table-wrap"><table class="team-load"><thead><tr><th>Agent</th><th>Open</th><th>Needs action</th><th>Won</th><th>Archived</th></tr></thead><tbody>' +
+        '<tr><td><b>Unassigned</b></td><td>' + active.filter(function (l) { return !l.assigned_to && S.group(l.status) !== 'won'; }).length + '</td><td>' + inbox.filter(function (l) { return !l.assigned_to; }).length + '</td><td>—</td><td>—</td></tr>' +
+        people.map(function (p) {
+          var mine = leads.filter(function (l) { return l.assigned_to === p.id; });
+          return '<tr><td>' + esc(p.full_name || p.email) + '</td><td>' + mine.filter(function (l) { var g = S.group(l.status); return g === 'inbox' || g === 'working'; }).length + '</td>' +
+            '<td>' + mine.filter(function (l) { return S.group(l.status) === 'inbox'; }).length + '</td><td>' + mine.filter(function (l) { return S.group(l.status) === 'won'; }).length + '</td>' +
+            '<td>' + mine.filter(isArchived).length + '</td></tr>';
+        }).join('') + '</tbody></table></div></section>';
+    }
+
+    root.innerHTML =
+      '<div class="page-head"><div><h1>' + esc(hello) + '</h1><p class="muted">' + esc(new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })) +
+      (isAdmin() ? ' · Everything across the team' : ' · Your leads') + '</p></div>' +
+      '<a class="btn btn-primary" href="#/leads">Open leads</a></div>' +
+      '<div class="tiles">' +
+      tile('New this week', String(thisWeek), (diff === 0 ? 'Same as last week' : (diff > 0 ? '▲ ' + diff : '▼ ' + (-diff)) + ' vs last week'), '#/leads') +
+      tile('Needs action', String(inbox.length), 'New, abandoned or referred', '#/leads', inbox.length ? 'gold' : '') +
+      tile('Waiting 24h+', String(stale.length), stale.length ? 'Not contacted yet' : 'Everyone’s been contacted', '#/leads', stale.length ? 'alert' : '') +
+      tile('Open pipeline', money(pipeline) || '$0', 'Coverage still in play', '#/leads') +
+      tile('Won this month', String(wonMonth), won.length + ' won all-time', '#/leads', wonMonth ? 'good' : '') +
+      tile('Close rate', rate == null ? '—' : rate + '%', 'Won ÷ (won + archived)', '#/archive') +
+      '</div>' +
+      '<div class="home-grid">' +
+      '<section class="panel follow"><h2>Follow up now</h2>' + (follow.length ? '<ul class="follow-list">' + follow.map(function (l) {
+        var tel = phone10(l.phone);
+        return '<li><a class="fl-main" href="#/lead/' + esc(l.id) + '"><b>' + esc(l.first_name + ' ' + l.last_name) + '</b><span>' + statusChip(l.status) + ' · in ' + esc(ago(l.created_at)) +
+          (l.last_contacted_at ? '' : ' · <span class="warn">not contacted</span>') + '</span></a>' +
+          (tel ? '<a class="btn btn-ghost btn-sm" href="tel:+1' + esc(tel) + '" data-call="' + esc(l.id) + '">Call</a>' : '') + '</li>';
+      }).join('') + '</ul>' : '<p class="muted">Nothing waiting. Nice work.</p>') + '</section>' +
+      '<section class="panel"><h2>New leads, last 14 days</h2>' + chart + '</section>' +
+      '<section class="panel"><h2>Pipeline by stage</h2>' + hbars(stageRows) + '</section>' +
+      '<section class="panel"><h2>Where leads come from</h2>' + hbars(srcRows, leads.length) +
+      '<p class="hint">' + online + ' online · ' + (leads.length - online) + ' agent path</p></section>' +
+      workload +
+      '<section class="panel activity"><h2>Recent activity</h2><ol class="timeline" id="activity"><li class="muted">Loading…</li></ol></section>' +
+      '</div>';
+
+    $$('[data-call]', root).forEach(function (a) {
+      a.addEventListener('click', function () { sb.rpc('lead_log_contact', { p_lead: a.getAttribute('data-call'), p_via: 'call' }); });
+    });
+    // Sizes are set from script: the admin pages' security policy blocks inline style attributes.
+    $$('[data-h]', root).forEach(function (el) { el.style.height = el.getAttribute('data-h') + '%'; });
+    $$('[data-w]', root).forEach(function (el) { el.style.width = el.getAttribute('data-w') + '%'; });
+    var tip = $('.bar-tip', root), wrap = $('.bars', root);
+    $$('.bar-slot', root).forEach(function (slot) {
+      var show = function () {
+        tip.textContent = slot.getAttribute('data-tip');
+        tip.style.left = (slot.offsetLeft + slot.offsetWidth / 2) + 'px';
+        tip.classList.add('on');
+      };
+      slot.addEventListener('mouseenter', show);
+      slot.addEventListener('focus', show);
+      slot.addEventListener('mouseleave', function () { tip.classList.remove('on'); });
+      slot.addEventListener('blur', function () { tip.classList.remove('on'); });
+    });
+    if (wrap) wrap.parentNode.style.position = 'relative';
+    if (lastActivity) drawActivity(lastActivity);
+  }
+
+  var lastActivity = null;
+  async function loadActivity() {
+    var r = await sb.from('lead_events').select('*').order('created_at', { ascending: false }).limit(12);
+    lastActivity = r.data || [];
+    drawActivity(lastActivity);
+  }
+  function drawActivity(events) {
+    var box = $('#activity');
+    if (!box) return;
+    if (!events.length) { box.innerHTML = '<li class="muted">No activity yet.</li>'; return; }
+    box.innerHTML = events.map(function (e) {
+      var l = leads.find(function (x) { return x.id === e.lead_id; });
+      var name = l ? '<a href="#/lead/' + esc(l.id) + '">' + esc(l.first_name + ' ' + l.last_name) + '</a>' : 'a lead';
+      return eventItem(e).replace('<div class="tl-text">', '<div class="tl-text"><span class="tl-lead">' + name + ':</span> ');
+    }).join('');
   }
 
   // ---------- one lead ----------
@@ -606,10 +869,9 @@
       (l.email ? '<a class="btn btn-ghost" data-contact="email" href="mailto:' + esc(l.email) + '">Email</a>' : '') +
       '</div></div>' +
 
+      (isArchived(l) ? '<div class="archived-note">This lead is archived (' + esc(S.label(l.status)) + '). Pick an active stage below to restore it.</div>' : '') +
       '<div class="lead-controls">' +
-      '<label class="fld fld-inline">Status<select id="l-status">' + S.STATUSES.map(function (s) {
-        return '<option value="' + s.key + '"' + (s.key === l.status ? ' selected' : '') + '>' + esc(s.label) + '</option>';
-      }).join('') + '</select></label>' +
+      '<label class="fld fld-inline">Stage<select id="l-status">' + stageOptions(l.status) + '</select></label>' +
       (isAdmin() ? '<label class="fld fld-inline">Assigned to<select id="l-assign"><option value="">Unassigned</option>' + team.filter(function (p) { return p.active || p.id === l.assigned_to; }).map(function (p) {
         return '<option value="' + esc(p.id) + '"' + (p.id === l.assigned_to ? ' selected' : '') + '>' + esc((p.full_name || p.email) + (p.role === 'admin' ? ' (admin)' : '')) + '</option>';
       }).join('') + '</select></label>' : '') +

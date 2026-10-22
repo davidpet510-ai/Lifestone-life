@@ -6,7 +6,7 @@
  *   inbox    needs someone to act
  *   working  an agent is on it
  *   won      approved or issued
- *   closed   finished without a policy
+ *   closed   finished without a policy (shown in the dashboard's Archive)
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -23,7 +23,9 @@
     { key: 'issued',        label: 'Policy issued',             group: 'won' },
     { key: 'declined',      label: 'Declined',                  group: 'closed' },
     { key: 'unreachable',   label: 'Unable to reach',           group: 'closed' },
-    { key: 'not_interested',label: 'Not interested',            group: 'closed' }
+    { key: 'not_interested',label: 'Not interested',            group: 'closed' },
+    { key: 'bought_elsewhere', label: 'Bought elsewhere',       group: 'closed' },
+    { key: 'duplicate',     label: 'Duplicate / test',          group: 'closed' }
   ];
   var PATHS = { digital: 'Online', agent: 'Agent' };
 

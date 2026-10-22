@@ -39,6 +39,7 @@ Our own lead dashboard at **lifestonelife.com/admin**. Agents sign in with a pas
 - **Admins** see every lead, assign leads, invite and turn off team members.
 - **Agents** see only the leads assigned to them.
 - Every lead has status, notes, call/text/email buttons and a full history.
+- Files (PDFs, photos, Word, Excel, up to 25 MB) can be attached to a lead. They're stored in a private Supabase bucket; only people who can see the lead can open them, and downloads use links that expire after 60 seconds.
 
 The data lives in [Supabase](https://supabase.com). Access rules are enforced by the database ([supabase/schema.sql](supabase/schema.sql)), not just the page.
 Lead statuses are in [config/lead-statuses.js](config/lead-statuses.js).
@@ -46,7 +47,7 @@ Lead statuses are in [config/lead-statuses.js](config/lead-statuses.js).
 ### One-time setup
 
 1. **Create a Supabase project** (free tier is fine). Pick the US East region.
-2. **Run the database setup:** Supabase → SQL Editor → New query → paste all of `supabase/schema.sql` → Run.
+2. **Run the database setup:** Supabase → SQL Editor → New query → paste all of `supabase/schema.sql` → Run. (Or run `supabase/parts/1` to `4` in order.)
 3. **Auth settings** (Supabase → Authentication):
    - Sign In / Providers → Email: turn **off** "Allow new users to sign up" (only invited people get in).
    - URL Configuration: Site URL `https://lifestonelife.com/admin/`, and add `https://lifestonelife.com/admin/` to Redirect URLs.

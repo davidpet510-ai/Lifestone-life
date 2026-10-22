@@ -849,6 +849,8 @@
     }
     var l = r.data;
     var ev = await sb.from('lead_events').select('*').eq('lead_id', id).order('created_at', { ascending: false });
+    var fl = await sb.from('lead_files').select('*').eq('lead_id', id).order('created_at', { ascending: false });
+    var files = fl.data || [];
     var events = ev.data || [];
     var d = l.details || {}, u = l.utm || {}, a = l.application;
 
@@ -906,7 +908,7 @@
       ]) + '</section>' +
       '</div>' +
 
-      '<div class="lead-side"><section class="panel"><h2>Notes &amp; history</h2>' +
+      '<div class="lead-side">' + filesPanel(files) + '<section class="panel"><h2>Notes &amp; history</h2>' +
       '<form id="f-note" class="note-form"><label class="sr" for="note">Add a note</label>' +
       '<textarea id="note" name="note" rows="3" placeholder="Add a note: what you talked about, next steps…" required></textarea>' +
       '<button class="btn btn-primary" type="submit">Add note</button></form>' +
@@ -932,6 +934,7 @@
         sb.rpc('lead_log_contact', { p_lead: id, p_via: btn.getAttribute('data-contact') }).then(function () { setTimeout(function () { if (location.hash === '#/lead/' + id) showLead(id); }, 1500); });
       });
     });
+    bindFiles(main, id, files);
     $('#f-note', main).addEventListener('submit', async function (e) {
       e.preventDefault();
       var text = $('#note', main).value.trim();
@@ -945,6 +948,106 @@
     });
   }
 
+  // ---------- files on a lead ----------
+  // Stored in the private "lead-files" bucket under <lead id>/. The database only lets
+  // people who can see the lead upload, list or download its files.
+  var FILE_TYPES = {
+    pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif',
+    doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', txt: 'text/plain', csv: 'text/csv'
+  };
+  var MAX_FILE = 25 * 1024 * 1024;
+
+  function fileSize(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+  function fileIcon(name) {
+    var ext = (name.split('.').pop() || '').toLowerCase();
+    return ext === 'pdf' ? 'PDF' : /^(jpe?g|png|webp|hei[cf])$/.test(ext) ? 'IMG' : /^docx?$/.test(ext) ? 'DOC' : /^xlsx?|csv$/.test(ext) ? 'XLS' : 'TXT';
+  }
+
+  function filesPanel(files) {
+    return '<section class="panel files"><h2>Files <span class="muted">(' + files.length + ')</span></h2>' +
+      '<label class="dropzone" id="dropzone"><input type="file" id="file-input" multiple accept="' + Object.keys(FILE_TYPES).map(function (x) { return '.' + x; }).join(',') + '">' +
+      '<b>Add files</b><span>or drag them here. PDF, photos, Word, Excel, up to 25 MB each.</span></label>' +
+      '<p class="upload-status" id="upload-status" role="status" hidden></p>' +
+      (files.length ? '<ul class="file-list">' + files.map(function (f) {
+        var canRemove = isAdmin() || f.uploaded_by === me.id;
+        return '<li data-file="' + esc(f.id) + '"><span class="file-ic">' + fileIcon(f.name) + '</span>' +
+          '<span class="file-main"><button type="button" class="file-name" data-dl>' + esc(f.name) + '</button>' +
+          '<small>' + esc(fileSize(f.size)) + ' · ' + esc(personName(f.uploaded_by) || 'Someone') + ' · ' + esc(ago(f.created_at)) + '</small></span>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-dl>Download</button>' +
+          (canRemove ? '<button type="button" class="ad-link-btn file-rm" data-rm aria-label="Remove ' + esc(f.name) + '">Remove</button>' : '') + '</li>';
+      }).join('') + '</ul>' : '<p class="muted">No files yet. Add policy documents, IDs or anything else for this client.</p>') +
+      '</section>';
+  }
+
+  function bindFiles(main, leadId, files) {
+    var input = $('#file-input', main), zone = $('#dropzone', main), status = $('#upload-status', main);
+    input.addEventListener('change', function () { uploadFiles(leadId, Array.prototype.slice.call(input.files), status); });
+    zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('is-over'); });
+    zone.addEventListener('dragleave', function () { zone.classList.remove('is-over'); });
+    zone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      zone.classList.remove('is-over');
+      uploadFiles(leadId, Array.prototype.slice.call(e.dataTransfer.files || []), status);
+    });
+    $$('.file-list li', main).forEach(function (li) {
+      var f = files.find(function (x) { return x.id === li.getAttribute('data-file'); });
+      $$('[data-dl]', li).forEach(function (b) { b.addEventListener('click', function () { downloadFile(f); }); });
+      var rm = $('[data-rm]', li);
+      if (rm) rm.addEventListener('click', function () { removeFile(leadId, f); });
+    });
+  }
+
+  async function uploadFiles(leadId, list, status) {
+    if (!list.length) return;
+    var done = 0, problems = [];
+    status.hidden = false;
+    for (var i = 0; i < list.length; i++) {
+      var file = list[i];
+      var ext = (file.name.split('.').pop() || '').toLowerCase();
+      var type = FILE_TYPES[ext];
+      if (!type) { problems.push(file.name + ': that file type isn’t allowed'); continue; }
+      if (file.size > MAX_FILE) { problems.push(file.name + ': over 25 MB'); continue; }
+      status.textContent = 'Uploading ' + (i + 1) + ' of ' + list.length + ': ' + file.name + '…';
+      var safe = file.name.replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(-80) || 'file.' + ext;
+      var id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+      var path = leadId + '/' + id + '-' + safe;
+      var up = await sb.storage.from('lead-files').upload(path, file, { contentType: type, upsert: false });
+      if (up.error) { problems.push(file.name + ': ' + niceError(up.error)); continue; }
+      var rec = await sb.rpc('lead_file_added', { p_lead: leadId, p_path: path, p_name: file.name, p_size: file.size, p_mime: type });
+      if (rec.error) {
+        await sb.storage.from('lead-files').remove([path]);   // don't leave an unlisted file behind
+        problems.push(file.name + ': ' + niceError(rec.error));
+        continue;
+      }
+      done++;
+    }
+    if (problems.length) toast(problems.join(' · '), 'err');
+    else toast(done === 1 ? 'File added.' : done + ' files added.', 'ok');
+    if (location.hash === '#/lead/' + leadId) showLead(leadId);
+  }
+
+  async function downloadFile(f) {
+    var r = await sb.storage.from('lead-files').createSignedUrl(f.path, 60, { download: f.name });
+    if (r.error || !r.data) return toast(niceError(r.error || 'Could not open the file'), 'err');
+    var a = document.createElement('a');
+    a.href = r.data.signedUrl;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  async function removeFile(leadId, f) {
+    if (!confirm('Remove “' + f.name + '” from this lead? This can’t be undone.')) return;
+    var r = await sb.storage.from('lead-files').remove([f.path]);
+    if (r.error) return toast(niceError(r.error), 'err');
+    var r2 = await sb.rpc('lead_file_removed', { p_file: f.id });
+    if (r2.error) return toast(niceError(r2.error), 'err');
+    toast('File removed.', 'ok');
+    showLead(leadId);
+  }
+
   function eventItem(e) {
     var who = e.actor ? personName(e.actor) || 'A team member' : 'Website';
     var m = e.meta || {}, text;
@@ -956,6 +1059,7 @@
       case 'path': text = 'Switched to the agent path: ' + esc(e.body || '') + '.'; break;
       case 'application': text = esc(e.body || 'Online application submitted.'); break;
       case 'note': text = '<span class="note-body">' + esc(e.body) + '</span>'; break;
+      case 'file': text = (m.action === 'removed' ? 'Removed file ' : 'Added file ') + '<b>' + esc(e.body || '') + '</b>.'; break;
       default: text = esc(e.body || e.kind);
     }
     return '<li class="tl-' + esc(e.kind) + '"><div class="tl-meta"><b>' + esc(who) + '</b> · <time title="' + esc(fmtDate(e.created_at)) + '">' + esc(ago(e.created_at)) + '</time></div><div class="tl-text">' + text + '</div></li>';

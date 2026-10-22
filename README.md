@@ -73,6 +73,8 @@ Lead statuses are in [config/lead-statuses.js](config/lead-statuses.js).
 
 Each person picks email and/or text alerts on the dashboard's **Settings** page.
 
+Mark `SUPABASE_SERVICE_ROLE_KEY`, `LEAD_SIGNING_SECRET`, `RESEND_API_KEY` and `TWILIO_AUTH_TOKEN` as **Contains secret values** in Netlify. Netlify only allows secret values for real deploy contexts (Production etc.), not "all". After adding or changing any variable, redeploy so the functions pick it up.
+
 ### Common admin tasks
 
 - **Someone lost their phone (2-step codes):** Supabase → Authentication → Users → their account → remove the MFA factor. They set it up again at next sign-in.

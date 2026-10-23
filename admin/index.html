@@ -28,6 +28,13 @@
       <a href="#/team" data-nav="team" data-admin hidden>Team</a>
       <a href="#/settings" data-nav="settings">Settings</a>
     </nav>
+    <div class="gs" id="gs">
+      <label class="sr" for="gs-input">Search everything</label>
+      <input type="search" id="gs-input" placeholder="Search names, phones, files, notes…" autocomplete="off"
+             role="combobox" aria-expanded="false" aria-controls="gs-results" aria-autocomplete="list">
+      <kbd class="gs-key" aria-hidden="true">/</kbd>
+      <div class="gs-results" id="gs-results" role="listbox" hidden></div>
+    </div>
     <div class="ad-me">
       <span id="ad-me-name"></span>
       <button type="button" class="ad-link-btn" id="ad-signout">Sign out</button>

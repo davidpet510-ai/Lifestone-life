@@ -114,6 +114,7 @@
     });
     window.addEventListener('hashchange', route);
     $('#ad-signout').addEventListener('click', signOut);
+    initGlobalSearch();
     watchIdle();
     await gate();
   }
@@ -160,6 +161,117 @@
         signOut().then(function () { toast('Signed out after ' + IDLE_MINUTES + ' minutes without activity.'); });
       }
     }, 30000);
+  }
+
+  // ---------- search everything (top bar) ----------
+  // Leads (active and archived) are searched from what's already loaded; files and notes
+  // are looked up in the database. Each person only ever gets results they're allowed to see.
+  var gsTimer = null, gsSeq = 0;
+
+  function initGlobalSearch() {
+    var input = $('#gs-input'), box = $('#gs-results');
+    input.addEventListener('focus', function () { if (me && !leads.length) loadLeads().catch(function () {}); });
+    input.addEventListener('input', function () {
+      clearTimeout(gsTimer);
+      gsTimer = setTimeout(function () { runSearch(input.value); }, 180);
+    });
+    input.addEventListener('keydown', function (e) {
+      var items = $$('.gs-item', box), cur = items.indexOf($('.gs-item.on', box));
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!items.length) return;
+        var next = e.key === 'ArrowDown' ? (cur + 1) % items.length : (cur <= 0 ? items.length - 1 : cur - 1);
+        items.forEach(function (it, i) { it.classList.toggle('on', i === next); it.setAttribute('aria-selected', i === next ? 'true' : 'false'); });
+        items[next].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        var pick = $('.gs-item.on', box) || items[0];
+        if (pick) { e.preventDefault(); goSearch(pick.getAttribute('href')); }
+      } else if (e.key === 'Escape') {
+        closeSearch(true);
+      }
+    });
+    box.addEventListener('click', function (e) {
+      var a = e.target.closest('.gs-item');
+      if (a) { e.preventDefault(); goSearch(a.getAttribute('href')); }
+    });
+    document.addEventListener('click', function (e) { if (!e.target.closest('#gs')) closeSearch(false); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && me && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) { e.preventDefault(); input.focus(); input.select(); }
+    });
+  }
+
+  function goSearch(href) {
+    closeSearch(true);
+    $('#gs-input').blur();
+    if (location.hash === href) route(); else location.hash = href;
+  }
+
+  function closeSearch(clear) {
+    var input = $('#gs-input'), box = $('#gs-results');
+    box.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    if (clear) input.value = '';
+  }
+
+  function hit(text, q) { return String(text || '').toLowerCase().indexOf(q) !== -1; }
+  function likePattern(q) { return '%' + q.replace(/[\\%_]/g, function (c) { return '\\' + c; }) + '%'; }
+  function mark(text, q) {
+    var t = String(text || ''), i = t.toLowerCase().indexOf(q);
+    if (!q || i === -1) return esc(t);
+    return esc(t.slice(0, i)) + '<mark>' + esc(t.slice(i, i + q.length)) + '</mark>' + esc(t.slice(i + q.length));
+  }
+
+  async function runSearch(raw) {
+    var q = raw.trim().toLowerCase(), qd = digits(q), box = $('#gs-results'), input = $('#gs-input');
+    var seq = ++gsSeq;
+    if (q.length < 2) { box.hidden = true; input.setAttribute('aria-expanded', 'false'); return; }
+
+    var leadHits = leads.filter(function (l) {
+      return hit(l.first_name + ' ' + l.last_name, q) || hit(l.email, q) || (qd.length >= 3 && digits(l.phone).indexOf(qd) !== -1) ||
+        (q.length === 2 && (l.state || '').toLowerCase() === q);
+    });
+    var active = leadHits.filter(function (l) { return !isArchived(l); }).slice(0, 6);
+    var archived = leadHits.filter(isArchived).slice(0, 4);
+    var people = isAdmin() ? team.filter(function (p) { return hit(p.full_name, q) || hit(p.email, q); }).slice(0, 3) : [];
+    draw([], []);   // show lead results right away, files and notes fill in after
+
+    var pat = likePattern(raw.trim());
+    var res = await Promise.all([
+      sb.from('lead_files').select('id,lead_id,name,created_at').ilike('name', pat).order('created_at', { ascending: false }).limit(5),
+      sb.from('lead_events').select('id,lead_id,body,created_at').eq('kind', 'note').ilike('body', pat).order('created_at', { ascending: false }).limit(5)
+    ]).catch(function () { return [{}, {}]; });
+    if (seq !== gsSeq) return;   // a newer search already started
+    draw((res[0] && res[0].data) || [], (res[1] && res[1].data) || []);
+
+    function leadName(id) { var l = leads.find(function (x) { return x.id === id; }); return l ? l.first_name + ' ' + l.last_name : 'a lead'; }
+    function item(href, main, sub) { return '<a class="gs-item" role="option" aria-selected="false" href="' + esc(href) + '"><span class="gs-main">' + main + '</span>' + (sub ? '<span class="gs-sub">' + sub + '</span>' : '') + '</a>'; }
+    function group(title, html) { return html ? '<div class="gs-group"><p class="gs-title">' + esc(title) + '</p>' + html + '</div>' : ''; }
+
+    function draw(files, notes) {
+      var html =
+        group('Leads', active.map(function (l) {
+          return item('#/lead/' + l.id, mark(l.first_name + ' ' + l.last_name, q), esc(S.label(l.status)) + ' · ' + esc(fmtPhone(l.phone)) + (l.state ? ' · ' + esc(l.state) : ''));
+        }).join('')) +
+        group('Archived', archived.map(function (l) {
+          return item('#/lead/' + l.id, mark(l.first_name + ' ' + l.last_name, q), esc(S.label(l.status)) + ' · ' + esc(fmtPhone(l.phone)));
+        }).join('')) +
+        group('Files', files.map(function (f) {
+          return item('#/lead/' + f.lead_id, mark(f.name, q), 'on ' + esc(leadName(f.lead_id)) + ' · ' + esc(ago(f.created_at)));
+        }).join('')) +
+        group('Notes', notes.map(function (n) {
+          var body = String(n.body || ''), i = body.toLowerCase().indexOf(q), start = Math.max(0, i - 30);
+          var snip = (start ? '…' : '') + body.slice(start, start + 90) + (body.length > start + 90 ? '…' : '');
+          return item('#/lead/' + n.lead_id, mark(snip, q), 'note on ' + esc(leadName(n.lead_id)) + ' · ' + esc(ago(n.created_at)));
+        }).join('')) +
+        group('Team', people.map(function (p) {
+          return item('#/team', mark(p.full_name || p.email, q), esc(p.role === 'admin' ? 'Admin' : 'Agent') + ' · ' + esc(p.email));
+        }).join(''));
+      box.innerHTML = html || '<p class="gs-none">No matches for “' + esc(raw.trim()) + '”.</p>';
+      box.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      var first = $('.gs-item', box);
+      if (first) { first.classList.add('on'); first.setAttribute('aria-selected', 'true'); }
+    }
   }
 
   // ---------- auth screens ----------

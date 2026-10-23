@@ -137,7 +137,7 @@
   }
   async function gateOnce() {
     var sess = (await sb.auth.getSession()).data.session;
-    if (linkError) { var m = linkError; linkError = null; return showLogin('That link didn’t work (' + m + '). Ask an admin for a new invite, or reset your password.'); }
+    if (linkError) { var m = linkError; linkError = null; history.replaceState(null, '', '#/'); return showLinkProblem(m); }
     if (!sess) return showLogin();
     if (linkType === 'invite' || linkType === 'recovery') return showSetPassword(linkType);
 
@@ -342,6 +342,36 @@
       toast('If that email has an account, a reset link is on its way.');
     });
     f.email.focus();
+  }
+
+  // An invite or reset link that expired or was already used.
+  function showLinkProblem(detail) {
+    stopRefresh();
+    setTop(false);
+    var main = render(card('This link has expired', '' +
+      '<p>For security, setup links only work for a limited time and only once' + (/expired|invalid/i.test(detail) ? '' : ' (' + esc(detail) + ')') + '.</p>' +
+      '<p>Enter your email and we’ll send you a fresh link to set your password.</p>' +
+      '<form id="f-relink" novalidate>' +
+      '<label class="fld">Email<input name="email" type="email" autocomplete="email" required></label>' +
+      '<p class="form-error" role="alert" hidden></p>' +
+      '<button class="btn btn-primary btn-wide" type="submit">Email me a new link</button>' +
+      '<button class="ad-link-btn auth-alt" type="button" id="have-pw">I already have a password</button></form>',
+      'No problem, it only takes a minute.'));
+    var f = $('#f-relink', main);
+    f.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      formError(f, '');
+      var email = f.email.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return formError(f, 'Enter the email address your invite was sent to.');
+      var btn = $('button[type=submit]', f);
+      busy(btn, true, 'Sending…');
+      var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/admin/' });
+      busy(btn, false);
+      if (r.error) return formError(f, /rate|seconds|too many/i.test(r.error.message) ? 'A link was just sent. Wait a minute, then try again.' : niceError(r.error));
+      render(card('Check your email', '<p>If <b>' + esc(email) + '</b> has a Lifestone account, a new link is on its way. Open it within the hour and you’ll be able to set your password.</p>' +
+        '<p class="hint">Don’t see it? Check spam, or ask your admin to tap “Resend invite” on the Team page.</p>'));
+    });
+    $('#have-pw', main).addEventListener('click', function () { showLogin(); });
   }
 
   function showSetPassword(kind) {
@@ -1234,9 +1264,21 @@
   }
 
   // ---------- team (admins) ----------
+  async function adminCall(body) {
+    var token = (await sb.auth.getSession()).data.session.access_token;
+    var res = await fetch('/.netlify/functions/admin', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(body)
+    });
+    var out = await res.json().catch(function () { return { ok: false, error: 'Something went wrong' }; });
+    if (!out.ok) throw new Error(out.error || 'Something went wrong');
+    return out;
+  }
+
   async function showTeam() {
     stopRefresh();
     await loadTeam();
+    var setup = {};
+    try { setup = (await adminCall({ action: 'team-status' })).status || {}; } catch (e) { /* the page still works without it */ }
     var main = render('<div class="page">' +
       '<div class="page-head"><div><h1>Team</h1><p class="muted">Invite agents, set roles, and turn accounts off when someone leaves.</p></div></div>' +
       '<section class="panel"><h2>Invite someone</h2>' +
@@ -1252,12 +1294,14 @@
         var open = leads.filter(function (l) { return l.assigned_to === p.id && S.group(l.status) !== 'closed' && S.group(l.status) !== 'won'; }).length;
         var self = p.id === me.id;
         return '<tr data-id="' + esc(p.id) + '">' +
-          '<td data-label="Name"><b>' + esc(p.full_name || '—') + '</b>' + (self ? ' <span class="muted">(you)</span>' : '') + '</td>' +
+          '<td data-label="Name"><b>' + esc(p.full_name || '—') + '</b>' + (self ? ' <span class="muted">(you)</span>' : '') +
+          (setup[p.id] && !setup[p.id].signedIn ? ' <span class="pending">Invite pending</span>' : '') + '</td>' +
           '<td data-label="Email">' + esc(p.email) + '</td>' +
           '<td data-label="Role"><select data-f="role"' + (self ? ' disabled' : '') + '><option value="agent"' + (p.role === 'agent' ? ' selected' : '') + '>Agent</option><option value="admin"' + (p.role === 'admin' ? ' selected' : '') + '>Admin</option></select></td>' +
           '<td data-label="Account"><select data-f="active"' + (self ? ' disabled' : '') + '><option value="1"' + (p.active ? ' selected' : '') + '>On</option><option value="0"' + (!p.active ? ' selected' : '') + '>Off</option></select></td>' +
           '<td data-label="Open leads">' + open + '</td>' +
-          '<td>' + (self ? '' : '<button class="btn btn-ghost btn-sm" type="button" data-save>Save</button>') + '</td></tr>';
+          '<td class="row-actions">' + (self ? '' : '<button class="btn btn-ghost btn-sm" type="button" data-save>Save</button>') +
+          (!self && p.active && setup[p.id] && !setup[p.id].signedIn ? '<button class="ad-link-btn" type="button" data-resend>Resend invite</button>' : '') + '</td></tr>';
       }).join('') + '</tbody></table></div>' +
       '<p class="hint">Turning an account off signs them out of the data immediately and moves their open leads back to Unassigned.</p></section></div>');
 
@@ -1269,18 +1313,27 @@
       var btn = $('button[type=submit]', f);
       busy(btn, true, 'Sending…');
       try {
-        var token = (await sb.auth.getSession()).data.session.access_token;
-        var res = await fetch('/.netlify/functions/admin', {
-          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-          body: JSON.stringify({ action: 'invite', fullName: f.fullName.value.trim(), email: f.email.value.trim(), role: f.role.value })
-        });
-        var out = await res.json();
-        if (!out.ok) throw new Error(out.error);
+        await adminCall({ action: 'invite', fullName: f.fullName.value.trim(), email: f.email.value.trim(), role: f.role.value });
         toast('Invite sent to ' + f.email.value.trim() + '.', 'ok');
         showTeam();
       } catch (err) {
         formError(f, niceError(err));
       } finally { busy(btn, false); }
+    });
+
+    $$('[data-resend]', main).forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var tr = btn.closest('tr');
+        busy(btn, true, 'Sending…');
+        try {
+          await adminCall({ action: 'resend-invite', userId: tr.getAttribute('data-id') });
+          btn.textContent = 'Sent ✓';
+          toast('New setup link sent. It works for a limited time, so ask them to open it soon.', 'ok');
+        } catch (err) {
+          busy(btn, false);
+          toast(niceError(err), 'err');
+        }
+      });
     });
 
     $$('[data-save]', main).forEach(function (btn) {

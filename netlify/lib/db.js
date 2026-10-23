@@ -77,4 +77,16 @@ async function inviteUser(email, fullName, redirectTo) {
   return call('/auth/v1/invite' + q, { method: 'POST', headers: serviceHeaders(), body: JSON.stringify({ email, data: { full_name: fullName } }) });
 }
 
-module.exports = { insertLead, updateLead, getLead, addEvent, getProfile, activeAdmins, updateProfile, userFromToken, inviteUser };
+// Sign-in status for every account (who has finished setting up), from Supabase's admin API.
+async function authUsers() {
+  const out = await call('/auth/v1/admin/users?per_page=1000', { headers: serviceHeaders() });
+  return (out && out.users) || [];
+}
+
+// Emails a fresh link that lets the person (re)set their password. Works for invites that expired.
+async function sendSetupLink(email, redirectTo) {
+  const q = redirectTo ? '?redirect_to=' + encodeURIComponent(redirectTo) : '';
+  return call('/auth/v1/recover' + q, { method: 'POST', headers: serviceHeaders(), body: JSON.stringify({ email }) });
+}
+
+module.exports = { insertLead, updateLead, getLead, addEvent, getProfile, activeAdmins, updateProfile, userFromToken, inviteUser, authUsers, sendSetupLink };

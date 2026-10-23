@@ -4,6 +4,8 @@
  *   GET  ?action=config                       public Supabase URL + anon key for the dashboard (safe to expose)
  *   POST { action: 'invite', email, fullName, role }   admins only: emails an invite to a new team member
  *   POST { action: 'notify-assign', leadId }           admins only: alerts the agent a lead was just assigned to
+ *   POST { action: 'team-status' }                     admins only: who has finished setting up their account
+ *   POST { action: 'resend-invite', userId }           admins only: emails a fresh set-your-password link
  *
  * POST calls must send the dashboard user's login token: Authorization: Bearer <token>.
  * The caller must be an active admin who finished two-step verification.
@@ -30,10 +32,14 @@ exports.handler = async (event) => {
 
     if (body.action === 'invite') return await invite(body, me);
     if (body.action === 'notify-assign') return await notifyAssign(body);
+    if (body.action === 'team-status') return await teamStatus();
+    if (body.action === 'resend-invite') return await resendInvite(body, me);
     return C.json(400, { ok: false, error: 'Unknown action' });
   } catch (e) {
     console.error('admin function error:', e.code || '', e.message);
-    return C.json(e.code === 'CONFIG' ? 500 : 502, { ok: false, error: e.code === 'DB' && e.status === 422 ? 'That email may already have an account' : 'Something went wrong' });
+    const msg = e.code === 'DB' && e.status === 429 ? 'Too many emails just now. Wait a minute and try again.'
+      : e.code === 'DB' && e.status === 422 ? 'That email may already have an account' : 'Something went wrong';
+    return C.json(e.code === 'CONFIG' ? 500 : 502, { ok: false, error: msg });
   }
 };
 
@@ -56,5 +62,23 @@ async function notifyAssign(body) {
   if (!lead || !lead.assigned_to) return C.json(200, { ok: true });
   const agent = await db.getProfile(lead.assigned_to);
   await alerts.assigned(agent, lead);
+  return C.json(200, { ok: true });
+}
+
+async function teamStatus() {
+  const users = await db.authUsers();
+  const status = {};
+  for (const u of users) {
+    status[u.id] = { signedIn: !!u.last_sign_in_at, lastSignIn: u.last_sign_in_at || null, invitedAt: u.invited_at || null };
+  }
+  return C.json(200, { ok: true, status });
+}
+
+async function resendInvite(body, me) {
+  if (!C.UUID.test(String(body.userId || ''))) return C.json(400, { ok: false, error: 'Bad user' });
+  const person = await db.getProfile(body.userId);
+  if (!person || !person.active) return C.json(400, { ok: false, error: 'That account is turned off' });
+  await db.sendSetupLink(person.email, C.siteUrl() ? C.siteUrl() + '/admin/' : '');
+  console.log('setup link resent', { by: me.id, to: person.id });
   return C.json(200, { ok: true });
 }

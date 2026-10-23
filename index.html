@@ -740,6 +740,15 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
  .sticky-cta a{flex:1}
  body{padding-bottom:78px}
 }
+.type-explain{margin:12px 0 0;padding:14px 16px;border-radius:14px;background:#F3F8F5;border:1px solid #D5E1DA;border-left:4px solid #4B8064;color:#33433A;font-size:15px;line-height:1.5;animation:teIn .25s ease}
+.type-explain b{display:block;font-family:'Source Serif 4',Georgia,serif;font-size:17px;color:#1F3D2E;margin-bottom:2px}
+.type-explain p{margin:0 0 6px}
+.type-explain ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.type-explain li{position:relative;padding-left:20px;font-size:14px}
+.type-explain li::before{content:"";position:absolute;left:3px;top:6px;width:9px;height:5px;border-left:2px solid #4B8064;border-bottom:2px solid #4B8064;transform:rotate(-45deg)}
+.type-explain small{display:block;margin-top:8px;font-size:12.5px;color:#55645C}
+@keyframes teIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.type-explain{animation:none}}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"InsuranceAgency","name":"Lifestone Life Insurance","url":"https://lifestonelife.com/","logo":"https://lifestonelife.com/icon-512.png","image":"https://lifestonelife.com/images/share-card.png","telephone":"+1-954-205-6233","email":"policies@lifestonesettlements.com","address":{"@type":"PostalAddress","streetAddress":"2211 E Sample Rd, Suite 205","addressLocality":"Lighthouse Point","addressRegion":"FL","postalCode":"33064","addressCountry":"US"},"areaServed":{"@type":"Country","name":"United States"},"slogan":"Family-run for three generations","openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"17:00"}]}
@@ -815,6 +824,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
           <div class="hq-field"><label for="hq-coverage">Coverage amount</label><select id="hq-coverage" name="coverage" required data-msg="Please choose a coverage amount."><option value="">Choose an amount</option><option value="10000">$10,000</option><option value="15000">$15,000</option><option value="20000">$20,000</option><option value="25000">$25,000</option><option value="50000">$50,000</option><option value="75000">$75,000</option><option value="100000">$100,000</option><option value="250000">$250,000</option><option value="500000">$500,000</option><option value="750000">$750,000</option><option value="1000000">$1,000,000</option><option value="1500000">$1,500,000</option><option value="2000000">$2,000,000</option><option value="3000000">$3,000,000</option><option value="5000000">$5,000,000+</option></select></div>
           <p class="hq-sub" id="hq-q-type">Coverage type</p>
           <div class="hq-opts" role="group" aria-labelledby="hq-q-type" data-lq-choice="type" data-required data-msg="Please choose a coverage type." style="--cols:3"><button type="button" class="hq-chip" data-value="term">Term</button><button type="button" class="hq-chip" data-value="universal">Universal life</button><button type="button" class="hq-chip" data-value="not_sure">Not sure</button></div>
+          <div class="type-explain" data-type-explain aria-live="polite" hidden></div>
           <p class="hq-error" role="alert" data-lq-error></p>
           <div class="hq-nav"><button type="button" class="hq-back" data-lq-back>← Back</button><button type="button" class="hq-go" data-lq-next>Continue <span aria-hidden="true">→</span></button></div>
         </div>
@@ -1101,6 +1111,7 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
         <div class="qf-field qf-field-wide"><label for="qc-coverage">Coverage amount</label><div class="qf-input"><span class="qf-fi"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="9" cy="7" rx="5" ry="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 7v4c0 1.2 2.2 2.2 5 2.2s5-1 5-2.2V7M10 15.6c.6 1 2.6 1.6 5 1.6 2.8 0 5-1 5-2.2v-4c0-1.2-2.2-2.2-5-2.2-.6 0-1.1 0-1.6.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><select id="qc-coverage" name="coverage" required data-msg="Please choose a coverage amount."><option value="">Choose an amount</option><option value="10000">$10,000</option><option value="15000">$15,000</option><option value="20000">$20,000</option><option value="25000">$25,000</option><option value="50000">$50,000</option><option value="75000">$75,000</option><option value="100000">$100,000</option><option value="250000">$250,000</option><option value="500000">$500,000</option><option value="750000">$750,000</option><option value="1000000">$1,000,000</option><option value="1500000">$1,500,000</option><option value="2000000">$2,000,000</option><option value="3000000">$3,000,000</option><option value="5000000">$5,000,000+</option></select></div></div>
         <h3 id="q-type" class="qf-q qf-q2">What kind of coverage interests you?</h3>
         <div role="group" aria-labelledby="q-type" data-lq-choice="type" data-required data-msg="Please choose a coverage type." class="qf-tiles qf-tiles-3"><button type="button" class="chip qf-tile" data-value="term"><span class="qf-ti"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="qf-tl">Term</span></button><button type="button" class="chip qf-tile" data-value="universal"><span class="qf-ti"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h6M14 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="qf-tl">Universal life</span></button><button type="button" class="chip qf-tile" data-value="not_sure"><span class="qf-ti"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.4M12 17h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="qf-tl">Not sure</span></button></div>
+        <div class="type-explain" data-type-explain aria-live="polite" hidden></div>
         <p class="qc-error" role="alert" data-lq-error></p>
         <div class="qc-nav qf-nav"><span class="qf-navl"><button type="button" class="qc-back qf-back" data-lq-back>← Back</button><a href="agent-callback.html" class="qf-talk" data-lq-talk>I’d rather talk to someone</a></span><button type="button" class="qf-next" data-lq-next>Continue <span aria-hidden="true">→</span></button></div>
       </div>
@@ -1466,6 +1477,35 @@ button.hq-go:disabled{opacity:.7;cursor:wait}
       started = true;
     }});
   }
+})();
+
+// Coverage type: a short plain-English explanation appears when someone picks an option.
+(function(){
+  var INFO = {
+    term: { t: 'Term life', p: 'Protection for a set number of years, like 10, 20 or 30.',
+      li: ['Usually the lowest price for the most coverage', 'Pays your family if you pass away during the term', 'Good for income, a mortgage or raising kids'] },
+    universal: { t: 'Universal life', p: 'Permanent coverage designed to last your whole life, as long as premiums are paid.',
+      li: ['Flexible payments and a cash value that can grow over time', 'Costs more than term for the same amount', 'Good for leaving a legacy or lifelong protection'] },
+    not_sure: { t: 'Not sure? That’s okay.', p: 'Most families start with term because it’s the most affordable.',
+      li: ['We’ll show your options side by side', 'A licensed agent can help you choose, free'] }
+  };
+  document.querySelectorAll('[data-lq-choice="type"]').forEach(function(group){
+    var box = group.parentNode.querySelector('[data-type-explain]');
+    if (!box) return;
+    group.querySelectorAll('[data-value]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var x = INFO[btn.getAttribute('data-value')];
+        if (!x) { box.hidden = true; return; }
+        box.innerHTML = '';
+        var b = document.createElement('b'); b.textContent = x.t; box.appendChild(b);
+        var p = document.createElement('p'); p.textContent = x.p; box.appendChild(p);
+        var ul = document.createElement('ul');
+        x.li.forEach(function(t){ var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+        box.appendChild(ul);
+        box.hidden = false;
+      });
+    });
+  });
 })();
 </script>
 </body>

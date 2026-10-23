@@ -310,6 +310,9 @@ select.who{min-height:34px;padding:5px 8px;font-size:14px;max-width:180px}
 .row-actions{white-space:nowrap}
 .row-actions .ad-link-btn{margin-left:10px;color:var(--brand);font-size:14px}
 
+.remember{margin:4px 0 2px}
+.remember-hint{margin:0 0 14px 30px;font-size:13px}
+
 /* phones & tablets */
 @media (max-width:1060px){.tiles{grid-template-columns:repeat(3,1fr)}.home-grid{grid-template-columns:1fr}.lead-grid{grid-template-columns:1fr}.invite{grid-template-columns:1fr 1fr}.invite .btn{grid-column:1/-1}}
 @media (max-width:760px){

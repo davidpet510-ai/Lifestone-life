@@ -12,7 +12,36 @@
   'use strict';
 
   var S = window.LifestoneStatuses;
-  var IDLE_MINUTES = 60;          // sign out after this long without activity
+  var IDLE_MINUTES = 60;          // sign out after this long without activity (unless "keep me signed in")
+  var REMEMBER_DAYS = 30;         // "keep me signed in" lasts this long, then sign in once more
+  var REMEMBER_KEY = 'lq_crm_remember';
+
+  // "Keep me signed in": when on, the login is kept in this browser (localStorage) for up to
+  // REMEMBER_DAYS with no idle sign-out. When off, it lives only until the browser closes
+  // (sessionStorage) and the idle sign-out applies.
+  function remembered() { var until = Number(savedPref(REMEMBER_KEY, '0')); return until > Date.now(); }
+  function setRemember(on) {
+    try {
+      if (on) localStorage.setItem(REMEMBER_KEY, String(Date.now() + REMEMBER_DAYS * 86400000));
+      else localStorage.removeItem(REMEMBER_KEY);
+    } catch (e) { /* storage blocked: falls back to a browser-session login */ }
+  }
+  var sessionStore = {
+    getItem: function (k) {
+      try { return (remembered() ? localStorage : sessionStorage).getItem(k); } catch (e) { return null; }
+    },
+    setItem: function (k, v) {
+      try {
+        var keep = remembered();
+        (keep ? localStorage : sessionStorage).setItem(k, v);
+        (keep ? sessionStorage : localStorage).removeItem(k);
+      } catch (e) { /* ignore */ }
+    },
+    removeItem: function (k) {
+      try { localStorage.removeItem(k); } catch (e) { /* ignore */ }
+      try { sessionStorage.removeItem(k); } catch (e) { /* ignore */ }
+    }
+  };
   var REFRESH_SECONDS = 45;       // how often the lead list checks for new leads
   var LEAD_LIMIT = 2000;
   var REQUEST_TIMEOUT = 20000;    // give up on a database request after 20 seconds
@@ -113,8 +142,15 @@
         '<p>The dashboard can’t find its database settings. Add <code>SUPABASE_URL</code>, <code>SUPABASE_ANON_KEY</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> in Netlify, then redeploy.</p>'));
       return;
     }
+    // "Keep me signed in" ran out: remove the saved login so it can't be reused.
+    if (savedPref(REMEMBER_KEY, '') && !remembered()) {
+      try {
+        Object.keys(localStorage).forEach(function (k) { if (/^sb-.*-auth-token/.test(k)) localStorage.removeItem(k); });
+        localStorage.removeItem(REMEMBER_KEY);
+      } catch (e) { /* ignore */ }
+    }
     sb = window.supabase.createClient(cfg.url, cfg.anonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' }
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit', storage: sessionStore }
     });
     sb.auth.onAuthStateChange(function (event) {
       if (event === 'PASSWORD_RECOVERY') linkType = 'recovery';
@@ -164,6 +200,7 @@
   async function signOut() {
     stopRefresh();
     await sb.auth.signOut();
+    setRemember(false);
     me = null; leads = []; team = [];
     history.replaceState(null, '', '#/');
     showLogin();
@@ -175,7 +212,7 @@
       window.addEventListener(ev, function () { last = Date.now(); }, { passive: true });
     });
     setInterval(function () {
-      if (me && Date.now() - last > IDLE_MINUTES * 60000) {
+      if (me && !remembered() && Date.now() - last > IDLE_MINUTES * 60000) {
         signOut().then(function () { toast('Signed out after ' + IDLE_MINUTES + ' minutes without activity.'); });
       }
     }, 30000);
@@ -317,6 +354,8 @@
       '<form id="f-login" novalidate>' +
       '<label class="fld">Email<input name="email" type="email" autocomplete="username" required></label>' +
       '<label class="fld">Password<input name="password" type="password" autocomplete="current-password" required></label>' +
+      '<label class="check remember"><input type="checkbox" name="remember" checked> Keep me signed in on this device for ' + REMEMBER_DAYS + ' days</label>' +
+      '<p class="hint remember-hint">Untick on shared or public computers.</p>' +
       '<p class="form-error" role="alert"' + (message ? '' : ' hidden') + '>' + esc(message || '') + '</p>' +
       '<button class="btn btn-primary btn-wide" type="submit">Sign in</button>' +
       '<button class="ad-link-btn auth-alt" type="button" id="forgot">Forgot your password?</button>' +
@@ -328,6 +367,7 @@
       formError(f, '');
       if (!f.email.value || !f.password.value) return formError(f, 'Enter your email and password.');
       busy(btn, true, 'Signing in…');
+      setRemember(f.remember.checked);   // decides where the login is stored, so it must come first
       var r = await sb.auth.signInWithPassword({ email: f.email.value.trim(), password: f.password.value });
       busy(btn, false);
       if (r.error) return formError(f, /invalid/i.test(r.error.message) ? 'That email and password don’t match.' : niceError(r.error));

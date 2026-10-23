@@ -15,6 +15,13 @@
   var IDLE_MINUTES = 60;          // sign out after this long without activity
   var REFRESH_SECONDS = 45;       // how often the lead list checks for new leads
   var LEAD_LIMIT = 2000;
+  var REQUEST_TIMEOUT = 20000;    // give up on a database request after 20 seconds
+  var SLOW_MSG = 'The database is responding slowly right now. This is usually a short Supabase hiccup. Try again in a minute.';
+
+  // Adds a time limit to a Supabase query so a slow server can't leave the page hanging.
+  function timed(query) {
+    return (typeof query.abortSignal === 'function' && window.AbortSignal && AbortSignal.timeout) ? query.abortSignal(AbortSignal.timeout(REQUEST_TIMEOUT)) : query;
+  }
 
   var sb = null;                  // Supabase client
   var me = null;                  // my profile row
@@ -62,6 +69,7 @@
   function pathBadge(p) { return '<span class="badge badge-' + esc(p) + '">' + esc(S.PATHS[p] || p) + '</span>'; }
   function niceError(err) {
     var m = (err && (err.message || err.error_description)) || String(err || 'Something went wrong');
+    if (/abort|timed? ?out|timeout|52[0-9]|upstream|gateway/i.test(m) || (err && err.name === 'AbortError')) return SLOW_MSG;
     if (/Failed to fetch|NetworkError/i.test(m)) return 'Can’t reach the server. Check your connection and try again.';
     return m;
   }
@@ -120,7 +128,14 @@
   }
 
   // Decides which screen to show: login → set password → two-step → app.
-  async function gate() {
+  // Only one runs at a time, so repeated clicks can't stack up requests.
+  var gating = null;
+  function gate() {
+    if (gating) return gating;
+    gating = gateOnce().catch(function (e) { showRetry(niceError(e)); }).then(function () { gating = null; });
+    return gating;
+  }
+  async function gateOnce() {
     var sess = (await sb.auth.getSession()).data.session;
     if (linkError) { var m = linkError; linkError = null; return showLogin('That link didn’t work (' + m + '). Ask an admin for a new invite, or reset your password.'); }
     if (!sess) return showLogin();
@@ -133,11 +148,14 @@
       return verified.length ? showMfaChallenge(verified[0]) : showMfaEnroll();
     }
 
-    var prof = await sb.from('profiles').select('*').eq('id', sess.user.id).maybeSingle();
-    if (prof.error || !prof.data) return showBlocked('We couldn’t load your profile. Try signing in again.');
+    setTop(false);
+    render(card('Signing you in…', '<div class="ad-loading">Loading your dashboard…</div>'));
+    var prof = await timed(sb.from('profiles').select('*').eq('id', sess.user.id)).maybeSingle();
+    if (prof.error) return showRetry(niceError(prof.error));
+    if (!prof.data) return showBlocked('We couldn’t find your profile. Ask an admin to check your account.');
     if (!prof.data.active) return showBlocked('Your account is turned off. Ask an admin to turn it back on.');
     me = prof.data;
-    await loadTeam();
+    try { await loadTeam(); } catch (e) { me = null; return showRetry(niceError(e)); }
     setTop(true);
     if (!location.hash || location.hash === '#/' || location.hash.indexOf('access_token') !== -1) history.replaceState(null, '', '#/home');
     route();
@@ -403,10 +421,23 @@
       var btn = $('button[type=submit]', f);
       busy(btn, true, 'Checking…');
       var r = await sb.auth.mfa.challengeAndVerify({ factorId: factorId, code: code });
-      busy(btn, false);
-      if (r.error) { f.code.select(); return formError(f, /invalid|expired/i.test(r.error.message) ? 'That code didn’t work. Codes change every 30 seconds, so try the newest one.' : niceError(r.error)); }
-      gate();
+      if (r.error) {
+        busy(btn, false);
+        f.code.select();
+        return formError(f, /invalid|expired/i.test(r.error.message) ? 'That code didn’t work. Codes change every 30 seconds, so try the newest one.' : niceError(r.error));
+      }
+      gate();   // the form is replaced by a "Signing you in…" screen, so it can't be submitted twice
     });
+  }
+
+  // Something timed out or failed to load: explain, and offer to try again.
+  function showRetry(msg) {
+    setTop(false);
+    var main = render(card('Taking longer than usual', '<p>' + esc(msg) + '</p>' +
+      '<button class="btn btn-primary btn-wide" type="button" id="b-retry">Try again</button>' +
+      '<button class="ad-link-btn auth-alt" type="button" id="b-out">Sign out</button>'));
+    $('#b-retry', main).addEventListener('click', function () { render(card('Signing you in…', '<div class="ad-loading">Loading your dashboard…</div>')); gate(); });
+    $('#b-out', main).addEventListener('click', signOut);
   }
 
   function showBlocked(msg) {
@@ -417,14 +448,21 @@
 
   // ---------- data ----------
   async function loadTeam() {
-    var r = await sb.from('profiles').select('id,email,full_name,phone,role,active,alert_email,alert_sms,created_at').order('created_at');
+    var r = await timed(sb.from('profiles').select('id,email,full_name,phone,role,active,alert_email,alert_sms,created_at').order('created_at'));
+    if (r.error) throw r.error;
     team = r.data || [];
   }
 
-  async function loadLeads() {
-    var r = await sb.from('leads')
+  // Only one lead load at a time; extra calls share the one in progress.
+  var leadsLoading = null;
+  function loadLeads() {
+    if (!leadsLoading) leadsLoading = loadLeadsOnce().then(function () { leadsLoading = null; }, function (e) { leadsLoading = null; throw e; });
+    return leadsLoading;
+  }
+  async function loadLeadsOnce() {
+    var r = await timed(sb.from('leads')
       .select('id,created_at,updated_at,first_name,last_name,email,phone,state,age,coverage,coverage_label,coverage_type,path,status,source,assigned_to,last_contacted_at')
-      .order('created_at', { ascending: false }).limit(LEAD_LIMIT);
+      .order('created_at', { ascending: false }).limit(LEAD_LIMIT));
     if (r.error) throw r.error;
     var before = leads.length && leadsLoadedAt ? leads[0].created_at : null;
     leads = r.data || [];
@@ -446,6 +484,12 @@
     }, REFRESH_SECONDS * 1000);
   }
   function stopRefresh() { if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null; }
+
+  function showLoadError(e) {
+    var main = render('<div class="page"><div class="empty"><p><b>Couldn’t load this page.</b></p><p class="muted">' + esc(niceError(e)) + '</p>' +
+      '<p><button class="btn btn-primary" type="button" id="p-retry">Try again</button></p></div></div>');
+    $('#p-retry', main).addEventListener('click', route);
+  }
 
   // ---------- routing ----------
   function route() {
@@ -483,7 +527,7 @@
   // ---------- leads list (grouped by stage, like Monday) ----------
   async function showLeads() {
     render('<div class="ad-loading">Loading leads…</div>');
-    try { await loadLeads(); } catch (e) { return render('<div class="page"><p class="form-error">' + esc(niceError(e)) + '</p></div>'); }
+    try { await loadLeads(); } catch (e) { return showLoadError(e); }
     startRefresh();
     var main = render('<div class="page">' +
       '<div class="page-head"><div><h1>Leads</h1><p class="muted" id="lead-sum"></p></div>' +
@@ -741,7 +785,7 @@
   // ---------- archive ----------
   async function showArchive() {
     render('<div class="ad-loading">Loading archive…</div>');
-    try { await loadLeads(); } catch (e) { return render('<div class="page"><p class="form-error">' + esc(niceError(e)) + '</p></div>'); }
+    try { await loadLeads(); } catch (e) { return showLoadError(e); }
     startRefresh();
     var main = render('<div class="page">' +
       '<div class="page-head"><div><h1>Archive</h1><p class="muted" id="arch-sum"></p></div></div>' +
@@ -802,7 +846,7 @@
   // ---------- dashboard (home) ----------
   async function showHome() {
     render('<div class="ad-loading">Loading dashboard…</div>');
-    try { await loadLeads(); } catch (e) { return render('<div class="page"><p class="form-error">' + esc(niceError(e)) + '</p></div>'); }
+    try { await loadLeads(); } catch (e) { return showLoadError(e); }
     startRefresh();
     render('<div class="page" id="home"></div>');
     drawHome();
@@ -955,8 +999,9 @@
   async function showLead(id) {
     stopRefresh();
     render('<div class="ad-loading">Loading lead…</div>');
-    var r = await sb.from('leads').select('*').eq('id', id).maybeSingle();
-    if (r.error || !r.data) {
+    var r = await timed(sb.from('leads').select('*').eq('id', id)).maybeSingle();
+    if (r.error) return showLoadError(r.error);
+    if (!r.data) {
       return render('<div class="page"><a href="#/leads" class="back">← All leads</a><div class="empty"><p><b>Lead not found.</b></p><p class="muted">It may have been reassigned to someone else.</p></div></div>');
     }
     var l = r.data;

@@ -416,7 +416,7 @@
 
   function showSetPassword(kind) {
     setTop(false);
-    var main = render(card(kind === 'invite' ? 'Welcome to Lifestone' : 'Choose a new password', '' +
+    var main = render(card(kind === 'invite' ? 'Welcome to Lifestone' : 'Set your password', '' +
       '<form id="f-pass" novalidate>' +
       (kind === 'invite' ? '<label class="fld">Your name<input name="full_name" autocomplete="name" required></label>' : '') +
       '<label class="fld">New password<input name="password" type="password" autocomplete="new-password" minlength="10" required></label>' +

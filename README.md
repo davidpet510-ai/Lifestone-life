@@ -40,6 +40,13 @@ Our own lead dashboard at **lifestonelife.com/admin**. Agents sign in with a pas
 - **Agents** see only the leads assigned to them.
 - Every lead has status, notes, call/text/email buttons and a full history.
 - Files (PDFs, photos, Word, Excel, up to 25 MB) can be attached to a lead. They're stored in a private Supabase bucket; only people who can see the lead can open them, and downloads use links that expire after 60 seconds.
+- **Tasks & appointments** with due dates, a week calendar, a "My day" list on the dashboard, and email/text reminders when one comes due (the `task-reminders` function runs every 15 minutes and uses each person's alert settings).
+- **Call/text logging** with outcomes (no answer, left voicemail, talked, set appointment...) and a one-tap next follow-up. Contact attempts are counted.
+- **Text and email templates** with fill-ins like `{first_name}`. Texts open in the agent's own Messages app; emails open in their email app.
+- **Policies / pending business:** carrier, product, face amount, premium, status (submitted → underwriting → approved → issued → in force), underwriting requirements checklist, beneficiary and first-year commission. A lead's stage moves forward automatically to match its policy.
+- **Client details:** date of birth (with birthday and price-age reminders), city/ZIP, hot/warm/cold, tags, Do not contact, and duplicate warnings.
+- **Reports:** lead funnel, speed to lead, call outcomes, lead source, agent and carrier production.
+- Bulk move/assign from the list view, and CSV import/export for admins (Settings).
 
 The data lives in [Supabase](https://supabase.com). Access rules are enforced by the database ([supabase/schema.sql](supabase/schema.sql)), not just the page.
 Lead statuses are in [config/lead-statuses.js](config/lead-statuses.js).
@@ -47,7 +54,7 @@ Lead statuses are in [config/lead-statuses.js](config/lead-statuses.js).
 ### One-time setup
 
 1. **Create a Supabase project** (free tier is fine). Pick the US East region.
-2. **Run the database setup:** Supabase → SQL Editor → New query → paste all of `supabase/schema.sql` → Run. (Or run `supabase/parts/1` to `4` in order.)
+2. **Run the database setup:** Supabase → SQL Editor → New query → paste all of `supabase/schema.sql` → Run. (Or run `supabase/parts/1` to `5` in order.)
 3. **Auth settings** (Supabase → Authentication):
    - Sign In / Providers → Email: turn **off** "Allow new users to sign up" (only invited people get in).
    - URL Configuration: Site URL `https://lifestonelife.com/admin/`, and add `https://lifestonelife.com/admin/` to Redirect URLs.

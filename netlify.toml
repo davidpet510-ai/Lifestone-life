@@ -6,6 +6,10 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# Task reminders go out by email/text a few minutes before each task is due.
+[functions."task-reminders"]
+  schedule = "*/15 * * * *"
+
 # Keep server code, database setup and scripts from being served as web pages.
 [[redirects]]
   from = "/netlify/*"

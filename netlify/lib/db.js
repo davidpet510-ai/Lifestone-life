@@ -89,4 +89,16 @@ async function sendSetupLink(email, redirectTo) {
   return call('/auth/v1/recover' + q, { method: 'POST', headers: serviceHeaders(), body: JSON.stringify({ email }) });
 }
 
-module.exports = { insertLead, updateLead, getLead, addEvent, getProfile, activeAdmins, updateProfile, userFromToken, inviteUser, authUsers, sendSetupLink };
+// Open tasks due within the next 15 minutes (or up to a day overdue) that haven't been reminded yet.
+async function tasksToRemind() {
+  const soon = new Date(Date.now() + 15 * 60000).toISOString();
+  const dayAgo = new Date(Date.now() - 86400000).toISOString();
+  return rest('/tasks?select=id,lead_id,assigned_to,kind,title,due_at&done_at=is.null&removed_at=is.null&reminded_at=is.null' +
+    '&due_at=lte.' + encodeURIComponent(soon) + '&due_at=gte.' + encodeURIComponent(dayAgo) + '&order=due_at.asc&limit=200', 'GET');
+}
+async function markReminded(ids) {
+  if (!ids.length) return;
+  await rest('/tasks?id=in.(' + ids.map(encodeURIComponent).join(',') + ')', 'PATCH', { reminded_at: new Date().toISOString() }, 'return=minimal');
+}
+
+module.exports = { tasksToRemind, markReminded, insertLead, updateLead, getLead, addEvent, getProfile, activeAdmins, updateProfile, userFromToken, inviteUser, authUsers, sendSetupLink };

@@ -104,4 +104,22 @@ function application(recipients, lead, result) {
   return notify(recipients, 'Online application: ' + who + ' (' + label + ')', 'An online application came in. Carrier result: ' + result + '.', 'Lifestone: online application from ' + who + ' (' + label + ').', lead);
 }
 
-module.exports = { newLead, assigned, wantsAgent, application, toE164 };
+// Reminder that a task is due. No lead details beyond the first name and last initial.
+async function taskReminder(agent, task, lead) {
+  if (!agent || !agent.active) return;
+  const when = new Date(task.due_at).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: '2-digit' }) + ' ET';
+  const who = lead ? ' (' + lead.first_name + ' ' + String(lead.last_name || '').slice(0, 1) + '.)' : '';
+  const link = lead ? leadLink(lead) : siteUrl() + '/admin/#/tasks';
+  const line = 'Reminder: ' + task.title + who + ', due ' + when + '.';
+  const jobs = [];
+  if (agent.alert_email && agent.email) {
+    jobs.push(sendEmail(agent.email, 'Reminder: ' + task.title + who, line + '\n\nOpen: ' + link,
+      '<div style="font-family:Arial,sans-serif;font-size:15px;color:#1E2A24"><p style="margin:0 0 18px">' + esc(line) + '</p>' +
+      '<p style="margin:0"><a href="' + esc(link) + '" style="background:#1F3D2E;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:bold">Open in Lifestone dashboard</a></p></div>'));
+  }
+  if (agent.alert_sms && agent.phone) jobs.push(sendSms(agent.phone, 'Lifestone ' + line + ' ' + link));
+  const results = await Promise.allSettled(jobs);
+  results.filter((x) => x.status === 'rejected').forEach((x) => console.error('reminder failed:', x.reason && x.reason.message));
+}
+
+module.exports = { taskReminder, newLead, assigned, wantsAgent, application, toE164 };

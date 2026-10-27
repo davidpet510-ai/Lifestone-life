@@ -24,13 +24,16 @@
     <nav class="ad-nav" aria-label="Main">
       <a href="#/home" data-nav="home">Dashboard</a>
       <a href="#/leads" data-nav="leads">Leads</a>
+      <a href="#/tasks" data-nav="tasks">Tasks <i class="nav-badge" id="nav-tasks" hidden></i></a>
+      <a href="#/policies" data-nav="policies">Policies</a>
+      <a href="#/reports" data-nav="reports">Reports</a>
       <a href="#/archive" data-nav="archive">Archive</a>
       <a href="#/team" data-nav="team" data-admin hidden>Team</a>
       <a href="#/settings" data-nav="settings">Settings</a>
     </nav>
     <div class="gs" id="gs">
       <label class="sr" for="gs-input">Search everything</label>
-      <input type="search" id="gs-input" placeholder="Search names, phones, files, notes…" autocomplete="off"
+      <input type="search" id="gs-input" placeholder="Search leads, policies, tasks, notes…" autocomplete="off"
              role="combobox" aria-expanded="false" aria-controls="gs-results" aria-autocomplete="list">
       <kbd class="gs-key" aria-hidden="true">/</kbd>
       <div class="gs-results" id="gs-results" role="listbox" hidden></div>

@@ -344,3 +344,98 @@ dd{color:var(--tx)}
 @media (prefers-reduced-motion:reduce){
   .ops-status i,.ops-strip .ops-dot,.boot li{animation:none}
 }
+
+/* ======================================================================
+   Contrast pass: the background stays dark; everything on it is lifted.
+   Brighter text, lighter cards with visible edges, bolder figures and
+   stronger status colors, so content reads at a glance.
+   ====================================================================== */
+:root{
+  --tx:#F2F7F4;--tx2:#D3DED8;--tx3:#9DB0A6;
+  --bg1:#111B17;--bg2:#15211C;--bg3:#1B2A23;
+  --edge:#263830;--edge2:#30463B;--edge3:#3E5A4C;
+  --brass:#E8C477;--brass2:#C9A45C;
+  --sig:#45E6A0;--amb:#FFC24D;--red:#FF6464;--blu:#6BB6FF;--vio:#B59BFF;
+  --deep:#FFFFFF;
+}
+body{color:var(--tx)}
+/* cards and panels: lifted off the background */
+.panel,.tile,.table-wrap,.lead-controls,.tgroup,.wday,.empty,.grp-empty,.is-shut .grp-head{
+  background-color:rgba(17,27,23,.96);border-color:var(--edge2);box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 24px rgba(0,0,0,.35)}
+.col{background:rgba(14,22,19,.9);border-color:var(--edge2)}
+.card,.pol{background:#16231D;border-color:var(--edge2)}
+.card:hover,.pol:hover{border-color:var(--brass2)}
+.modal,.gs-results{background:#121D18}
+
+/* headings and titles */
+.page-head h1,.lead-head h1,.modal h2,.auth h1{color:#FFFFFF;font-weight:700}
+.panel h2,.tgroup h2,.col-head h2,.wday h3{color:#E6EEE9;font-weight:600}
+.ops-k{color:var(--brass);font-weight:600}
+.muted,.hint,.tile-sub,.tile-label,dt,.tl-meta,.fl-main span,.card-foot,.card-next,.tk-main small,td small,.pol-meta,.file-main small,.tpl-list small,.consent-text,.gs-sub{color:var(--tx3)}
+.tile-label,th{color:#B3C4BA}
+
+/* names, values and key figures */
+.lead-name,.card-name,.fl-main b,.tk-main b,.pol-top b,.file-name,.gs-main,dd,.tl-lead a{color:#FFFFFF;font-weight:700}
+.tile-value{color:#FFFFFF;font-weight:600;font-size:30px}
+.tile-gold .tile-value{color:var(--amb);text-shadow:0 0 16px rgba(255,194,77,.35)}
+.tile-good .tile-value{color:var(--sig);text-shadow:0 0 16px rgba(69,230,160,.35)}
+.tile-alert .tile-value{color:var(--red);text-shadow:0 0 16px rgba(255,100,100,.5)}
+.tile-gold{border-top-color:var(--amb)}.tile-good{border-top-color:var(--sig)}
+.tile-alert{border-top-color:var(--red);box-shadow:0 0 0 1px rgba(255,100,100,.45),0 0 28px rgba(255,100,100,.2)}
+.card-meta,.tl-text,td{color:var(--tx)}
+.hb-n,.fn-n,.kv-n,.pol-nums,.grp-sum,.col-sum{color:#FFFFFF}
+.cu-what{color:var(--brass)}
+
+/* status chips: solid enough to spot instantly */
+.chip-inbox{background:rgba(255,194,77,.2);color:#FFD27A;box-shadow:inset 0 0 0 1px rgba(255,194,77,.55)}
+.chip-working{background:rgba(107,182,255,.18);color:#9CCDFF;box-shadow:inset 0 0 0 1px rgba(107,182,255,.5)}
+.chip-won{background:rgba(69,230,160,.18);color:#7AF0BD;box-shadow:inset 0 0 0 1px rgba(69,230,160,.5)}
+.chip-closed{background:rgba(255,255,255,.08);color:var(--tx2);box-shadow:inset 0 0 0 1px var(--edge3)}
+.temp-hot{background:rgba(255,100,100,.22);color:#FFA3A3;box-shadow:inset 0 0 0 1px rgba(255,100,100,.7),0 0 12px rgba(255,100,100,.35)}
+.temp-warm{background:rgba(255,194,77,.2);color:#FFD27A;box-shadow:inset 0 0 0 1px rgba(255,194,77,.55)}
+.temp-cold{background:rgba(107,182,255,.18);color:#9CCDFF;box-shadow:inset 0 0 0 1px rgba(107,182,255,.5)}
+.tag{background:var(--bg3);color:var(--tx);box-shadow:inset 0 0 0 1px var(--edge3)}
+.tk-kind{background:var(--bg3);color:var(--tx)}
+.tk-call{background:rgba(107,182,255,.2);color:#9CCDFF}
+.tk-text{background:rgba(69,230,160,.18);color:#7AF0BD}
+.tk-email{background:rgba(181,155,255,.2);color:#CDBBFF}
+.tk-appointment{background:rgba(255,194,77,.2);color:#FFD27A}
+.warn{color:#FFD27A}
+.next{color:#7AF0BD}
+.over,.next.over{color:#FF8A8A}
+.task.is-over{background:linear-gradient(90deg,rgba(255,100,100,.14),transparent 70%);box-shadow:inset 3px 0 0 var(--red)}
+.task.is-over .tk-main b{color:#FFC2C2}
+.pol-req{background:rgba(255,194,77,.15);color:#FFD27A}
+.pol-req.ok{background:rgba(69,230,160,.14);color:#7AF0BD}
+.note-body{background:rgba(232,196,119,.1);color:var(--tx)}
+.dnc-note{background:rgba(255,100,100,.16);color:#FFC9C9}
+.dup-note{background:rgba(255,194,77,.13);color:#FFE2A6}
+.cmp-ask{background:rgba(255,194,77,.16);color:#FFD27A}
+
+/* controls: readable inputs and clearly clickable buttons */
+.fld,.check,.fu{color:var(--tx2)}
+.fld input,.fld select,.fld textarea,.filters input,.filters select,table select,.note-form textarea,.req-add input,.fu select,.bulk select,.card-move select{
+  background:#0C1411;color:#FFFFFF;border-color:var(--edge3)}
+.fld input::placeholder,textarea::placeholder,.filters input::placeholder,.gs input::placeholder{color:#7F948A}
+.btn-ghost{color:#FFFFFF;box-shadow:inset 0 0 0 1px var(--edge3)}
+.btn-ghost:hover{box-shadow:inset 0 0 0 1px var(--brass)}
+.btn-primary{background:var(--brass);color:#120E05;box-shadow:0 0 0 1px rgba(232,196,119,.5),0 0 22px rgba(232,196,119,.25)}
+.seg button{color:var(--tx2)}
+.tabs button{color:var(--tx2);background:var(--bg1);box-shadow:inset 0 0 0 1px var(--edge2)}
+.chip-btn,.kind-pick span,.outcomes span{color:var(--tx);box-shadow:inset 0 0 0 1px var(--edge3)}
+.ad-nav a{color:#C3D1C9}
+.ad-nav a:hover{color:#FFFFFF}
+.ad-top .ad-link-btn{color:var(--tx)}
+td{border-bottom-color:#1C2B24}
+table.leads tbody tr:hover,table.leads tbody tr:focus{background:#1A2822}
+
+/* charts */
+.bar{background:linear-gradient(180deg,#5CF0B0,rgba(69,230,160,.45))}
+.hb-track,.fn-bar{background:#22342B}
+.hb-fill{background:linear-gradient(90deg,rgba(69,230,160,.65),#5CF0B0)}
+.hbars a,.hbars .hb-row{color:var(--tx)}
+
+@media (max-width:760px){
+  tbody tr{background:#111B17;border-color:var(--edge2)}
+  td::before{color:#B3C4BA}
+}

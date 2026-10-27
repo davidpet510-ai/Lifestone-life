@@ -7,9 +7,8 @@ Static site hosted on Netlify. No build step. Lead handling runs in Netlify Func
 | Page | File |
 |---|---|
 | Homepage + quote quiz | [index.html](index.html) |
-| Online application (simple cases) | [apply.html](apply.html) |
 | Agent callback | [agent-callback.html](agent-callback.html) |
-| Thank you (`?path=digital`, `?path=agent`, `?path=review`) | [thank-you.html](thank-you.html) |
+| Thank you (`?path=agent`, `?path=review`) | [thank-you.html](thank-you.html) |
 | Free Policy Review | [policy-review.html](policy-review.html) |
 | Privacy / Terms (pending compliance review) | [privacy.html](privacy.html), [terms.html](terms.html) |
 | Team CRM dashboard (login required) | [admin/](admin/) |
@@ -18,19 +17,15 @@ Static site hosted on Netlify. No build step. Lead handling runs in Netlify Func
 
 ## How a quote flows
 
+Every lead is handled by a licensed agent. There is no online application.
+
 1. The quiz (hero card or `#quote` form) saves the lead **first**, through `/.netlify/functions/lead`, into the Lifestone CRM.
-2. The routing rules decide the path:
-   - **Digital** → `apply.html` → `/.netlify/functions/imo-submit` → `thank-you.html?path=digital`
-   - **Agent** → `agent-callback.html` → `thank-you.html?path=agent`
-3. If someone leaves `apply.html` without submitting, the lead is marked **Abandoned – follow up**.
-4. If the function can't be reached, the browser keeps the lead and retries on the next page load.
-5. Admins get an email and/or text for every new lead.
+2. The visitor goes to `agent-callback.html` to pick a good time to call, then `thank-you.html?path=agent`.
+3. If the function can't be reached, the browser keeps the lead and retries on the next page load.
+4. Admins get an email and/or text for every new lead.
 
-SSN, bank and card details are never collected on this site. Health answers are only used to pick the path and are never stored.
-
-## Change the routing rules
-
-Everything is in [config/routing-rules.js](config/routing-rules.js): age range, coverage limits, which coverage types can apply online, and more. The limits there are placeholders until they are confirmed with the carrier.
+SSN, bank and card details are never collected on this site, and the quiz asks no health questions.
+Old links to `/apply.html` redirect to the callback page.
 
 ## Lifestone CRM (`/admin`)
 
@@ -88,7 +83,3 @@ Mark `SUPABASE_SERVICE_ROLE_KEY`, `LEAD_SIGNING_SECRET`, `RESEND_API_KEY` and `T
 - **Someone lost their phone (2-step codes):** Supabase → Authentication → Users → their account → remove the MFA factor. They set it up again at next sign-in.
 - **Someone leaves:** Team page → Account **Off** → Save. Their open leads go back to Unassigned.
 - **Backups:** the free tier keeps none you can restore yourself. Supabase Pro (about $25/month) adds daily backups. Recommended once real leads are coming in.
-
-## Carrier integration
-
-[netlify/functions/imo-submit.js](netlify/functions/imo-submit.js) is a placeholder. It returns `pending_manual` today and has TODOs for the approved, referred and declined responses.

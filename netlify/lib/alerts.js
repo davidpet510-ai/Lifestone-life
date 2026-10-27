@@ -5,7 +5,7 @@
  *   Email (Resend):  RESEND_API_KEY, ALERT_FROM_EMAIL  e.g. "Lifestone Leads <leads@lifestonelife.com>"
  *   Text (Twilio):   TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER  e.g. +19545550000
  */
-const { siteUrl, digits, Statuses } = require('./common.js');
+const { siteUrl, digits } = require('./common.js');
 
 const money = (n) => (n ? '$' + Number(n).toLocaleString('en-US') : '');
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -50,8 +50,6 @@ function summaryLines(lead) {
     ['State', lead.state],
     ['Age', lead.age],
     ['Coverage', [money(lead.coverage) || lead.coverage_label, lead.coverage_type].filter(Boolean).join(' · ')],
-    ['Path', Statuses.PATHS[lead.path] || lead.path],
-    ['Why an agent', lead.reason],
     ['Best time', lead.best_time],
     ['Source', lead.source]
   ].filter(([, v]) => v !== '' && v != null);
@@ -83,25 +81,12 @@ async function notify(recipients, subject, intro, smsText, lead) {
 
 function newLead(recipients, lead) {
   const who = lead.first_name + ' ' + String(lead.last_name || '').slice(0, 1) + '.';
-  const kind = lead.status === 'abandoned' ? 'Abandoned application' : 'New lead';
-  const path = Statuses.PATHS[lead.path] || lead.path;
-  return notify(recipients, kind + ': ' + who + ' (' + path + ')', kind + ' from the website.', 'Lifestone: ' + kind.toLowerCase() + ', ' + who + ' (' + path + ').', lead);
+  return notify(recipients, 'New lead: ' + who, 'New lead from the website. Please call them soon.', 'Lifestone: new lead, ' + who + '.', lead);
 }
 
 function assigned(agent, lead) {
   const who = lead.first_name + ' ' + String(lead.last_name || '').slice(0, 1) + '.';
   return notify([agent], 'Lead assigned to you: ' + who, 'This lead was assigned to you.', 'Lifestone: lead assigned to you, ' + who + '.', lead);
-}
-
-function wantsAgent(recipients, lead) {
-  const who = lead.first_name + ' ' + String(lead.last_name || '').slice(0, 1) + '.';
-  return notify(recipients, 'Wants to talk to an agent: ' + who, 'This person left the online application and asked to talk to an agent.', 'Lifestone: ' + who + ' asked to talk to an agent.', lead);
-}
-
-function application(recipients, lead, result) {
-  const who = lead.first_name + ' ' + String(lead.last_name || '').slice(0, 1) + '.';
-  const label = Statuses.label(lead.status);
-  return notify(recipients, 'Online application: ' + who + ' (' + label + ')', 'An online application came in. Carrier result: ' + result + '.', 'Lifestone: online application from ' + who + ' (' + label + ').', lead);
 }
 
 // Reminder that a task is due. No lead details beyond the first name and last initial.
@@ -122,4 +107,4 @@ async function taskReminder(agent, task, lead) {
   results.filter((x) => x.status === 'rejected').forEach((x) => console.error('reminder failed:', x.reason && x.reason.message));
 }
 
-module.exports = { taskReminder, newLead, assigned, wantsAgent, application, toE164 };
+module.exports = { taskReminder, newLead, assigned, toE164 };

@@ -1,10 +1,10 @@
 /*
  * Lifestone Life quote flow (browser side).
  * - Runs any quiz form marked with data-lq-steps (homepage hero card and the quote section)
- * - Validates each step, decides digital vs. agent with config/routing-rules.js
+ * - Validates each step, then sends everyone to the "an agent will call you" page
  * - Saves every lead through the Netlify "lead" function before moving on
  * - Remembers UTM parameters and retries leads that failed to send
- * Needs config/routing-rules.js loaded first.
+ * Needs config/age.js loaded first.
  */
 (function () {
   var LEAD_URL = '/.netlify/functions/lead';
@@ -71,7 +71,7 @@
   // ---------- quiz ----------
   function initQuiz(form, opts) {
     opts = opts || {};
-    var R = window.LifestoneRouting;
+    var Age = window.LifestoneAge;
     var steps = [].slice.call(form.querySelectorAll('[data-lq-step]'));
     var current = 0, sending = false;
 
@@ -118,7 +118,7 @@
         else if (v && el.type === 'email' && !validEmail(v)) msg = 'Please enter a valid email address.';
         else if (v && el.name === 'phone' && !validPhone(v)) msg = 'Please enter a 10-digit phone number.';
         else if (v && el.name === 'dob') {
-          var age = R.ageFromDob(v);
+          var age = Age.ageFromDob(v);
           if (age == null || age < 0 || age > 110) msg = 'Please enter a valid date of birth.';
           else if (age < 18) msg = 'You must be at least 18 to get a quote.';
         }
@@ -169,7 +169,7 @@
       for (var i = 0; i < steps.length; i++) { clearError(steps[i]); if (problem(steps[i])) { show(i); problem(steps[i], true); return; } }
       var a = answers();
       var btn0 = form.querySelector('[type="submit"]'), label0 = btn0 ? btn0.innerHTML : '';
-      // Pages like apply.html handle their own submit; return false from onSubmit to re-enable the form.
+      // Pages like agent-callback.html handle their own submit; return false from onSubmit to re-enable the form.
       if (opts.onSubmit) {
         sending = true; if (btn0) { btn0.disabled = true; btn0.textContent = 'Sending…'; }
         Promise.resolve(opts.onSubmit(a)).catch(function () { return false; }).then(function (ok) {
@@ -181,23 +181,21 @@
         firstName: a.first_name, lastName: a.last_name, email: a.email, phone: a.phone,
         state: a.state, dob: a.dob, coverage: Number(a.coverage) || null, coverageLabel: a.coverage_label,
         type: a.type, typeLabel: a.type_label, goal: a.goal, goalLabel: a.goal_label,
-        health: a.health, replacing: a.replacing, interest: a.interest || ''
+        replacing: a.replacing, interest: a.interest || ''
       };
-      var decision = R.decide({ dob: lead.dob, coverage: lead.coverage, type: lead.type, health: lead.health, replacing: lead.replacing, state: lead.state });
       var consent = consentRecord();
       var btn = form.querySelector('[type="submit"]'), label = btn ? btn.innerHTML : '';
       sending = true; if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
 
       sendLead({ action: 'create', source: form.getAttribute('data-source') || 'homepage', lead: lead, consent: consent, hp: (form.querySelector('[data-hp]') || {}).value || '' })
         .then(function (res) {
-          var path = (res && res.path) || decision.path;
           write('sessionStorage', 'lq_lead', {
-            itemId: res && res.itemId, token: res && res.token, path: path, source: form.getAttribute('data-source'),
+            itemId: res && res.itemId, token: res && res.token, source: form.getAttribute('data-source'),
             firstName: lead.firstName, lastName: lead.lastName, email: lead.email, phone: lead.phone, state: lead.state,
             dob: lead.dob, coverage: lead.coverage, coverageLabel: lead.coverageLabel, type: lead.type, typeLabel: lead.typeLabel, consent: consent
           });
           drop('sessionStorage', 'lq_partial');
-          location.href = path === 'digital' ? 'apply.html' : 'agent-callback.html';
+          location.href = 'agent-callback.html';
         })
         .catch(function () { sending = false; if (btn) { btn.disabled = false; btn.innerHTML = label; } });
     });

@@ -1,6 +1,6 @@
 // Shared helpers for the Netlify functions: input cleaning, responses, and signed lead tokens.
 const crypto = require('crypto');
-const Routing = require('../../config/routing-rules.js');
+const Age = require('../../config/age.js');
 const Statuses = require('../../config/lead-statuses.js');
 
 function env(name) {
@@ -57,6 +57,6 @@ function parseBody(event) {
 function siteUrl() { return (process.env.SITE_URL || process.env.URL || '').replace(/\/$/, ''); }
 
 module.exports = {
-  Routing, Statuses, env, sign, verify, UUID, json, parseBody, siteUrl,
+  Age, Statuses, env, sign, verify, UUID, json, parseBody, siteUrl,
   clean, digits, phone11, isEmail, US_STATES, consentFields
 };

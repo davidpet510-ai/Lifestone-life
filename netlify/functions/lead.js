@@ -3,12 +3,12 @@
  * Saves every lead to the Lifestone CRM (Supabase) and alerts the admins.
  *
  *   { action: 'create', source, lead: {...}, consent: {agreed, at, version, text}, utm, page, hp, talkToAgent, status, bestTime, review }
- *     → creates a lead, returns { ok, itemId, token, path }
- *   { action: 'update', itemId, token, status, bestTime, path }
+ *     → creates a lead, returns { ok, itemId, token }
+ *   { action: 'update', itemId, token, bestTime }
  *     → updates that lead (the token proves the browser created it)
  *
  * `hp` is a hidden honeypot field: real people never fill it, so anything in it is treated as spam.
- * The health screen answer is only used to choose the path. It is never stored or logged.
+ * Every lead goes to a licensed agent. No health answers are collected.
  */
 const C = require('../lib/common.js');
 const db = require('../lib/db.js');
@@ -22,7 +22,7 @@ exports.handler = async (event) => {
   if (error) return error;
 
   // Spam: answer like a success so bots learn nothing, but save nothing.
-  if (body.hp) return C.json(200, { ok: true, path: 'agent' });
+  if (body.hp) return C.json(200, { ok: true });
 
   try {
     if (body.action === 'update') return await update(body);
@@ -52,15 +52,9 @@ async function create(body) {
   if (!consent) problems.push('consent');
   if (problems.length) return C.json(400, { ok: false, error: 'Missing or invalid: ' + problems.join(', ') });
 
-  const age = l.dob ? C.Routing.ageFromDob(C.clean(l.dob, 10)) : null;
+  const age = l.dob ? C.Age.ageFromDob(C.clean(l.dob, 10)) : null;
   const coverage = Math.min(Math.max(Number(l.coverage) || 0, 0), 100000000) || null;
   const type = TYPES[l.type] ? l.type : '';
-  const forcedAgent = body.talkToAgent === true || AGENT_SOURCES.includes(source);
-  const decision = C.Routing.decide({
-    age, coverage, type, state, talkToAgent: forcedAgent,
-    health: l.health === 'no' ? 'no' : l.health === 'yes' ? 'yes' : '',
-    replacing: l.replacing === 'no' ? 'no' : l.replacing === 'yes' ? 'yes' : ''
-  });
 
   const utm = {};
   for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']) {
@@ -88,19 +82,18 @@ async function create(body) {
     goal: C.clean(l.goalLabel, 100),
     interest: C.clean(l.interest, 60),
     replacing: l.replacing === 'yes' ? 'Yes' : l.replacing === 'no' ? 'No' : '',
-    path: decision.path,
-    status: body.status === 'abandoned' ? 'abandoned' : 'new',
-    reason: decision.path === 'agent' ? decision.reasons.join('; ') : '',
+    path: 'agent',
+    status: 'new',
     source,
     best_time: C.clean(body.bestTime, 60),
     utm,
     details
   }, consent));
 
-  await db.addEvent(lead.id, 'created', null, { source, path: decision.path });
-  console.log('lead created', { id: lead.id, source, path: decision.path });
+  await db.addEvent(lead.id, 'created', null, { source });
+  console.log('lead created', { id: lead.id, source });
   await alerts.newLead(await db.activeAdmins(), lead);
-  return C.json(200, { ok: true, itemId: lead.id, token: C.sign(lead.id), path: decision.path });
+  return C.json(200, { ok: true, itemId: lead.id, token: C.sign(lead.id) });
 }
 
 async function update(body) {
@@ -108,32 +101,11 @@ async function update(body) {
   const before = await db.getLead(body.itemId);
   if (!before) return C.json(404, { ok: false, error: 'Not found' });
 
-  const fields = {};
-  // Only move a lead to "abandoned" while nobody has worked it yet.
-  if (body.status === 'abandoned' && before.status === 'new') fields.status = 'abandoned';
-  if (body.bestTime) fields.best_time = C.clean(body.bestTime, 60);
-  if (body.path === 'agent' && before.path !== 'agent') {
-    fields.path = 'agent';
-    fields.reason = 'Asked to talk to an agent';
-    if (before.status === 'abandoned') fields.status = 'new';
-  }
-  if (!Object.keys(fields).length) return C.json(200, { ok: true });
+  const bestTime = C.clean(body.bestTime, 60);
+  if (!bestTime) return C.json(200, { ok: true });
 
-  const lead = await db.updateLead(body.itemId, fields);
-  if (fields.status) await db.addEvent(lead.id, 'status', null, { from: before.status, to: fields.status, by: 'website' });
-  if (fields.path) await db.addEvent(lead.id, 'path', 'Asked to talk to an agent', { from: before.path, to: 'agent' });
-  if (fields.best_time) await db.addEvent(lead.id, 'update', 'Best time to call: ' + fields.best_time, {});
-  console.log('lead updated', { id: lead.id, keys: Object.keys(fields) });
-
-  if (fields.status === 'abandoned' || fields.path) {
-    const recipients = await db.activeAdmins();
-    if (lead.assigned_to) recipients.push(await db.getProfile(lead.assigned_to));
-    await (fields.path ? alerts.wantsAgent : alerts.newLead)(dedupe(recipients), lead);
-  }
+  const lead = await db.updateLead(body.itemId, { best_time: bestTime });
+  await db.addEvent(lead.id, 'update', 'Best time to call: ' + bestTime, {});
+  console.log('lead updated', { id: lead.id, keys: ['best_time'] });
   return C.json(200, { ok: true });
-}
-
-function dedupe(list) {
-  const seen = new Set();
-  return list.filter((p) => p && !seen.has(p.id) && seen.add(p.id));
 }

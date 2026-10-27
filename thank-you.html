@@ -60,11 +60,6 @@
   <div class="qf-wrap">
     <div class="qf-card pg-msg">
       <div class="qf-check" aria-hidden="true"><svg width="44" height="44" viewBox="0 0 24 24"><path d="M6 12.5l4 4L18 8" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div data-ty="digital" hidden>
-        <h2>Application received!</h2>
-        <p>Watch your email. Your carrier will send you a secure link to verify your identity, set up payment, and e-sign.</p>
-        <p>If anything else is needed, a licensed Lifestone agent will reach out.</p>
-      </div>
       <div data-ty="agent" hidden>
         <h2>You’re all set!</h2>
         <p>A licensed Lifestone agent will call you shortly, Monday–Friday, 9–5 EST.</p>
@@ -117,14 +112,14 @@
 </footer>
 
 <script src="js/site.js"></script>
-<script src="config/routing-rules.js"></script>
+<script src="config/age.js"></script>
 <script src="js/quote-flow.js"></script>
 <script>
 (function(){
   var path = new URLSearchParams(location.search).get('path');
-  if (['digital', 'agent', 'review'].indexOf(path) === -1) path = 'agent';
+  if (['agent', 'review'].indexOf(path) === -1) path = 'agent';
   document.querySelector('[data-ty="' + path + '"]').hidden = false;
-  // Conversion tracking: add ad pixels here and use `path` (digital / agent / review) as the conversion label.
+  // Conversion tracking: add ad pixels here and use `path` (agent / review) as the conversion label.
 })();
 </script>
 </body>

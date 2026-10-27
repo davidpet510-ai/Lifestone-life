@@ -145,23 +145,18 @@
 </footer>
 
 <script src="js/site.js"></script>
-<script src="config/routing-rules.js"></script>
+<script src="config/age.js"></script>
 <script src="js/quote-flow.js"></script>
 <script>
 (function(){
   var lead = LifestoneQuote.getLead();
   var partial = LifestoneQuote.getPartial() || {};
-  var fromApply = new URLSearchParams(location.search).get('from') === 'apply';
 
   if (lead && lead.phone) {
     // We already have their details: confirm, and optionally ask for a time.
     document.getElementById('cb-confirm').hidden = false;
     var d = String(lead.phone).replace(/\D/g, '').slice(-10);
     document.getElementById('cb-phone-show').textContent = d.length === 10 ? '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6) : lead.phone;
-    if (fromApply && lead.itemId && lead.path !== 'agent') {
-      LifestoneQuote.sendLead({ action: 'update', itemId: lead.itemId, token: lead.token, path: 'agent' });
-    }
-    lead.path = 'agent'; LifestoneQuote.setLead(lead);
     document.getElementById('cb-time-form').addEventListener('submit', function(e){
       e.preventDefault();
       var t = this.querySelector('[name="best_time"]:checked');
@@ -185,9 +180,9 @@
         state: partial.state, dob: partial.dob, coverage: Number(partial.coverage) || null, coverageLabel: partial.coverage_label,
         type: partial.type, typeLabel: partial.type_label, goal: partial.goal, goalLabel: partial.goal_label, replacing: partial.replacing
       };
-      return LifestoneQuote.sendLead({ action: 'create', source: 'agent-callback', talkToAgent: true, lead: info,
+      return LifestoneQuote.sendLead({ action: 'create', source: 'agent-callback', lead: info,
         bestTime: t ? t.value : '', consent: consent, hp: a.website || '' }).then(function(res){
-        LifestoneQuote.setLead({ itemId: res && res.itemId, token: res && res.token, path: 'agent', firstName: a.first_name,
+        LifestoneQuote.setLead({ itemId: res && res.itemId, token: res && res.token, firstName: a.first_name,
           lastName: a.last_name, email: a.email, phone: a.phone, consent: consent });
         location.href = 'thank-you.html?path=agent';
       });

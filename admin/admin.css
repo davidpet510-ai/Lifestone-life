@@ -106,13 +106,11 @@ table.leads tbody tr:hover,table.leads tbody tr:focus{background:#F6FAF7;outline
 .lead-name:hover{text-decoration:underline}
 table select{min-height:38px;padding:6px 10px;width:auto}
 
-.chip,.badge{display:inline-block;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;vertical-align:middle}
+.chip{display:inline-block;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;vertical-align:middle}
 .chip-inbox{background:#FCEFD6;color:#7A5A12}
 .chip-working{background:#E3EEF8;color:#24507A}
 .chip-won{background:#DDF0E3;color:#1F6A3B}
 .chip-closed{background:#ECEDEC;color:#5F6E66}
-.badge-digital{background:#0F2419;color:#F2D9A0}
-.badge-agent{background:#EAF1ED;color:#2F5A44;box-shadow:inset 0 0 0 1px #C9D6CE}
 
 .empty{background:#fff;border-radius:18px;padding:48px 20px;text-align:center;border:1px dashed #C9D6CE}
 .empty p{margin:4px 0}
@@ -197,8 +195,6 @@ dd{margin:0;font-weight:700;overflow-wrap:anywhere}
 
 /* stage colors (list groups and stage pills) */
 .st-new{--st:#D9A43B}
-.st-abandoned{--st:#E07B39}
-.st-referred{--st:#C9573B}
 .st-contacted{--st:#4A86C5}
 .st-quoted{--st:#7E63C2}
 .st-app_submitted{--st:#2E9A9A}
@@ -231,8 +227,8 @@ select.who{min-height:34px;padding:5px 8px;font-size:14px;max-width:180px}
 /* same column widths in every group so they line up like one sheet */
 @media (min-width:761px){
  .grp table.leads{table-layout:fixed}
- .grp th.c-name{width:20%}.grp th.c-stage{width:17%}.grp th.c-who{width:14%}.grp th.c-phone{width:13%}
- .grp th.c-cov{width:11%}.grp th.c-path{width:8%}.grp th.c-time{width:9%}
+ .grp th.c-name{width:24%}.grp th.c-stage{width:17%}.grp th.c-who{width:14%}.grp th.c-phone{width:13%}
+ .grp th.c-cov{width:15%}.grp th.c-time{width:9%}
  .grp td{overflow:hidden;text-overflow:ellipsis}
  .grp th.c-act{width:11%}
  .grp td:last-child{overflow:visible}

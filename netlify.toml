@@ -10,6 +10,19 @@
 [functions."task-reminders"]
   schedule = "*/15 * * * *"
 
+# The online application was retired: every quote now goes to a licensed agent.
+[[redirects]]
+  from = "/apply.html"
+  to = "/agent-callback.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/apply"
+  to = "/agent-callback.html"
+  status = 301
+  force = true
+
 # Keep server code, database setup and scripts from being served as web pages.
 [[redirects]]
   from = "/netlify/*"

@@ -97,8 +97,8 @@
     return p ? (p.full_name || p.email) : '';
   }
   function isAdmin() { return me && me.role === 'admin'; }
+  var SOURCE_NAMES = { 'homepage-hero': 'Homepage quiz', 'homepage-quote': 'Quote form', 'policy-review': 'Policy review', 'agent-callback': 'Callback request', import: 'Imported' };
   function statusChip(key) { return '<span class="chip chip-' + esc(S.group(key)) + '">' + esc(S.label(key)) + '</span>'; }
-  function pathBadge(p) { return '<span class="badge badge-' + esc(p) + '">' + esc(S.PATHS[p] || p) + '</span>'; }
   function niceError(err) {
     var m = (err && (err.message || err.error_description)) || String(err || 'Something went wrong');
     if (/abort|timed? ?out|timeout|52[0-9]|upstream|gateway/i.test(m) || (err && err.name === 'AbortError')) return SLOW_MSG;
@@ -633,7 +633,6 @@
       '<button class="btn btn-ghost" type="button" id="refresh">Refresh</button></div></div>' +
       '<div class="filters">' +
       '<input type="search" id="f-q" placeholder="Search name, phone or email" aria-label="Search leads">' +
-      '<select id="f-path" aria-label="Path"><option value="">Online + agent</option><option value="digital">Online only</option><option value="agent">Agent only</option></select>' +
       (isAdmin() ? '<select id="f-agent" aria-label="Assigned to"><option value="">Everyone</option><option value="none">Unassigned</option>' +
         team.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.full_name || p.email) + '</option>'; }).join('') + '</select>' : '') +
       '<select id="f-temp" aria-label="Temperature"><option value="">Hot, warm or cold</option><option value="hot">Hot</option><option value="warm">Warm</option><option value="cold">Cold</option></select>' +
@@ -644,10 +643,8 @@
       '<div id="lead-rows"></div><div class="bulk" id="bulk" role="region" aria-label="Change selected leads" hidden></div></div>');
 
     $('#f-q', main).value = view.q;
-    $('#f-path', main).value = view.path;
     if ($('#f-agent', main)) $('#f-agent', main).value = view.agent;
     $('#f-q', main).addEventListener('input', function (e) { view.q = e.target.value; drawLeadRows(); });
-    $('#f-path', main).addEventListener('change', function (e) { view.path = e.target.value; drawLeadRows(); });
     if ($('#f-agent', main)) $('#f-agent', main).addEventListener('change', function (e) { view.agent = e.target.value; drawLeadRows(); });
     [['#f-temp', 'temp'], ['#f-fu', 'fu'], ['#f-tag', 'tag']].forEach(function (x) {
       var el = $(x[0], main);
@@ -665,7 +662,6 @@
   function filtered() {
     var q = view.q.trim().toLowerCase(), qd = digits(q);
     return leads.filter(function (l) {
-      if (view.path && l.path !== view.path) return false;
       if (view.agent === 'none' && l.assigned_to) return false;
       if (view.agent && view.agent !== 'none' && l.assigned_to !== view.agent) return false;
       if (view.temp && l.temperature !== view.temp) return false;
@@ -756,7 +752,7 @@
       return;
     }
     var head = '<thead><tr><th class="c-name">Name</th><th class="c-stage">Stage</th>' + (isAdmin() ? '<th class="c-who">Assigned</th>' : '') +
-      '<th class="c-phone">Phone</th><th class="c-cov">Coverage</th><th class="c-path">Path</th><th class="c-time">Received</th><th class="c-time">Last contact</th></tr></thead>';
+      '<th class="c-phone">Phone</th><th class="c-cov">Coverage</th><th class="c-time">Received</th><th class="c-time">Last contact</th></tr></thead>';
     box.innerHTML = stagesShown().map(function (st) {
       var items = base.filter(function (l) { return l.status === st.key; });
       var total = items.reduce(function (sum, l) { return sum + (Number(l.coverage) || 0); }, 0);
@@ -776,7 +772,6 @@
             (isAdmin() ? '<td data-label="Assigned">' + assignSelect(l) + '</td>' : '') +
             '<td data-label="Phone">' + esc(fmtPhone(l.phone)) + '</td>' +
             '<td data-label="Coverage"><span>' + esc(money(l.coverage) || l.coverage_label || '—') + (l.coverage_type ? '<small>' + esc(l.coverage_type) + '</small>' : '') + '</span></td>' +
-            '<td data-label="Path">' + pathBadge(l.path) + '</td>' +
             '<td data-label="Received" title="' + esc(fmtDate(l.created_at)) + '">' + esc(ago(l.created_at)) + '</td>' +
             '<td data-label="Last contact">' + (l.last_contacted_at ? esc(ago(l.last_contacted_at)) : '<span class="warn">Never</span>') +
             '<small>' + (nextTaskLabel(l.id) || '<span class="muted">No follow-up</span>') + '</small></td>' +
@@ -881,7 +876,7 @@
       initials = personName(l.assigned_to).split(/[\s@]+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join('');
     }
     return '<article class="card" draggable="true" tabindex="0" data-id="' + esc(l.id) + '">' +
-      '<div class="card-top"><b class="card-name">' + esc(l.first_name + ' ' + l.last_name) + '</b><span class="card-badges">' + tempDot(l.temperature) + pathBadge(l.path) + '</span></div>' +
+      '<div class="card-top"><b class="card-name">' + esc(l.first_name + ' ' + l.last_name) + '</b><span class="card-badges">' + tempDot(l.temperature) + '</span></div>' +
       '<div class="card-meta">' + esc([money(l.coverage) || l.coverage_label, l.coverage_type].filter(Boolean).join(' · ') || 'Coverage not given') + '</div>' +
       '<div class="card-meta">' + esc(fmtPhone(l.phone)) + (l.state ? ' · ' + esc(l.state) : '') + '</div>' +
       (nextTaskLabel(l.id) ? '<div class="card-next">Next: ' + nextTaskLabel(l.id) + '</div>' : '') +
@@ -1060,9 +1055,8 @@
     var stageRows = OPEN.map(function (st) { return { label: st.label, n: leads.filter(function (l) { return l.status === st.key; }).length }; }).filter(function (r) { return r.n; });
     var srcCount = {};
     leads.forEach(function (l) { var k = l.source || 'unknown'; srcCount[k] = (srcCount[k] || 0) + 1; });
-    var NAMES = { 'homepage-hero': 'Homepage quiz', 'homepage-quote': 'Quote form', 'policy-review': 'Policy review', 'agent-callback': 'Callback request', apply: 'Online application' };
+    var NAMES = SOURCE_NAMES;
     var srcRows = Object.keys(srcCount).map(function (k) { return { label: NAMES[k] || k, n: srcCount[k] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 6);
-    var online = leads.filter(function (l) { return l.path === 'digital'; }).length;
 
     var follow = stale.concat(inbox.filter(function (l) { return stale.indexOf(l) === -1; }))
       .sort(function (a, b) { return t(a.created_at) - t(b.created_at); }).slice(0, 6);
@@ -1121,7 +1115,7 @@
       '<a class="btn btn-primary" href="#/leads">Open leads</a></div>' +
       '<div class="tiles tiles-4">' +
       tile('New this week', String(thisWeek), (diff === 0 ? 'Same as last week' : (diff > 0 ? '▲ ' + diff : '▼ ' + (-diff)) + ' vs last week'), '#/leads') +
-      tile('Needs action', String(inbox.length), 'New, abandoned or referred', '#/leads', inbox.length ? 'gold' : '') +
+      tile('Needs action', String(inbox.length), 'New, not worked yet', '#/leads', inbox.length ? 'gold' : '') +
       tile('Waiting 24h+', String(stale.length), stale.length ? 'Not contacted yet' : 'Everyone’s been contacted', '#/leads', stale.length ? 'alert' : '') +
       tile('My tasks today', String(mineDue.length), overdueN ? overdueN + ' overdue' : (mineDue.length ? 'None overdue' : 'Nothing due'), '#/tasks', overdueN ? 'alert' : '') +
       tile('Pending apps', String(pendingPols.length), money0(sumAnnual(pendingPols)) + ' annual premium', '#/policies', pendingPols.length ? 'gold' : '') +
@@ -1146,7 +1140,7 @@
       '<section class="panel"><h2>New leads, last 14 days</h2>' + chart + '</section>' +
       '<section class="panel"><h2>Pipeline by stage</h2>' + hbars(stageRows) + '</section>' +
       '<section class="panel"><h2>Where leads come from</h2>' + hbars(srcRows, leads.length) +
-      '<p class="hint">' + online + ' online · ' + (leads.length - online) + ' agent path</p></section>' +
+      '</section>' +
       workload +
       '<section class="panel activity"><h2>Recent activity</h2><ol class="timeline" id="activity"><li class="muted">Loading…</li></ol></section>' +
       '</div>';
@@ -1232,7 +1226,7 @@
     var dupes = leads.filter(function (x) {
       return x.id !== id && ((digits(l.phone).length >= 10 && digits(x.phone) === digits(l.phone)) || (l.email && x.email && x.email.toLowerCase() === l.email.toLowerCase()));
     });
-    var d = l.details || {}, u = l.utm || {}, a = l.application;
+    var d = l.details || {}, u = l.utm || {};
     var reload = function (opt) { return showLead(id, Object.assign({ quiet: true }, opt || {})); };
     var openStage = S.group(l.status) === 'inbox' || S.group(l.status) === 'working';
 
@@ -1248,7 +1242,7 @@
       '<a href="#/leads" class="back">← All leads</a>' +
       '<div class="lead-head">' +
       '<div><h1>' + esc(fullName(l)) + '</h1>' +
-      '<p class="muted">' + pathBadge(l.path) + ' ' + statusChip(l.status) + ' ' + tempDot(l.temperature) + ' <span>Received ' + esc(fmtDate(l.created_at)) + '</span></p>' +
+      '<p class="muted">' + statusChip(l.status) + ' ' + tempDot(l.temperature) + ' <span>Received ' + esc(fmtDate(l.created_at)) + '</span></p>' +
       ((l.tags || []).length ? '<p class="lead-tags">' + tagChips(l.tags) + '</p>' : '') + '</div>' +
       '<div class="lead-actions">' +
       (!dnc && tel ? '<a class="btn btn-primary" data-contact="call" href="tel:+1' + esc(tel) + '">Call</a>' +
@@ -1290,14 +1284,6 @@
         ['Coverage', money(l.coverage) || l.coverage_label], ['Type', l.coverage_type], ['Interested in', l.interest],
         ['Goal', l.goal], ['Replacing a policy', l.replacing]
       ]) + '</section>' +
-      '<section class="panel"><h2>Routing</h2>' + rows([
-        ['Path', S.PATHS[l.path] || l.path], ['Why it went to an agent', l.reason]
-      ]) + '<p class="hint">Health answers are only used to choose the path and are never stored.</p></section>' +
-      (a ? '<section class="panel"><h2>Online application</h2>' + rows([
-        ['Received', fmtDate(a.received_at)], ['Carrier result', a.carrier_result], ['Coverage start', a.coverage_start],
-        ['Beneficiary', [a.beneficiary, a.beneficiary_relationship ? '(' + a.beneficiary_relationship + ')' : ''].join(' ').trim()],
-        ['Address', [a.address, a.city, a.state, a.zip].filter(Boolean).join(', ')], ['Gender', a.gender]
-      ]) + '<p class="hint">' + esc(a.note || '') + '</p></section>' : '') +
       (d.review ? '<section class="panel"><h2>Policy review answers</h2>' + rows(Object.keys(d.review).map(function (k) { return [k.replace(/_/g, ' '), d.review[k]]; })) + '</section>' : '') +
       '<section class="panel"><h2>Consent</h2>' + rows([
         ['Agreed', l.consent_at ? fmtDate(l.consent_at) : 'Not recorded'], ['Version', l.consent_version]
@@ -1586,7 +1572,7 @@
     var who = e.actor ? personName(e.actor) || 'A team member' : 'Website';
     var m = e.meta || {}, text;
     switch (e.kind) {
-      case 'created': text = m.source === 'import' ? 'Imported from a spreadsheet.' : 'Lead came in from <b>' + esc(m.source || 'the website') + '</b> (' + esc(S.PATHS[m.path] || m.path || '') + ' path).'; break;
+      case 'created': text = m.source === 'import' ? 'Imported from a spreadsheet.' : 'Lead came in from <b>' + esc(SOURCE_NAMES[m.source] || m.source || 'the website') + '</b>.'; break;
       case 'status': text = 'Status changed from <b>' + esc(S.label(m.from)) + '</b> to <b>' + esc(S.label(m.to)) + '</b>' + (m.auto ? ' to match the policy' : '') + '.'; break;
       case 'assigned': text = m.to ? 'Assigned to <b>' + esc(m.name) + '</b>.' : 'Unassigned.'; break;
       case 'contact':
@@ -1611,7 +1597,6 @@
           (changed.length ? 'Updated ' + esc(changed.join(', ')) + '.' : '');
         break;
       case 'path': text = 'Switched to the agent path: ' + esc(e.body || '') + '.'; break;
-      case 'application': text = esc(e.body || 'Online application submitted.'); break;
       case 'note': text = '<span class="note-body">' + esc(e.body) + '</span>'; break;
       case 'file': text = (m.action === 'removed' ? 'Removed file ' : 'Added file ') + '<b>' + esc(e.body || '') + '</b>.'; break;
       default: text = esc(e.body || e.kind);
@@ -2474,7 +2459,7 @@
     drawReports();
   }
 
-  var RANK = { new: 0, abandoned: 0, referred: 0, contacted: 1, quoted: 2, app_submitted: 3, approved: 4, issued: 5 };
+  var RANK = { new: 0, contacted: 1, quoted: 2, app_submitted: 3, approved: 4, issued: 5 };
   function reached(l, step, polByLead) {
     var r = RANK[l.status], pols = polByLead[l.id] || [];
     var applied = pols.length > 0 || l.status === 'declined';
@@ -2529,7 +2514,7 @@
         rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return '<td data-label="' + esc(cols[i]) + '">' + c + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
     }
 
-    var NAMES = { 'homepage-hero': 'Homepage quiz', 'homepage-quote': 'Quote form', 'policy-review': 'Policy review', 'agent-callback': 'Callback request', apply: 'Online application', import: 'Imported' };
+    var NAMES = SOURCE_NAMES;
     var bySrc = {};
     L.forEach(function (l) { var k = l.source || 'unknown'; (bySrc[k] = bySrc[k] || []).push(l); });
     var srcRows = Object.keys(bySrc).sort(function (a, b) { return bySrc[b].length - bySrc[a].length; }).map(function (k) {
@@ -2603,11 +2588,11 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   }
   function exportLeads() {
-    var head = ['First name', 'Last name', 'Phone', 'Email', 'State', 'City', 'ZIP', 'Date of birth', 'Age', 'Coverage', 'Coverage type', 'Stage', 'Path', 'Source',
+    var head = ['First name', 'Last name', 'Phone', 'Email', 'State', 'City', 'ZIP', 'Date of birth', 'Age', 'Coverage', 'Coverage type', 'Stage', 'Source',
       'Assigned to', 'Temperature', 'Tags', 'Do not contact', 'Attempts', 'Came in', 'Last contact', 'Policies'];
     var rows = leads.map(function (l) {
       var pols = policies.filter(function (p) { return p.lead_id === l.id; }).map(function (p) { return p.carrier + ' (' + pStatus(p.status).label + ')'; }).join('; ');
-      return [l.first_name, l.last_name, fmtPhone(l.phone), l.email, l.state, l.city, l.zip, l.dob, l.age, l.coverage, l.coverage_type, S.label(l.status), S.PATHS[l.path] || l.path,
+      return [l.first_name, l.last_name, fmtPhone(l.phone), l.email, l.state, l.city, l.zip, l.dob, l.age, l.coverage, l.coverage_type, S.label(l.status),
         l.source, personName(l.assigned_to), TEMPS[l.temperature] || '', (l.tags || []).join(', '), l.do_not_contact ? 'Yes' : '', l.contact_attempts || 0,
         fmtDate(l.created_at), fmtDate(l.last_contacted_at), pols];
     });

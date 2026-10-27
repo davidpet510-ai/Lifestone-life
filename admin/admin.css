@@ -558,3 +558,97 @@ div.fld > span:first-child{display:block}
  .cmp-foot .btn{width:100%}
  .tiles-4{grid-template-columns:1fr 1fr}
 }
+
+/* ======================================================================
+   Professional finish
+   One clean sans-serif, compact spacing, small corners and hairline
+   borders instead of floating shadows. The serif is kept for the
+   Lifestone wordmark only.
+   ====================================================================== */
+:root{--ui:'Source Sans 3','Source Sans Pro',system-ui,-apple-system,'Segoe UI',sans-serif;--edge:#DDE2DE;--edge2:#E8ECE9;--r:6px;--r-lg:8px;--page:#F3F4F2}
+body{font-family:var(--ui);font-size:15px;background:var(--page);-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1,"lnum" 1}
+h1,h2,h3{font-family:var(--ui);font-weight:600;letter-spacing:-.01em;color:#16261D}
+.ad-brand b{font-family:var(--serif)}
+.page{padding:24px 24px 72px}
+.page-head{margin-bottom:16px}
+.page-head h1{font-size:26px}
+.lead-head h1{font-size:28px}
+.panel h2{font-size:16px;margin-bottom:12px}
+.muted,.hint{color:#5E6B64}
+
+/* top bar: flat, with an underline for the current page */
+.ad-top{box-shadow:none;border-bottom:1px solid rgba(255,255,255,.08)}
+.ad-top-in{padding:0 24px;min-height:58px;gap:24px}
+.ad-nav{gap:2px;align-self:stretch}
+.ad-nav a{display:flex;align-items:center;border-radius:0;padding:0 12px;font-weight:600;font-size:14.5px;color:#B9CBC1;box-shadow:inset 0 -3px 0 transparent}
+.ad-nav a:hover{background:none;color:#FFFFFF}
+.ad-nav a.on{background:none;color:#FFFFFF;box-shadow:inset 0 -3px 0 #CFAE6A}
+.ad-nav a.on .nav-badge{background:#C9573B}
+.gs input{border-radius:var(--r);min-height:36px;padding:7px 36px 7px 12px;font-size:14px}
+.gs-results{border-radius:var(--r-lg);box-shadow:0 12px 32px rgba(0,0,0,.18);border:1px solid var(--edge)}
+.gs-item{border-radius:4px}
+
+/* buttons and inputs */
+.btn{border-radius:var(--r);min-height:38px;padding:8px 16px;font-size:14.5px;font-weight:600;box-shadow:none}
+.btn-primary{background:#1F3D2E;box-shadow:none}
+.btn-primary:hover{background:#163024;transform:none}
+.btn-ghost{box-shadow:inset 0 0 0 1px #C9D2CC}
+.btn-ghost:hover{box-shadow:inset 0 0 0 1px #8FA398;background:#F7F9F8}
+.btn-sm{min-height:32px;padding:5px 12px;font-size:13.5px}
+.fld{font-weight:600;font-size:14px}
+.fld input,.fld select,.fld textarea,.filters input,.filters select,table select,.note-form textarea,.req-add input,.fu select,.bulk select{border-radius:var(--r);min-height:38px;padding:7px 11px;font-size:15px;border-width:1px;border-color:#C9D2CC}
+.check{font-size:14.5px}
+.seg{border-radius:var(--r);padding:3px;box-shadow:inset 0 0 0 1px var(--edge)}
+.seg button{border-radius:4px;font-size:14px;padding:6px 12px;font-weight:600}
+.tabs button{border-radius:var(--r);font-size:14px;padding:7px 12px;font-weight:600}
+.chip-btn,.kind-pick span,.outcomes span{border-radius:4px;font-weight:600}
+
+/* surfaces */
+.panel,.tile,.table-wrap,.empty,.lead-controls,.tgroup,.wday,.modal,.auth-card,.col,.gs-results{border-radius:var(--r-lg)}
+.panel,.tile,.table-wrap,.lead-controls,.tgroup{box-shadow:none;border:1px solid var(--edge)}
+.panel{padding:18px 20px}
+.tile{padding:14px 16px;border-top-width:3px}
+.tile:hover{transform:none;border-color:#C9D2CC}
+.tile-label{font-size:12px;letter-spacing:.05em}
+.tile-value{font-family:var(--ui);font-weight:600;font-size:28px;letter-spacing:-.01em}
+.fn-n,.kv-n{font-family:var(--ui);font-weight:600}
+th{font-size:12px;letter-spacing:.04em;padding:10px 14px;font-weight:600}
+td{padding:11px 14px;font-size:14.5px}
+.empty{border-style:solid;border-color:var(--edge)}
+.modal{box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.ad-toast{border-radius:var(--r-lg)}
+.auth-card{box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.auth-brand{border-radius:var(--r)}
+.auth h1{font-size:24px}
+
+/* badges, chips and stage pills */
+.chip,.temp,.tag,.pchip,.pending,.tk-kind,.nav-badge{border-radius:4px}
+.chip,.temp,.pchip,.pending{font-weight:600}
+select.pill{border-radius:4px;font-weight:600;min-height:32px;padding:5px 10px}
+.grp-name{font-family:var(--ui);font-weight:600;font-size:16px}
+.grp-body .table-wrap,.grp-empty{border-radius:var(--r)}
+.is-shut .grp-head{box-shadow:inset 4px 0 0 var(--st);border:1px solid var(--edge)}
+.grp-body .table-wrap{border-left-width:4px}
+
+/* board */
+.col{background:#E9ECE9}
+.col-head{border-radius:var(--r-lg) var(--r-lg) 0 0;border-top-width:3px}
+.col-head h2{font-size:14.5px}
+.card{border-radius:var(--r);box-shadow:0 1px 2px rgba(22,38,29,.06);border:1px solid var(--edge2)}
+.card:hover{box-shadow:0 2px 6px rgba(22,38,29,.1);transform:none}
+
+/* lead page, tasks, policies */
+.pol,.dropzone,.file-ic,.dnc-note,.dup-note,.archived-note,.cmp-ask,.note-body,.hist-more,.pol-req,.reqs,.bulk,.archive-drop{border-radius:var(--r)}
+.timeline li::before{width:10px;height:10px;left:-6px}
+.tg-over,.tg-today,.tg-tomorrow,.tg-done,.tgroup{border-left-width:4px}
+.tgroup h2{font-size:16px}
+.bulk{box-shadow:0 10px 28px rgba(0,0,0,.25)}
+
+@media (max-width:760px){
+ .ad-top-in{padding:8px 14px;min-height:0}
+ .ad-nav{align-self:auto}
+ .ad-nav a{padding:10px 12px}
+ .fld input,.fld select,.fld textarea,.filters input,.filters select,.note-form textarea{font-size:16px}
+ .page{padding:18px 14px 70px}
+ tbody tr{border-radius:var(--r-lg);box-shadow:none;border:1px solid var(--edge)}
+}

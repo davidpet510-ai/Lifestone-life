@@ -1,0 +1,133 @@
+/*
+ * Heritage finish for the public site. Loaded last on every page.
+ *
+ * Same layout, photos and video. This file only quiets the "new startup" look so the
+ * site reads like the 50-year, three-generation agency it is:
+ *   - classic type: Source Serif headings, Source Sans body (replaces Atkinson Hyperlegible)
+ *   - squared, solid buttons instead of glowing gradient pills
+ *   - small corner radii and hairline borders instead of big soft shadows
+ *   - one headline style (no color-switching second half), quiet labels with a brass rule
+ *   - no shimmer, glow, swash or confetti effects
+ */
+:root{
+  --sans:'Source Sans 3','Source Sans Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --brass:#A8834A;          /* labels and rules on light backgrounds */
+  --brass-lt:#D9BF85;       /* the same accent on dark backgrounds */
+  --btn-gold:#CFAE6A;       /* primary button on dark backgrounds */
+  --btn-gold-hover:#BF9C55;
+  --r-sm:3px;--r:6px;
+  --hair:1px solid rgba(31,61,46,.14);
+}
+
+/* ---------- type ---------- */
+body,input,select,textarea,button{font-family:var(--sans)}
+body{font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;font-feature-settings:"lnum" 1}
+h1,h2,h3{font-weight:600;letter-spacing:-.005em}
+.qh{font-family:var(--sans)}
+.hx-h1{font-weight:600}
+/* One headline voice: the second half stays italic but no longer changes color. */
+.tw-intro h2 em,.pc-intro h2 em,.lo h2 em,.qf-intro h2 em{color:inherit;font-weight:600}
+.fc h2 em{color:var(--brass-lt)}
+.hx-gold{font-weight:600}
+.hx-gold .w{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--brass-lt);-webkit-text-fill-color:var(--brass-lt)}
+.hx-swash{display:none}
+.hx-lede b{color:#FFFFFF}
+
+/* Small caps labels: quieter, with a short brass rule, like a letterhead. */
+.tw-eyebrow,.pc-eyebrow,.ps-eyebrow,.qf-eyebrow,.lf-eyebrow,.wy-eyebrow,.fq-eyebrow,.lo-eyebrow{
+  display:flex;align-items:center;gap:14px;font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.2em;color:var(--brass)}
+.tw-eyebrow::before,.pc-eyebrow::before,.ps-eyebrow::before,.qf-eyebrow::before,.lf-eyebrow::before,.wy-eyebrow::before,.fq-eyebrow::before,.lo-eyebrow::before{
+  content:"";width:32px;height:1px;background:currentColor;opacity:.7}
+.tw-eyebrow,.pc-eyebrow,.qf-eyebrow,.fq-eyebrow{justify-content:center}
+.tw-eyebrow::after,.pc-eyebrow::after,.qf-eyebrow::after,.fq-eyebrow::after{content:"";width:32px;height:1px;background:currentColor;opacity:.7}
+.ps-eyebrow,.lf-eyebrow{color:var(--brass-lt)}
+.ft-h{font-family:var(--sans);font-weight:600;letter-spacing:.18em;color:var(--brass-lt)}
+
+/* Hero kicker: plain text with a rule, not a badge. */
+.hx-kicker{padding:0;border-radius:0;background:none;box-shadow:none;color:var(--brass-lt);font-weight:600;letter-spacing:.2em;font-size:12.5px}
+.hx-kicker::before{content:"";width:32px;height:1px;background:currentColor;opacity:.8}
+
+/* Brand mark: steady, no shimmer. */
+.nb-brand .nb-word small{animation:none;background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:#C7CDD2;color:#C7CDD2;filter:none;font-family:var(--sans);font-weight:600}
+.nb-brand img,.ft-brand img{filter:none}
+.nb.scrolled{background:#0F2419;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+
+/* ---------- buttons: squared and solid ---------- */
+.nb-cta,.tw-btn,.tw-btn-gold,.tw-btn-green,.pc-btn,.ps-cta,.qf-next,.qf-submit,.fc-btn,.lo-dir,.hq-go,.btn,.ft-cta a,
+.sticky-cta .sc-call,.sticky-cta .sc-quote{border-radius:var(--r-sm);box-shadow:none;transform:none;letter-spacing:.01em;font-family:var(--sans);font-weight:600}
+.nb-cta,.tw-btn-gold,.fc-btn,.ps-cta,.sticky-cta .sc-quote,.ft-cta a.nb-cta{background:var(--btn-gold);color:#14261B}
+.nb-cta:hover,.tw-btn-gold:hover,.fc-btn:hover,.ps-cta:hover,.sticky-cta .sc-quote:hover{background:var(--btn-gold-hover);color:#14261B;box-shadow:none;transform:none}
+.tw-btn-green,.pc-btn,.qf-next,.qf-submit,.lo-dir,.hq-go{background:#1F3D2E;color:#FFFFFF}
+.tw-btn-green:hover,.pc-btn:hover,.qf-next:hover,.qf-submit:hover,.lo-dir:hover,.hq-go:hover{background:#163024;color:#FFFFFF;box-shadow:none;transform:none}
+.btn{background:#1F3D2E}.btn:hover{background:#163024}
+
+/* ---------- surfaces: small radii, hairlines, almost no shadow ---------- */
+.hq{border-radius:var(--r);box-shadow:0 12px 32px rgba(0,0,0,.28)}
+.qf-card{border-radius:var(--r);box-shadow:0 2px 6px rgba(31,61,46,.05);border:var(--hair)}
+.qf-card::before{left:0;right:0;top:0;height:3px;border-radius:var(--r) var(--r) 0 0;background:var(--brass)}
+.tw-card{border-radius:var(--r)}
+.tw-online{box-shadow:none}
+.tw-agent{box-shadow:none;border:var(--hair)}
+.tw-or{box-shadow:none;border:var(--hair);font-weight:600}
+.pc-card{border-radius:var(--r);box-shadow:0 1px 2px rgba(31,61,46,.05)}
+.pc-top::after,.pc-shine,.pc::before,.qf::before,.wy::before,.ps-glow{display:none}
+.pc-facts,.pc-best{border-radius:var(--r-sm)}
+.lo-tag{letter-spacing:.18em;font-weight:600}
+.wy-badge-ic{border-radius:var(--r-sm)}
+.lf-card{border-radius:var(--r);box-shadow:none}
+.wy-list li{border-radius:var(--r);box-shadow:none;border:var(--hair)}
+.wy-list li:hover{box-shadow:none;transform:none}
+.wy-art img{border-radius:var(--r);box-shadow:0 2px 8px rgba(31,61,46,.12)}
+.wy-frame{border-radius:var(--r)}
+.wy-badge{border-radius:var(--r);box-shadow:none;animation:none}
+.lo-card{border-radius:var(--r);box-shadow:0 1px 2px rgba(31,61,46,.05)}
+.lo-pin{box-shadow:0 0 0 8px rgba(242,217,160,.12);background:var(--btn-gold)}
+.lo-verify{border-radius:var(--r-sm)}
+.ps-step{border-radius:var(--r);box-shadow:none}
+.ps-step.on{box-shadow:none}
+.ps-big-n{background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-stroke:1px var(--brass-lt);font-weight:600}
+.card,.photo{border-radius:var(--r);box-shadow:none}
+.type-explain{border-radius:var(--r-sm)}
+
+/* FAQ: a clean ruled list, like a printed brochure. */
+.fq-item{border-radius:0;box-shadow:none;background:transparent;border:0;border-bottom:var(--hair)}
+.fq-item:first-child{border-top:var(--hair)}
+.fq-item[open]{box-shadow:none}
+.fq-item summary{padding:22px 4px;font-family:var(--serif);font-weight:600;font-size:20px}
+.fq-item i{background:transparent;border:var(--hair)}
+
+/* ---------- small labels, badges and icons ---------- */
+.tw-badge,.pc-badge,.lf-tag,.tag{border-radius:var(--r-sm);background:none;box-shadow:inset 0 0 0 1px currentColor;font-weight:600;letter-spacing:.14em}
+.tw-online .tw-badge,.pc-badge,.lf-tag{color:var(--brass-lt);background:rgba(15,36,25,.35)}
+.lf-tag{background:rgba(15,36,25,.55)}
+.tw-agent .tw-badge{color:var(--brass)}
+.tw-ic,.pc-ic,.ps-ic,.wy-ic,.qf-ti{border-radius:var(--r-sm)}
+.wy-ic{background:#1F3D2E}
+.qf-perks li{border-radius:var(--r-sm);box-shadow:none}
+
+/* Trust bar: confident serif figures between hairlines, no icon tiles. */
+.tb-list li{position:relative}
+.tb-list li + li::before{content:"";position:absolute;left:-14px;top:6px;bottom:6px;width:1px;background:rgba(242,217,160,.18)}
+.tb-ic{background:none;box-shadow:none;border-radius:0;width:28px;color:var(--brass-lt)}
+.tb-list b{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:0}
+
+/* ---------- form controls ---------- */
+.hq-chip,.chip,.qf .chip.qf-tile{border-radius:var(--r-sm);transform:none}
+.qf .chip.qf-tile{border-width:1px;border-color:#CBD5CF}
+.qf .chip.qf-tile:hover,.qf .chip.qf-tile[aria-pressed="true"]{box-shadow:none;transform:none;animation:none}
+.qf .chip.qf-tile[aria-pressed="true"]{border:1.5px solid #1F3D2E}
+.qf-pill{border-radius:var(--r-sm)}
+.qf-input input,.qf-input select,.field input,.field select,.hq-field input,.hq-field select,.qf-consent{border-radius:var(--r-sm)}
+.qf-progress,.qf-progress div,.hq-dots i{border-radius:0}
+.qf-progress div{background:#1F3D2E}
+.qf-burst{display:none}
+.qf-check{box-shadow:none}
+
+/* phones */
+@media (max-width:600px){
+  .hx-kicker{letter-spacing:.1em;font-size:11.5px}
+  .hx-kicker::before{display:none}
+  .hq-dots i{width:12px}
+  .hq-dots{gap:3px}
+  .hq-count{white-space:nowrap}
+}

@@ -462,6 +462,14 @@ div.fld > span:first-child{display:block}
 .timeline li.tl-policy::before{background:#1F6A3B}
 .cu-what{color:var(--deep)}
 
+/* history on a lead: latest entries, older ones folded away */
+.hist-filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding-top:14px;border-top:1px solid var(--line)}
+.hf-n{font-weight:400;opacity:.75}
+.hist-more{display:block;width:100%;margin-top:14px;padding:10px;border:1.5px dashed #C9D6CE;border-radius:12px;background:var(--soft);font:inherit;font-weight:700;font-size:14px;color:var(--brand);cursor:pointer}
+.hist-more:hover{border-color:var(--accent);background:#EAF1ED}
+.hist-more::after{content:" ▾"}
+.hist-more[aria-expanded=true]::after{content:" ▴"}
+
 /* reports */
 .funnel{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 .fn-step{display:flex;flex-direction:column;gap:2px}

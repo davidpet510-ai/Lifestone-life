@@ -1316,7 +1316,7 @@
         doneT.map(function (t) { return taskItem(t, { noLead: true }); }).join('') + '</ul></details>' : '') + '</section>' +
       filesPanel(files) +
       '<section class="panel"><h2>Notes &amp; history</h2>' + composerHtml(o.composer, o.ask) +
-      '<ol class="timeline">' + events.map(eventItem).join('') + '</ol></section></div></div></div>');
+      '<div id="history"></div></section></div></div></div>');
 
     $('#l-status', main).addEventListener('change', async function (e) {
       var r2 = await sb.rpc('lead_set_status', { p_lead: id, p_status: e.target.value });
@@ -1368,6 +1368,45 @@
     bindTasks($('.lead-tasks', main), reload);
     bindFiles(main, id, files);
     bindComposer(main, l, o.composer, reload);
+    if (histView.lead !== id) histView = { lead: id, filter: 'all', open: false };
+    drawHistory(events);
+  }
+
+  // History shows the latest few entries; the rest fold away behind "Show all".
+  // The filter and open/closed choice stick while you stay on the same lead.
+  var HISTORY_SHOWN = 5;
+  var histView = { lead: null, filter: 'all', open: false };
+  var HISTORY_FILTERS = [
+    ['all', 'All', function () { return true; }],
+    ['notes', 'Notes', function (e) { return e.kind === 'note' || (e.kind === 'contact' && e.body); }],
+    ['contact', 'Calls & texts', function (e) { return e.kind === 'contact'; }],
+    ['task', 'Tasks', function (e) { return e.kind === 'task'; }],
+    ['changes', 'Changes', function (e) { return ['note', 'contact', 'task'].indexOf(e.kind) === -1; }]
+  ];
+
+  function drawHistory(events) {
+    var box = $('#history');
+    if (!box) return;
+    var filters = HISTORY_FILTERS.map(function (f) { return { key: f[0], label: f[1], items: events.filter(f[2]) }; })
+      .filter(function (f) { return f.key === 'all' || f.items.length; });
+    var cur = filters.find(function (f) { return f.key === histView.filter; }) || filters[0];
+    var list = cur.items, more = list.length - HISTORY_SHOWN;
+    box.innerHTML = (events.length > HISTORY_SHOWN ? '<div class="hist-filters" role="group" aria-label="Show in history">' + filters.map(function (f) {
+      return '<button type="button" class="chip-btn' + (f === cur ? ' on' : '') + '" data-hf="' + f.key + '" aria-pressed="' + (f === cur) + '">' +
+        esc(f.label) + ' <span class="hf-n">' + f.items.length + '</span></button>';
+    }).join('') + '</div>' : '') +
+      (list.length ? '<ol class="timeline">' + (histView.open ? list : list.slice(0, HISTORY_SHOWN)).map(eventItem).join('') + '</ol>' : '<p class="muted">Nothing here yet.</p>') +
+      (more > 0 ? '<button type="button" class="hist-more" data-hmore aria-expanded="' + histView.open + '">' +
+        (histView.open ? 'Show less' : 'Show ' + plural(more, 'older entry', 'older entries')) + '</button>' : '');
+    $$('[data-hf]', box).forEach(function (b) {
+      b.addEventListener('click', function () { histView.filter = b.getAttribute('data-hf'); histView.open = false; drawHistory(events); });
+    });
+    var btn = $('[data-hmore]', box);
+    if (btn) btn.addEventListener('click', function () {
+      histView.open = !histView.open;
+      drawHistory(events);
+      if (!histView.open) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
   }
 
   // Notes and call/text logging in one box.

@@ -125,8 +125,61 @@
   function setTop(visible) {
     $('#ad-top').hidden = !visible;
     if (!visible) return;
-    $('#ad-me-name').textContent = (me.full_name || me.email) + (isAdmin() ? ' · Admin' : '');
+    $('#ad-me-name').innerHTML = esc((me.full_name || me.email).split(' ')[0].toUpperCase()) + ' · CLEARANCE <b>' + (isAdmin() ? 'ADMIN' : 'AGENT') + '</b>';
+    startClock();
     $$('[data-admin]').forEach(function (el) { el.hidden = !isAdmin(); });
+  }
+
+  // Live clock in the top bar.
+  var clockTimer = null;
+  function startClock() {
+    var el = $('#ops-clock');
+    if (!el || clockTimer) return;
+    var tick = function () {
+      var d = new Date();
+      el.textContent = d.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short' }).toUpperCase() + ' · ' +
+        d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    };
+    tick();
+    clockTimer = setInterval(tick, 1000);
+  }
+
+  // A short "secure channel" sequence the first time someone signs in during a browser session.
+  // It runs while the real data loads, so it never makes anyone wait longer.
+  var BOOT_KEY = 'lq_ops_booted';
+  function bootSequence() {
+    var seen = false;
+    try { seen = sessionStorage.getItem(BOOT_KEY) === '1'; sessionStorage.setItem(BOOT_KEY, '1'); } catch (e) { /* ignore */ }
+    var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (seen || calm) {
+      render(card('Signing you in…', '<div class="ad-loading">Loading your dashboard…</div>'));
+      return { done: Promise.resolve(), finish: function () { return Promise.resolve(); } };
+    }
+    render('<section class="auth"><div class="boot" role="status"><p class="boot-k">LIFESTONE // OPERATIONS</p><ol id="boot-lines"></ol></div></section>');
+    var lines = ['Verifying credentials', 'Two-step verification', 'Opening encrypted channel', 'Loading case files'];
+    var add = function (text, mark, cls) {
+      var ol = $('#boot-lines');
+      if (!ol) return;
+      var li = document.createElement('li');
+      if (cls) li.className = cls;
+      li.innerHTML = '<span>' + esc(text) + '</span><b>' + esc(mark) + '</b>';
+      ol.appendChild(li);
+    };
+    var done = new Promise(function (resolve) {
+      var i = 0;
+      (function next() {
+        if (i >= lines.length) return resolve();
+        add(lines[i++], 'OK');
+        setTimeout(next, 170);
+      })();
+    });
+    return {
+      done: done,
+      finish: function (name) {
+        add('Access granted' + (name ? ' · ' + name.split(' ')[0] : ''), '▸', 'boot-go');
+        return new Promise(function (r) { setTimeout(r, 380); });
+      }
+    };
   }
 
   function markNav(name) {
@@ -189,13 +242,15 @@
     }
 
     setTop(false);
-    render(card('Signing you in…', '<div class="ad-loading">Loading your dashboard…</div>'));
+    var boot = bootSequence();
     var prof = await timed(sb.from('profiles').select('*').eq('id', sess.user.id)).maybeSingle();
     if (prof.error) return showRetry(niceError(prof.error));
     if (!prof.data) return showBlocked('We couldn’t find your profile. Ask an admin to check your account.');
     if (!prof.data.active) return showBlocked('Your account is turned off. Ask an admin to turn it back on.');
     me = prof.data;
     try { await loadTeam(); } catch (e) { me = null; return showRetry(niceError(e)); }
+    await boot.done;
+    await boot.finish(me.full_name || '');
     setTop(true);
     if (!location.hash || location.hash === '#/' || location.hash.indexOf('access_token') !== -1) history.replaceState(null, '', '#/home');
     route();
@@ -206,6 +261,7 @@
     await sb.auth.signOut();
     setRemember(false);
     me = null; leads = []; team = []; tasks = []; policies = []; templates = null;
+    try { sessionStorage.removeItem(BOOT_KEY); } catch (e) { /* ignore */ }
     history.replaceState(null, '', '#/');
     showLogin();
   }
@@ -344,8 +400,10 @@
   // ---------- auth screens ----------
   function card(title, inner, sub) {
     return '<section class="auth"><div class="auth-card">' +
-      '<div class="auth-brand"><img src="/images/logo.png" width="44" height="40" alt=""><span><b>Lifestone</b><small>CRM</small></span></div>' +
-      '<h1>' + esc(title) + '</h1>' + (sub ? '<p class="auth-sub">' + sub + '</p>' : '') + inner + '</div></section>';
+      '<p class="ops-strip"><span class="ops-dot" aria-hidden="true"></span>RESTRICTED ACCESS<span class="ops-strip-r">LIFESTONE // OPS</span></p>' +
+      '<div class="auth-brand"><img src="/images/logo.png" width="44" height="40" alt=""><span><b>Lifestone</b><small>OPERATIONS</small></span></div>' +
+      '<h1>' + esc(title) + '</h1>' + (sub ? '<p class="auth-sub">' + sub + '</p>' : '') + inner +
+      '<p class="ops-foot">Authorized personnel only · Activity is recorded</p></div></section>';
   }
 
   function formError(form, msg) {
@@ -371,7 +429,7 @@
       '<p class="form-error" role="alert"' + (message ? '' : ' hidden') + '>' + esc(message || '') + '</p>' +
       '<button class="btn btn-primary btn-wide" type="submit">Sign in</button>' +
       '<button class="ad-link-btn auth-alt" type="button" id="forgot">Forgot your password?</button>' +
-      '</form>', 'For Lifestone team members only.'));
+      '</form>', 'Lifestone team members only. Sign in to continue.'));
     var f = $('#f-login', main);
     f.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -559,7 +617,7 @@
       if (fresh) toast(fresh === 1 ? '1 new lead just came in.' : fresh + ' new leads just came in.', 'ok');
     }
     var waiting = leads.filter(function (l) { return S.group(l.status) === 'inbox'; }).length;
-    document.title = (waiting ? '(' + waiting + ') ' : '') + 'Lifestone CRM';
+    document.title = (waiting ? '(' + waiting + ') ' : '') + 'Lifestone Operations';
   }
 
   function startRefresh() {
@@ -1110,8 +1168,8 @@
     }
 
     root.innerHTML =
-      '<div class="page-head"><div><h1>' + esc(hello) + '</h1><p class="muted">' + esc(new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })) +
-      (isAdmin() ? ' · Everything across the team' : ' · Your leads') + '</p></div>' +
+      '<div class="page-head"><div><p class="ops-k">Sitrep <i>·</i> ' + esc(new Date().toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })) +
+      ' <i>·</i> ' + (isAdmin() ? 'All agents' : 'Your files') + '</p><h1>' + esc(hello) + '</h1><p class="muted">' + (isAdmin() ? 'Everything happening across the team' : 'Everything on your leads') + '</p></div>' +
       '<a class="btn btn-primary" href="#/leads">Open leads</a></div>' +
       '<div class="tiles tiles-4">' +
       tile('New this week', String(thisWeek), (diff === 0 ? 'Same as last week' : (diff > 0 ? '▲ ' + diff : '▼ ' + (-diff)) + ' vs last week'), '#/leads') +
@@ -1241,7 +1299,7 @@
     var main = render('<div class="page">' +
       '<a href="#/leads" class="back">← All leads</a>' +
       '<div class="lead-head">' +
-      '<div><h1>' + esc(fullName(l)) + '</h1>' +
+      '<div><p class="ops-k">Case file <i>·</i> #' + esc(l.id.replace(/-/g, '').slice(0, 6).toUpperCase()) + '</p><h1>' + esc(fullName(l)) + '</h1>' +
       '<p class="muted">' + statusChip(l.status) + ' ' + tempDot(l.temperature) + ' <span>Received ' + esc(fmtDate(l.created_at)) + '</span></p>' +
       ((l.tags || []).length ? '<p class="lead-tags">' + tagChips(l.tags) + '</p>' : '') + '</div>' +
       '<div class="lead-actions">' +

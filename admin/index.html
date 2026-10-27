@@ -7,19 +7,20 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="theme-color" content="#0F2419">
-<title>Lifestone CRM</title>
+<meta name="theme-color" content="#030605">
+<title>Lifestone Operations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;family=Source+Sans+3:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="/admin/admin.css">
+<link rel="stylesheet" href="/admin/ops.css">
 </head>
 <body>
 <header class="ad-top" id="ad-top" hidden>
   <div class="ad-top-in">
     <a href="#/home" class="ad-brand" aria-label="Lifestone CRM home">
       <img src="/images/logo.png" width="40" height="37" alt="">
-      <span><b>Lifestone</b><small>CRM</small></span>
+      <span><b>Lifestone</b><small>OPERATIONS</small></span>
     </a>
     <nav class="ad-nav" aria-label="Main">
       <a href="#/home" data-nav="home">Dashboard</a>
@@ -39,7 +40,9 @@
       <div class="gs-results" id="gs-results" role="listbox" hidden></div>
     </div>
     <div class="ad-me">
-      <span id="ad-me-name"></span>
+      <span class="ops-status" title="Your connection is encrypted"><i aria-hidden="true"></i><span>SECURE</span></span>
+      <span class="ops-clock" id="ops-clock" aria-hidden="true"></span>
+      <span class="ops-clear" id="ad-me-name"></span>
       <button type="button" class="ad-link-btn" id="ad-signout">Sign out</button>
     </div>
   </div>

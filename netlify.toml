@@ -23,6 +23,25 @@
   status = 301
   force = true
 
+# Internal notes (README, launch checklist) are for the team, not visitors.
+[[redirects]]
+  from = "/*.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/LAUNCH-CHECKLIST.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/README.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # Keep server code, database setup and scripts from being served as web pages.
 [[redirects]]
   from = "/netlify/*"

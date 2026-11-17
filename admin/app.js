@@ -98,6 +98,33 @@
   }
   function isAdmin() { return me && me.role === 'admin'; }
   var SOURCE_NAMES = { 'homepage-hero': 'Homepage quiz', 'homepage-quote': 'Quote form', 'policy-review': 'Policy review', 'agent-callback': 'Callback request', import: 'Imported' };
+
+  // How a lead found the website, in plain English: ad tags first, then ad click IDs, then the
+  // referring site. Leads from before Nov 17, 2026 have no referrer recorded.
+  var TRACKING_SINCE = '2026-11-17';
+  function channelOf(l) {
+    var u = l.utm || {}, d = l.details || {};
+    if (l.source === 'import') return 'Imported';
+    if (u.utm_source) return cap(u.utm_source) + (u.utm_medium ? ' (' + u.utm_medium + ')' : '');
+    if (d.gclid) return 'Google Ads';
+    if (d.fbclid) return 'Facebook / Instagram';
+    if (d.referrer) {
+      var host = '';
+      try { host = new URL(d.referrer).hostname.replace(/^www\./, ''); } catch (e) { host = d.referrer; }
+      if (/(^|\.)google\./.test(host)) return 'Google search';
+      if (/(^|\.)bing\.com$/.test(host)) return 'Bing search';
+      if (/(^|\.)(yahoo|duckduckgo)\.com$/.test(host)) return 'Web search';
+      if (/(^|\.)(facebook|fb|instagram)\.com$/.test(host)) return 'Facebook / Instagram';
+      if (/(^|\.)(t\.co|twitter\.com|x\.com)$/.test(host)) return 'X (Twitter)';
+      if (/(^|\.)linkedin\.com$/.test(host) || host === 'lnkd.in') return 'LinkedIn';
+      if (/(^|\.)(youtube\.com|youtu\.be)$/.test(host)) return 'YouTube';
+      return host;
+    }
+    if (d.landing || d.first_visit) return 'Direct';
+    return (l.created_at || '') < TRACKING_SINCE ? 'Not tracked (before Nov 17)' : 'Direct';
+  }
+  function cap(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
+  var CHANNEL_HINT = { Direct: 'Typed the address, a bookmark, or a link from a text, email or app that doesn’t share where it came from' };
   function statusChip(key) { return '<span class="chip chip-' + esc(S.group(key)) + '">' + esc(S.label(key)) + '</span>'; }
   function niceError(err) {
     var m = (err && (err.message || err.error_description)) || String(err || 'Something went wrong');
@@ -550,7 +577,7 @@
     var res = await Promise.all([
       timed(sb.from('leads')
         .select('id,created_at,updated_at,first_name,last_name,email,phone,state,age,coverage,coverage_label,coverage_type,path,status,source,assigned_to,last_contacted_at,' +
-          'dob,city,zip,temperature,tags,do_not_contact,contact_attempts')
+          'dob,city,zip,temperature,tags,do_not_contact,contact_attempts,utm,details')
         .order('created_at', { ascending: false }).limit(LEAD_LIMIT)),
       loadExtras().catch(function () { /* the leads still load */ })
     ]);
@@ -1296,7 +1323,10 @@
         ['Agreed', l.consent_at ? fmtDate(l.consent_at) : 'Not recorded'], ['Version', l.consent_version]
       ]) + (l.consent_text ? '<p class="consent-text">“' + esc(l.consent_text) + '”</p>' : '') + '</section>' +
       '<section class="panel"><h2>Where they came from</h2>' + rows([
-        ['Form', l.source], ['Page', d.page], ['Ad source', u.utm_source], ['Medium', u.utm_medium], ['Campaign', u.utm_campaign],
+        ['Found us via', '<b>' + esc(channelOf(l)) + '</b>' + (CHANNEL_HINT[channelOf(l)] ? '<small class="dd-hint">' + esc(CHANNEL_HINT[channelOf(l)]) + '</small>' : ''), true],
+        ['Referring site', d.referrer], ['First page they saw', d.landing ? 'lifestonelife.com' + d.landing : ''], ['First visit', d.first_visit ? fmtDate(d.first_visit) : ''],
+        ['Started in', d.started_in ? SOURCE_NAMES[d.started_in] || d.started_in : ''],
+        ['Submitted on', SOURCE_NAMES[l.source] || l.source], ['Ad source', u.utm_source], ['Medium', u.utm_medium], ['Campaign', u.utm_campaign],
         ['Ad term', u.utm_term], ['Ad content', u.utm_content], ['Google click ID', d.gclid ? 'Yes' : ''], ['Facebook click ID', d.fbclid ? 'Yes' : '']
       ]) + '</section>' +
       '</div>' +
@@ -2522,8 +2552,16 @@
     }
 
     var NAMES = SOURCE_NAMES;
-    var bySrc = {};
+    var bySrc = {}, byChan = {};
     L.forEach(function (l) { var k = l.source || 'unknown'; (bySrc[k] = bySrc[k] || []).push(l); });
+    L.forEach(function (l) { var k = channelOf(l); (byChan[k] = byChan[k] || []).push(l); });
+    var groupRow = function (label, list) {
+      var issued = list.filter(function (l) { return reached(l, 'issued', polByLead); }).length;
+      var prem = sum(list, function (l) { return sum((polByLead[l.id] || []).filter(function (p) { return p.status === 'in_force'; }), annual); });
+      return [esc(label), list.length, pct(list.filter(function (l) { return reached(l, 'contacted', polByLead); }).length, list.length),
+        list.filter(function (l) { return reached(l, 'applied', polByLead); }).length, issued, pct(issued, list.length), esc(money0(prem))];
+    };
+    var chanRows = Object.keys(byChan).sort(function (a, b) { return byChan[b].length - byChan[a].length; }).map(function (k) { return groupRow(k, byChan[k]); });
     var srcRows = Object.keys(bySrc).sort(function (a, b) { return bySrc[b].length - bySrc[a].length; }).map(function (k) {
       var list = bySrc[k], issued = list.filter(function (l) { return reached(l, 'issued', polByLead); }).length;
       var prem = sum(list, function (l) { return sum((polByLead[l.id] || []).filter(function (p) { return p.status === 'in_force'; }), annual); });
@@ -2572,7 +2610,9 @@
         var max = outRows[0].n || 1;
         return '<li><span class="hb-row"><span class="hb-label">' + esc(r.label) + '</span><span class="hb-track"><span class="hb-fill" data-w="' + (r.n / max * 100) + '"></span></span><span class="hb-n">' + r.n + '</span></span></li>';
       }).join('') + '</ul>' : '<p class="muted">No calls logged in this period.</p>') + '</section>' +
-      '<section class="panel span2"><h2>By lead source</h2>' + table(['Source', 'Leads', 'Contacted', 'Applied', 'Issued', 'Conversion', 'Placed premium'], srcRows) + '</section>' +
+      '<section class="panel span2"><h2>By channel</h2><p class="muted">How people found the website. Tracked for leads from Nov 17, 2026 on.</p>' +
+        table(['Channel', 'Leads', 'Contacted', 'Applied', 'Issued', 'Conversion', 'Placed premium'], chanRows) + '</section>' +
+      '<section class="panel span2"><h2>By form</h2>' + table(['Form', 'Leads', 'Contacted', 'Applied', 'Issued', 'Conversion', 'Placed premium'], srcRows) + '</section>' +
       agentTable +
       '<section class="panel span2"><h2>By carrier</h2>' + table(['Carrier', 'Apps', 'Declined', 'Placed', 'Placed premium'], carrierRows) + '</section>' +
       '</div>';
@@ -2595,12 +2635,12 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   }
   function exportLeads() {
-    var head = ['First name', 'Last name', 'Phone', 'Email', 'State', 'City', 'ZIP', 'Date of birth', 'Age', 'Coverage', 'Coverage type', 'Stage', 'Source',
+    var head = ['First name', 'Last name', 'Phone', 'Email', 'State', 'City', 'ZIP', 'Date of birth', 'Age', 'Coverage', 'Coverage type', 'Stage', 'Source', 'Found us via',
       'Assigned to', 'Temperature', 'Tags', 'Do not contact', 'Attempts', 'Came in', 'Last contact', 'Policies'];
     var rows = leads.map(function (l) {
       var pols = policies.filter(function (p) { return p.lead_id === l.id; }).map(function (p) { return p.carrier + ' (' + pStatus(p.status).label + ')'; }).join('; ');
       return [l.first_name, l.last_name, fmtPhone(l.phone), l.email, l.state, l.city, l.zip, l.dob, l.age, l.coverage, l.coverage_type, S.label(l.status),
-        l.source, personName(l.assigned_to), TEMPS[l.temperature] || '', (l.tags || []).join(', '), l.do_not_contact ? 'Yes' : '', l.contact_attempts || 0,
+        SOURCE_NAMES[l.source] || l.source, channelOf(l), personName(l.assigned_to), TEMPS[l.temperature] || '', (l.tags || []).join(', '), l.do_not_contact ? 'Yes' : '', l.contact_attempts || 0,
         fmtDate(l.created_at), fmtDate(l.last_contacted_at), pols];
     });
     downloadCsv('lifestone-leads-' + isoDay(new Date()) + '.csv', [head].concat(rows));

@@ -52,7 +52,11 @@ async function create(body) {
   if (!consent) problems.push('consent');
   if (problems.length) return C.json(400, { ok: false, error: 'Missing or invalid: ' + problems.join(', ') });
 
-  const age = l.dob ? C.Age.ageFromDob(C.clean(l.dob, 10)) : null;
+  // Only keep a date of birth that gives a believable adult age (a half-typed date can look like age 0).
+  const dobIn = C.clean(l.dob, 10);
+  const ageFromDob = dobIn ? C.Age.ageFromDob(dobIn) : null;
+  const dob = ageFromDob != null && ageFromDob >= 18 && ageFromDob <= 110 ? dobIn : null;
+  const age = dob ? ageFromDob : null;
   const coverage = Math.min(Math.max(Number(l.coverage) || 0, 0), 100000000) || null;
   const type = TYPES[l.type] ? l.type : '';
 
@@ -64,6 +68,13 @@ async function create(body) {
   const details = {};
   for (const k of ['gclid', 'fbclid']) { const v = C.clean((body.utm || {})[k], 300); if (v) details[k] = v; }
   if (body.page) details.page = C.clean(body.page, 200);
+  // How they first found the site: the referring site and the page they landed on.
+  const visit = body.visit && typeof body.visit === 'object' ? body.visit : {};
+  const referrer = C.clean(visit.ref, 300);
+  if (/^https?:\/\//i.test(referrer)) details.referrer = referrer;
+  if (visit.landing) details.landing = C.clean(visit.landing, 300);
+  if (Number(visit.at) > 0 && Number(visit.at) <= Date.now()) details.first_visit = new Date(Number(visit.at)).toISOString();
+  if (body.startedIn) details.started_in = C.clean(body.startedIn, 60);
   if (body.review && typeof body.review === 'object') {
     details.review = {};
     for (const [k, v] of Object.entries(body.review).slice(0, 12)) details.review[C.clean(k, 30)] = C.clean(String(v), 120);
@@ -75,6 +86,7 @@ async function create(body) {
     email,
     phone,
     state,
+    dob,
     age,
     coverage,
     coverage_label: C.clean(l.coverageLabel, 60),

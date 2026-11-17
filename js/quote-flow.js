@@ -3,7 +3,8 @@
  * - Runs any quiz form marked with data-lq-steps (homepage hero card and the quote section)
  * - Validates each step, then sends everyone to the "an agent will call you" page
  * - Saves every lead through the Netlify "lead" function before moving on
- * - Remembers UTM parameters and retries leads that failed to send
+ * - Remembers UTM parameters, how the visitor first found the site (referring site and
+ *   landing page), and retries leads that failed to send
  * Needs config/age.js loaded first.
  */
 (function () {
@@ -25,6 +26,17 @@
   }
   function getUtm() { return read('sessionStorage', 'lq_utm') || {}; }
 
+  // ---------- first visit: which site sent them and where they landed (kept 90 days in this browser) ----------
+  var VISIT_DAYS = 90;
+  function captureVisit() {
+    var v = read('localStorage', 'lq_visit');
+    if (v && v.at && Date.now() - v.at < VISIT_DAYS * 86400000) return;
+    var ref = '';
+    try { var r = new URL(document.referrer); if (r.hostname && r.hostname !== location.hostname) ref = r.origin + r.pathname; } catch (e) { /* no referrer */ }
+    write('localStorage', 'lq_visit', { ref: ref.slice(0, 300), landing: (location.pathname + location.search).slice(0, 300), at: Date.now() });
+  }
+  function getVisit() { return read('localStorage', 'lq_visit') || {}; }
+
   // ---------- sending ----------
   function post(url, body) {
     return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -35,6 +47,7 @@
     url = url || LEAD_URL;
     body.utm = body.utm || getUtm();
     body.page = body.page || location.pathname;
+    body.visit = body.visit || getVisit();
     return post(url, body).catch(function () { return post(url, body); }).catch(function () {
       var q = read('localStorage', 'lq_queue') || [];
       q.push({ url: url, body: body, at: Date.now() });
@@ -58,6 +71,7 @@
     url = url || LEAD_URL;
     body.utm = body.utm || getUtm();
     body.page = body.page || location.pathname;
+    body.visit = body.visit || getVisit();
     var data = JSON.stringify(body);
     if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([data], { type: 'application/json' }))) return;
     try { fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: data, keepalive: true }); } catch (e) {}
@@ -216,6 +230,7 @@
   }
 
   captureUtm();
+  captureVisit();
   flushQueue();
 
   window.LifestoneQuote = {

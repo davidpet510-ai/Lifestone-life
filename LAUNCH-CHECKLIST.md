@@ -7,6 +7,7 @@ What's left before lifestonelife.com is fully live. When an item is done, tell C
 - [ ] **Agency details for the footer and legal pages.** Send: legal agency name, Florida agency license number, and founding year (optional, for "Serving families since 19XX").
   - Claude then replaces `[AGENCY LEGAL NAME]` and `[AGENCY LICENSE #]` on every page.
 - [ ] **Privacy Policy and Terms review.** IMO/FMO compliance or a Florida insurance/TCPA attorney reviews `privacy.html`, `terms.html` and the consent checkbox text.
+  - Tell the reviewer the site also remembers, in the visitor's browser for 90 days, which website referred them and the first page they saw, and saves that with the lead (used to know which marketing works).
   - Send Claude the approved wording (or "approved as written") and the effective date.
   - Claude then applies the changes, fills in `[DATE]`, and removes the "Pending compliance review" banners.
 - [ ] **New-lead alerts.**

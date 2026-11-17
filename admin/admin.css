@@ -652,3 +652,56 @@ select.pill{border-radius:4px;font-weight:600;min-height:32px;padding:5px 10px}
  .page{padding:18px 14px 70px}
  tbody tr{border-radius:var(--r-lg);box-shadow:none;border:1px solid var(--edge)}
 }
+
+/* ======================================================================
+   Sidebar navigation
+   Wide screens: a fixed left sidebar with grouped, labeled sections.
+   Tablets and phones: the same links as a compact top bar.
+   ====================================================================== */
+.ad-top{background:#0F2419}
+.sb-h{display:none}
+.sb-ic{flex:none}
+.me-av{display:none}
+.nav-count{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:6px;padding:0 6px;border-radius:999px;background:#E9C77E;color:#1A3324;font-style:normal;font-size:12px;font-weight:700}
+.ad-nav a{gap:7px}
+
+@media (min-width:1000px){
+  body.has-sb{padding-left:244px}
+  .ad-top{position:fixed;left:0;top:0;bottom:0;width:244px;z-index:30;border-right:1px solid rgba(255,255,255,.06);border-bottom:0;box-shadow:none}
+  .ad-top-in{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:0;height:100%;max-width:none;margin:0;padding:18px 14px 14px;min-height:0}
+  .ad-brand{padding:2px 8px 18px}
+  .gs{order:0;flex:none;min-width:0;margin:0 0 6px;flex-basis:auto}
+  .gs input{min-height:38px;padding:7px 34px 7px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14.5px}
+  .gs input:focus{background:#fff;color:var(--ink)}
+  .gs-results{width:420px}
+  .ad-nav{order:0;display:flex;flex-direction:column;gap:2px;flex:1 1 auto;align-self:stretch;overflow-x:visible;overflow-y:auto}
+  .sb-h{display:block;margin:18px 10px 6px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7F9A8B}
+  .ad-nav a{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:8px;color:#C9D8CF;font-size:15px;font-weight:600;box-shadow:none}
+  .ad-nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+  .ad-nav a.on{background:rgba(242,217,160,.13);color:#fff;box-shadow:inset 3px 0 0 #E9C77E}
+  .ad-nav a.on .sb-ic{color:#E9C77E}
+  .ad-nav .nav-badge,.ad-nav .nav-count{margin-left:auto}
+  .ad-me{display:flex;align-items:center;gap:10px;margin:10px 0 0;padding:14px 6px 2px;border-top:1px solid rgba(255,255,255,.08);color:#C9D8CF;flex:none}
+  .ad-me .me-av{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:#E9C77E;color:#1A3324;font-weight:700;font-size:13px}
+  .ad-me .me-txt{display:flex;flex-direction:column;flex:1;min-width:0;line-height:1.25}
+  .me-txt b{color:#fff;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .me-txt small{color:#9DB3A7;font-size:12.5px}
+  .ad-me .ad-link-btn{display:grid;place-items:center;flex:none;width:34px;height:34px;padding:0;border-radius:8px;color:#C9D8CF}
+  .ad-me .ad-link-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+  .ad-toast,.bulk,.archive-drop{margin-left:122px}
+}
+@media (max-width:999px){
+  .ad-me .ad-link-btn{display:grid;place-items:center;width:34px;height:34px;padding:0;color:#F2D9A0}
+  .ad-nav a .sb-ic{width:16px;height:16px}
+}
+
+/* Deal board: every stage visible at once on a laptop screen; scrolls sideways only when narrow. */
+@media (min-width:1000px){
+  .board{gap:10px}
+  .col{flex:1 1 0;min-width:178px}
+  .card{padding:11px 12px}
+  .filters{flex-wrap:nowrap;align-items:center}
+  .filters input{flex:1 1 200px;min-width:160px}
+  .filters select{flex:0 1 170px;min-width:120px}
+  .archive-link{flex:none}
+}

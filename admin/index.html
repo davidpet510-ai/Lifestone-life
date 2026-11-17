@@ -7,43 +7,44 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="theme-color" content="#030605">
-<title>Lifestone Operations</title>
+<meta name="theme-color" content="#0F2419">
+<title>Lifestone CRM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;family=Source+Sans+3:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap">
 <link rel="stylesheet" href="/admin/admin.css">
-<link rel="stylesheet" href="/admin/ops.css">
 </head>
 <body>
 <header class="ad-top" id="ad-top" hidden>
   <div class="ad-top-in">
     <a href="#/home" class="ad-brand" aria-label="Lifestone CRM home">
-      <img src="/images/logo.png" width="40" height="37" alt="">
-      <span><b>Lifestone</b><small>OPERATIONS</small></span>
+      <img src="/images/logo.png" width="36" height="33" alt="">
+      <span><b>Lifestone</b><small>CRM</small></span>
     </a>
-    <nav class="ad-nav" aria-label="Main">
-      <a href="#/home" data-nav="home">Dashboard</a>
-      <a href="#/leads" data-nav="leads">Leads</a>
-      <a href="#/tasks" data-nav="tasks">Tasks <i class="nav-badge" id="nav-tasks" hidden></i></a>
-      <a href="#/policies" data-nav="policies">Policies</a>
-      <a href="#/reports" data-nav="reports">Reports</a>
-      <a href="#/archive" data-nav="archive">Archive</a>
-      <a href="#/team" data-nav="team" data-admin hidden>Team</a>
-      <a href="#/settings" data-nav="settings">Settings</a>
-    </nav>
     <div class="gs" id="gs">
       <label class="sr" for="gs-input">Search everything</label>
-      <input type="search" id="gs-input" placeholder="Search leads, policies, tasks, notes…" autocomplete="off"
+      <input type="search" id="gs-input" placeholder="Search…" autocomplete="off"
              role="combobox" aria-expanded="false" aria-controls="gs-results" aria-autocomplete="list">
       <kbd class="gs-key" aria-hidden="true">/</kbd>
       <div class="gs-results" id="gs-results" role="listbox" hidden></div>
     </div>
+    <nav class="ad-nav" aria-label="Main">
+      <p class="sb-h">Work</p>
+      <a href="#/home" data-nav="home"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Dashboard</span></a>
+      <a href="#/leads" data-nav="leads"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.3a3.5 3.5 0 0 1 0 6.4M18.5 14.4c1.8.8 3 2.8 3 5.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Leads</span><i class="nav-count" id="nav-leads" title="Need action" hidden></i></a>
+      <a href="#/tasks" data-nav="tasks"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Tasks</span><i class="nav-badge" id="nav-tasks" title="Due today or overdue" hidden></i></a>
+      <a href="#/policies" data-nav="policies"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6zM9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Policies</span></a>
+      <p class="sb-h">Insights</p>
+      <a href="#/reports" data-nav="reports"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Reports</span></a>
+      <a href="#/archive" data-nav="archive"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v4H3zM5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Archive</span></a>
+      <p class="sb-h">Account</p>
+      <a href="#/team" data-nav="team" data-admin hidden><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Team</span></a>
+      <a href="#/settings" data-nav="settings"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Settings</span></a>
+    </nav>
     <div class="ad-me">
-      <span class="ops-status" title="Your connection is encrypted"><i aria-hidden="true"></i><span>SECURE</span></span>
-      <span class="ops-clock" id="ops-clock" aria-hidden="true"></span>
-      <span class="ops-clear" id="ad-me-name"></span>
-      <button type="button" class="ad-link-btn" id="ad-signout">Sign out</button>
+      <span class="me-av" id="ad-me-av" aria-hidden="true"></span>
+      <span class="me-txt"><b id="ad-me-name"></b><small id="ad-me-role"></small></span>
+      <button type="button" class="ad-link-btn" id="ad-signout" title="Sign out"><svg class="sb-ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Sign out</span></button>
     </div>
   </div>
 </header>
